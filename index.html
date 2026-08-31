@@ -122,7 +122,7 @@
         </div>
         <div class="player-controls">
             <button id="prevBtn" class="control-btn">⏮</button>
-            <button id="playBtn" class="control-btn play-btn">▶</button>
+            <button id="playBtn" class="control-btn play-btn">▶️</button>
             <button id="nextBtn" class="control-btn">⏭</button>
             <button id="stopBtn" class="control-btn">⏹</button>
         </div>
@@ -254,7 +254,7 @@
             handleError() {
                 alert('عذراً، تعذر تشغيل السورة. تأكد من وجود اتصال بالإنترنت أو حفظها مسبقاً.');
                 this.isPlaying = false;
-                document.getElementById('playBtn').textContent = '▶';
+                document.getElementById('playBtn').textContent = '▶️';
             }
 
             getSurahUrl(surahId) {
@@ -283,14 +283,14 @@
                     document.getElementById('playBtn').textContent = '⏸';
                 }).catch(() => {
                     this.isPlaying = false;
-                    document.getElementById('playBtn').textContent = '▶';
+                    document.getElementById('playBtn').textContent = '▶️';
                 });
             }
 
             pause() {
                 this.audio.pause();
                 this.isPlaying = false;
-                document.getElementById('playBtn').textContent = '▶';
+                document.getElementById('playBtn').textContent = '▶️';
             }
 
             stop() {
