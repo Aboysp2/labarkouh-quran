@@ -180,25 +180,33 @@
 
         document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
 
-        // قائمة القراء بأسماء المعرفات الصحيحة المعتمدة رسمياً في CDN
+        const SURAH_NAMES = [
+            "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
+            "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+            "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+            "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
+            "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
+            "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
+            "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
+            "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
+            "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+            "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
+            "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
+            "المسد","الإخلاص","الفلق","الناس"
+        ];
+
         const QURAN_DATA = {
             sheikhs: [
-                { id: 'ar.alafasy', name: 'مشاري راشد العفاسي' },
-                { id: 'ar.abdulbasit', name: 'عبد الباسط عبد الصمد' },
-                { id: 'ar.husary', name: 'محمود خليل الحصري' },
-                { id: 'ar.minshawi', name: 'محمد صديق المنشاوي' },
-                { id: 'ar.sudais', name: 'عبد الرحمن السديس' },
-                { id: 'ar.hudhaify', name: 'علي بن عبد الرحمن الحذيفي' },
-                { id: 'ar.muhammadayoub', name: 'محمد أيوب' },
-                { id: 'ar.shuraim', name: 'سعود الشريم' }
+                { id: 'Alafasy_128kbps', fallbackId: 'ar.alafasy', name: 'مشاري راشد العفاسي' },
+                { id: 'AbdulSamad_64kbps_QuranExplorer.Com', fallbackId: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد' },
+                { id: 'Husary_128kbps', fallbackId: 'ar.husary', name: 'محمود خليل الحصري' },
+                { id: 'Minshawy_Murattal_128kbps', fallbackId: 'ar.minshawi', name: 'محمد صديق المنشاوي' },
+                { id: 'Abdurrahmaan_As-Sudais_192kbps', fallbackId: 'ar.sudais', name: 'عبد الرحمن السديس' },
+                { id: 'Hudhaify_128kbps', fallbackId: 'ar.hudhaify', name: 'على بن عبد الرحمن الحذيفي' },
+                { id: 'Muhammad_Ayyoub_128kbps', fallbackId: 'ar.ayyoub', name: 'محمد أيوب' },
+                { id: 'Saood_ash-Shuraym_128kbps', fallbackId: 'ar.saoodshuraym', name: 'سعود الشريم' }
             ],
-            surahs: [
-                { id: 1, name: 'الفاتحة', verses: 7 }, { id: 2, name: 'البقرة', verses: 286 },
-                { id: 3, name: 'آل عمران', verses: 200 }, { id: 18, name: 'الكهف', verses: 110 },
-                { id: 36, name: 'يس', verses: 83 }, { id: 55, name: 'الرحمن', verses: 78 },
-                { id: 67, name: 'الملك', verses: 30 }, { id: 112, name: 'الإخلاص', verses: 4 },
-                { id: 113, name: 'الفلق', verses: 5 }, { id: 114, name: 'الناس', verses: 6 }
-            ]
+            surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
         };
 
         class QuranPlayer {
@@ -207,6 +215,7 @@
                 this.currentSheikh = QURAN_DATA.sheikhs[0];
                 this.currentSurahIndex = 0;
                 this.isPlaying = false;
+                this.isFallback = false;
                 this.initListeners();
             }
 
@@ -223,18 +232,32 @@
                 this.audio.addEventListener('ended', () => this.next());
 
                 this.audio.addEventListener('error', () => {
-                    alert('تعذر تشغيل هذه السورة حالياً لهذا القارئ، يرجى اختيار قارئ آخر.');
-                    this.isPlaying = false;
-                    document.getElementById('playBtn').textContent = '▶';
+                    if (!this.isFallback) {
+                        this.isFallback = true;
+                        const surahId = QURAN_DATA.surahs[this.currentSurahIndex].id;
+                        this.audio.src = `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.fallbackId}/${surahId}.mp3`;
+                        this.audio.play().catch(() => this.handleError());
+                    } else {
+                        this.handleError();
+                    }
                 });
+            }
+
+            handleError() {
+                alert('تعذر تحميل الملف الصوتي من السيرفرات. يرجى التأكد من اتصال الإنترنت.');
+                this.isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶';
             }
 
             playSurah(surahId) {
                 const index = QURAN_DATA.surahs.findIndex(s => s.id === Number(surahId));
                 if (index !== -1) {
                     this.currentSurahIndex = index;
+                    this.isFallback = false;
                     const surah = QURAN_DATA.surahs[this.currentSurahIndex];
-                    this.audio.src = `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.id}/${surah.id}.mp3`;
+                    const formattedId = String(surah.id).padStart(3, '0');
+                    
+                    this.audio.src = `https://everyquran.com/yousuf/data/${this.currentSheikh.id}/${formattedId}.mp3`;
                     document.getElementById('currentSurahName').textContent = `سورة ${surah.name}`;
                     document.getElementById('currentSheikhName').textContent = `القارئ: ${this.currentSheikh.name}`;
                     this.play();
@@ -248,8 +271,7 @@
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     document.getElementById('playBtn').textContent = '⏸';
-                }).catch(err => {
-                    console.error("Audio playback error:", err);
+                }).catch(() => {
                     this.isPlaying = false;
                     document.getElementById('playBtn').textContent = '▶';
                 });
@@ -323,7 +345,7 @@
             QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(s => {
                 const el = document.createElement('div');
                 el.className = 'surah-item';
-                el.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><div class="surah-num">${s.id}</div><strong>سورة ${s.name}</strong></div><span>${s.verses} آية</span>`;
+                el.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><div class="surah-num">${s.id}</div><strong>سورة ${s.name}</strong></div>`;
                 el.onclick = () => window.player.playSurah(s.id);
                 list.appendChild(el);
             });
