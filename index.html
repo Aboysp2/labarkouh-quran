@@ -139,7 +139,7 @@
     <header class="main-header">
         <div class="old-banner">
             <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
-            <p class="banner-text">﷽ صدقة جارية عن جميع أمة الإسلام ﷽</p>
+            <p class="banner-text">صدقة جارية عن جميع أمة الإسلام</p>
         </div>
     </header>
 
@@ -179,7 +179,7 @@
                 <p>استمع لتلاوات عطرة لكبار مشايخ العالم الإسلامي</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card"><h3>المشايخ</h3><p>5</p></div>
+                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">14</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
                 <div class="stat-card"><h3>بدون نت</h3><p>✓ PWA</p></div>
             </div>
@@ -207,19 +207,28 @@
     </main>
 
     <footer class="main-footer">
-        <p>صدقة جارية عن جميع أمة الإسلام - 2026</p>
+        <p>صدقة جارية عن جميع أمة الإسلام</p>
     </footer>
 
     <!-- Logic & PWA Script Integration -->
     <script>
-        // 1. Data Setup
+        // Data Setup with updated sheikhs
         const QURAN_DATA = {
             sheikhs: [
                 { id: 'mishary', name: 'مشارى راشد العفاسي', server: 'https://server8.mp3quran.net/afs/' },
                 { id: 'abdulbasit', name: 'عبد الباسط عبد الصمد', server: 'https://server7.mp3quran.net/basit/' },
                 { id: 'alhusary', name: 'محمود خليل الحصري', server: 'https://server13.mp3quran.net/hussary/' },
                 { id: 'minshawi', name: 'محمد صديق المنشاوي', server: 'https://server10.mp3quran.net/minsh/' },
-                { id: 'sudais', name: 'عبد الرحمن السديس', server: 'https://server11.mp3quran.net/sds/' }
+                { id: 'sudais', name: 'عبد الرحمن السديس', server: 'https://server11.mp3quran.net/sds/' },
+                { id: 'ayyoub', name: 'محمد أيوب', server: 'https://server8.mp3quran.net/ayyoub/' },
+                { id: 'hudhaify', name: 'عبد الرحمن الحذيفي', server: 'https://server9.mp3quran.net/hthfi/' },
+                { id: 'muhaisni', name: 'محمد المحيسني', server: 'https://server11.mp3quran.net/mhsne/' },
+                { id: 'matroud', name: 'عبد الله المطرود', server: 'https://server8.mp3quran.net/matroud/' },
+                { id: 'dosari', name: 'ياسر الدوسري', server: 'https://server11.mp3quran.net/yasser/' },
+                { id: 'ajamy', name: 'أحمد بن علي العجمي', server: 'https://server10.mp3quran.net/ajm/' },
+                { id: 'turki', name: 'بدر التركي', server: 'https://server10.mp3quran.net/badr/' },
+                { id: 'noreen', name: 'نورين محمد صديق', server: 'https://server11.mp3quran.net/nourin/' },
+                { id: 'hussam', name: 'حسام الدين عبادي', server: 'https://server14.mp3quran.net/hussam/' }
             ],
             surahs: [
                 { id: 1, name: 'الفاتحة', verses: 7 }, { id: 2, name: 'البقرة', verses: 286 },
@@ -230,7 +239,7 @@
             ]
         };
 
-        // 2. Audio Player Logic
+        // Player Logic
         class QuranPlayer {
             constructor() {
                 this.audio = new Audio();
@@ -301,12 +310,13 @@
             }
         }
 
-        // 3. Application Initialization
+        // App Initializer
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => document.getElementById('splashScreen')?.classList.add('hidden'), 1000);
             window.player = new QuranPlayer();
 
-            // Render Views
+            document.getElementById('totalSheikhsCount').textContent = QURAN_DATA.sheikhs.length;
+
             renderSheikhs();
             renderSurahs();
             setupNavigation();
@@ -323,7 +333,7 @@
                 el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
                 el.onclick = () => {
                     window.player.currentSheikh = s;
-                    alert(`تم اختيار: ${s.name}`);
+                    alert(`تم اختيار القارئ: ${s.name}`);
                     document.querySelector('[data-section="surahs"]').click();
                 };
                 list.appendChild(el);
@@ -366,9 +376,7 @@
             document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
         }
 
-        // 4. PWA Dynamic Registration (Manifest & Service Worker)
         function setupPWA() {
-            // Dynamic Web App Manifest
             const manifest = {
                 name: "لا باركوه للقرآن الكريم",
                 short_name: "لا باركوه",
@@ -378,14 +386,12 @@
                 theme_color: "#1a5e3a",
                 icons: [{ src: "https://cdn-icons-png.flaticon.com/512/3004/3004412.png", sizes: "512x512", type: "image/png" }]
             };
-            const stringManifest = JSON.stringify(manifest);
-            const blob = new Blob([stringManifest], {type: 'application/json'});
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
             document.getElementById('manifestPlaceholder').setAttribute('href', URL.createObjectURL(blob));
 
-            // Dynamic Service Worker Injection
             if ('serviceWorker' in navigator) {
                 const swCode = `
-                    const CACHE_NAME = 'quran-pwa-v1';
+                    const CACHE_NAME = 'quran-pwa-v2';
                     self.addEventListener('install', (e) => {
                         e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
                     });
@@ -394,11 +400,9 @@
                     });
                 `;
                 const swBlob = new Blob([swCode], {type: 'text/javascript'});
-                const swUrl = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW setup skipped:', err));
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
             }
 
-            // Install Prompt Listener
             let deferredPrompt;
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
@@ -409,16 +413,10 @@
             document.getElementById('installBtn').onclick = () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then(() => {
-                        document.getElementById('installPrompt').classList.add('hidden');
-                    });
+                    deferredPrompt.userChoice.then(() => document.getElementById('installPrompt').classList.add('hidden'));
                 }
             };
-            document.getElementById('dismissInstall').onclick = () => {
-                document.getElementById('installPrompt').classList.add('hidden');
-            };
-
-            // Offline status handler
+            document.getElementById('dismissInstall').onclick = () => document.getElementById('installPrompt').classList.add('hidden');
             window.addEventListener('online', () => document.getElementById('offlineIndicator').classList.add('hidden'));
             window.addEventListener('offline', () => document.getElementById('offlineIndicator').classList.remove('hidden'));
         }
