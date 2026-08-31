@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a5e3a">
+    <link rel="manifest" href="manifest.json">
     <title>لا باركوه للقرآن الكريم</title>
     
     <style>
@@ -79,8 +80,11 @@
         .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; }
         .surah-num { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
         
-        .download-btn { background: var(--primary); color: white; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
-        .download-btn:hover { background: var(--primary-dark); }
+        .action-btns { display: flex; gap: 8px; align-items: center; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .save-btn.saved { background: #27ae60; }
+        .save-btn.loading { background: #e67e22; opacity: 0.8; }
+        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; }
 
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -144,7 +148,7 @@
         <section id="home" class="section active">
             <div class="welcome-card">
                 <h2>🕌 مرحباً بك في تطبيق لا باركوه</h2>
-                <p>استمع واحفظ تلاوات القرآن الكريم بسهولة</p>
+                <p>استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت</p>
             </div>
             <div class="quick-stats">
                 <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">13</p></div>
@@ -203,22 +207,27 @@
 
         const QURAN_DATA = {
             sheikhs: [
-                { id: 'Alafasy_128kbps', fallbackId: 'ar.alafasy', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
-                { id: 'AbdulSamad_64kbps_QuranExplorer.Com', fallbackId: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
-                { id: 'Husary_128kbps', fallbackId: 'ar.husary', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
-                { id: 'Minshawy_Murattal_128kbps', fallbackId: 'ar.minshawi', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
-                { id: 'Abdurrahmaan_As-Sudais_192kbps', fallbackId: 'ar.sudais', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
-                { id: 'Hudhaify_128kbps', fallbackId: 'ar.hudhaify', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
-                { id: 'Muhammad_Ayyoub_128kbps', fallbackId: 'ar.ayyoub', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
-                { id: 'Saood_ash-Shuraym_128kbps', fallbackId: 'ar.saoodshuraym', name: 'سعود الشريم', country: 'السعودية 🇸🇦' },
-                { id: 'Noreen_Mohammad_Siddiq_128kbps', fallbackId: 'ar.noreen', name: 'نورين محمد صديق', country: 'السودان 🇸🇩' },
-                { id: 'Abdulrasheed_Soufi_128kbps', fallbackId: 'ar.soufi', name: 'عبد الرشيد صوفي', country: 'الصومال 🇸🇴' },
-                { id: 'Alzain_Mohammad_Ahmad_128kbps', fallbackId: 'ar.alzain', name: 'الزين محمد أحمد', country: 'السودان 🇸🇩' },
-                { id: 'Alfateh_Alzoubeir_128kbps', fallbackId: 'ar.alfateh', name: 'الفاتح محمد الزبير', country: 'السودان 🇸🇩' },
-                { id: 'Mahmoud_Ali_Al_Banna_128kbps', fallbackId: 'ar.banna', name: 'محمود علي البنا', country: 'مصر 🇪🇬' }
+                { id: 'ar.alafasy', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
+                { id: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
+                { id: 'ar.husary', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
+                { id: 'ar.minshawi', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
+                { id: 'ar.sudais', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
+                { id: 'ar.hudhaify', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
+                { id: 'ar.ayyoub', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
+                { id: 'ar.shaatree', name: 'أبو بكر الشاطري', country: 'السعودية 🇸🇦' },
+                { id: 'ar.hanif', name: 'هانئ الرفاعي', country: 'السعودية 🇸🇦' },
+                { id: 'ar.ahmedajamy', name: 'أحمد بن علي العجمي', country: 'السعودية 🇸🇦' },
+                { id: 'ar.mahermuaiqly', name: 'ماهر المعيقلي', country: 'السعودية 🇸🇦' },
+                { id: 'ar.muhammadjibreel', name: 'محمد جبريل', country: 'مصر 🇪🇬' },
+                { id: 'ar.parhizgar', name: 'شهريار پرهيزكار', country: 'إيران 🇮🇷' }
             ],
             surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
         };
+
+        // تسجيل الـ Service Worker لتفعيل وضع العمل بدون نت
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register fail', err));
+        }
 
         class QuranPlayer {
             constructor() {
@@ -226,7 +235,6 @@
                 this.currentSheikh = QURAN_DATA.sheikhs[0];
                 this.currentSurahIndex = 0;
                 this.isPlaying = false;
-                this.isFallback = false;
                 this.initListeners();
             }
 
@@ -241,35 +249,23 @@
                 });
 
                 this.audio.addEventListener('ended', () => this.next());
-
-                this.audio.addEventListener('error', () => {
-                    if (!this.isFallback) {
-                        this.isFallback = true;
-                        const surahId = QURAN_DATA.surahs[this.currentSurahIndex].id;
-                        this.audio.src = `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.fallbackId}/${surahId}.mp3`;
-                        this.audio.play().catch(() => this.handleError());
-                    } else {
-                        this.handleError();
-                    }
-                });
+                this.audio.addEventListener('error', () => this.handleError());
             }
 
             handleError() {
-                alert('يرجى الاتصال بالإنترنت للاستماع أول مرة أو اضغط على زر "تحميل" لتنزيل ملف الصوت مباشرة على جهازك.');
+                alert('لم يتم التمكن من تشغيل السورة. تأكد من وجود اتصال بالإنترنت أو قم بحفظها مسبقاً للاستماع بدون نت.');
                 this.isPlaying = false;
                 document.getElementById('playBtn').textContent = '▶';
             }
 
             getSurahUrl(surahId) {
-                const formattedId = String(surahId).padStart(3, '0');
-                return `https://everyquran.com/yousuf/data/${this.currentSheikh.id}/${formattedId}.mp3`;
+                return `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.id}/${surahId}.mp3`;
             }
 
             playSurah(surahId) {
                 const index = QURAN_DATA.surahs.findIndex(s => s.id === Number(surahId));
                 if (index !== -1) {
                     this.currentSurahIndex = index;
-                    this.isFallback = false;
                     const surah = QURAN_DATA.surahs[this.currentSurahIndex];
                     const url = this.getSurahUrl(surah.id);
                     
@@ -281,9 +277,7 @@
             }
 
             play() {
-                if (!this.audio.src) {
-                    return this.playSurah(QURAN_DATA.surahs[0].id);
-                }
+                if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     document.getElementById('playBtn').textContent = '⏸';
@@ -359,12 +353,23 @@
             });
         }
 
+        async function checkSavedStatus(url) {
+            if ('caches' in window) {
+                const cache = await caches.open('quran-audio-v1');
+                const match = await cache.match(url);
+                return !!match;
+            }
+            return false;
+        }
+
         function renderSurahs(filter = '') {
             const list = document.getElementById('surahsList');
             list.innerHTML = '';
             
-            QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(s => {
+            QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(async s => {
                 const url = window.player.getSurahUrl(s.id);
+                const isSaved = await checkSavedStatus(url);
+
                 const el = document.createElement('div');
                 el.className = 'surah-item';
                 el.innerHTML = `
@@ -372,12 +377,46 @@
                         <div class="surah-num">${s.id}</div>
                         <strong>سورة ${s.name}</strong>
                     </div>
-                    <a href="${url}" target="_blank" download="سورة_${s.name}.mp3" class="download-btn">
-                        📥 تحميل MP3
-                    </a>
+                    <div class="action-btns">
+                        <button class="save-btn ${isSaved ? 'saved' : ''}" id="saveBtn-${s.id}" onclick="toggleSaveSurah('${url}',${s.id})">
+                            ${isSaved ? '✔ محفوظة بدون نت' : '💾 حفظ للعمل بدون نت'}
+                        </button>
+                        <a href="${url}" target="_blank" download="سورة_${s.name}.mp3" class="direct-download">📥 MP3</a>
+                    </div>
                 `;
                 list.appendChild(el);
             });
+        }
+
+        async function toggleSaveSurah(url, surahId) {
+            const btn = document.getElementById(`saveBtn-${surahId}`);
+            if (!('caches' in window)) {
+                alert('متصفحك لا يدعم خاصية الحفظ المحلي.');
+                return;
+            }
+
+            const cache = await caches.open('quran-audio-v1');
+            const isSaved = await cache.match(url);
+
+            if (isSaved) {
+                await cache.delete(url);
+                btn.className = 'save-btn';
+                btn.innerHTML = '💾 حفظ للعمل بدون نت';
+            } else {
+                btn.className = 'save-btn loading';
+                btn.innerHTML = '⏳ جارٍ الحفظ...';
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Download failed');
+                    await cache.put(url, response);
+                    btn.className = 'save-btn saved';
+                    btn.innerHTML = '✔ محفوظة بدون نت';
+                } catch (e) {
+                    btn.className = 'save-btn';
+                    btn.innerHTML = '💾 حفظ للعمل بدون نت';
+                    alert('حدث خطأ أثناء حفظ السورة. تأكد من وجود اتصال بالإنترنت.');
+                }
+            }
         }
 
         function setupNavigation() {
