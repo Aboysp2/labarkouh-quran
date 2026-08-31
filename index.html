@@ -29,7 +29,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s, color 0.3s; }
 
-        .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s ease-out; }
+        .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease-out; }
         .splash-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
         .splash-logo { width: 100px; height: 100px; margin-bottom: 15px; }
@@ -81,7 +81,6 @@
 
         .surahs-list { display: flex; flex-direction: column; gap: 8px; }
         .surah-item { background: var(--card); padding: 12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
-        .surah-item:hover { transform: translateX(-5px); }
         .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; }
         .surah-num { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
         
@@ -90,7 +89,7 @@
         .save-btn:hover { background: var(--primary-dark); }
         .save-btn.saved { background: #27ae60; }
         .save-btn.loading { background: #e67e22; opacity: 0.8; cursor: wait; }
-        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; }
+        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; display: inline-block; }
         .direct-download:hover { transform: scale(1.05); }
 
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
@@ -106,6 +105,7 @@
 </head>
 <body>
 
+    <!-- شاشة البداية -->
     <div id="splashScreen" class="splash-screen">
         <div class="splash-content">
             <div id="splashLogoContainer" class="splash-logo"></div>
@@ -115,6 +115,7 @@
         </div>
     </div>
 
+    <!-- الهيدر -->
     <header class="main-header">
         <div class="old-banner">
             <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
@@ -122,6 +123,7 @@
         </div>
     </header>
 
+    <!-- مشغل الصوت -->
     <div class="player-bar" id="playerBar">
         <div class="player-info">
             <span id="currentSurahName">اختر سورة للاستماع</span>
@@ -136,14 +138,7 @@
         <div class="player-progress">
             <span id="currentTime">00:00</span>
             <input type="range" id="progressBar" value="0" min="0" max="100">
-            <span id="duration">00:00</span>
-        </div>
-        <div class="volume-control">
-            <span>🔊</span>
-            <input type="range" id="volumeBar" value="100" min="0" max="100">
-        </div>
-    </div>
-
+            <span id="duration">00:00</spanقل -->
     <nav class="main-nav">
         <button class="nav-btn active" data-section="home">🏠 الرئيسية</button>
         <button class="nav-btn" data-section="sheikhs">👤 المشايخ</button>
@@ -151,6 +146,7 @@
         <button class="nav-btn" data-section="settings">⚙ الإعدادات</button>
     </nav>
 
+    <!-- المحتوى -->
     <main class="content">
         <section id="home" class="section active">
             <div class="welcome-card">
@@ -165,21 +161,22 @@
 
         <section id="sheikhs" class="section">
             <h2 class="section-title">🌙 مشايخ القرآن الكريم</h2>
-            <div class="search-box"><input type="text" id="sheikhSearch" placeholder="🔍 ابحث عن شيخ..."></div>
+            <div class="search-box">
+                <input type="text" id="sheikhSearch" placeholder="🔍 ابحث عن شيخ...">
+            </div>
             <div id="sheikhsList" class="sheikhs-grid"></div>
         </section>
 
         <section id="surahs" class="section">
             <h2 class="section-title">📖 سور القرآن الكريم</h2>
-            <div class="search-box"><input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة..."></div>
-            <div id="surahsList" class="surahs-list"></div>
-        </section>
-
-        <section id="settings" class="section">
-            <h2 class="section-title">⚙ الإعدادات</h2>
-            <div class="setting-item">
-                <label>الوضع الليلي</label>
-                <label class="switch"><input type="checkbox" id="darkMode"><span class="slider"></span></label>
+            <div class="search-box">
+                <input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة...">
+            </div>
+           الوضع الليلي</label>
+                <label class="switch">
+                    <input type="checkbox" id="darkMode">
+                    <span class="slider"></span>
+                </label>
             </div>
         </section>
     </main>
@@ -189,7 +186,17 @@
     </footer>
 
     <script>
-        // ========== الأيقونة ==========
+        // ====== الأيقونة SVG ======
         const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
-            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392
+            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
+            <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
+        </svg>`;
+
+        document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
+
+        // ====== بيانات القرآن ======
+        const SURAH_NAMES = [
+            "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
+            "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+            "الأنبياء","
