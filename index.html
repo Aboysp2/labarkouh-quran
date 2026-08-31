@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5e3a">
+    <meta name="description" content="موقع لا باركوه للقرآن الكريم - استمع لتلاوات عطرة لكبار المشايخ بدون إنترنت">
+    <title>لا باركوه للقرآن الكريم</title>
+    
+    <!-- PWA Manifest Dynamic Link -->
+    <link rel="manifest" id="manifestPlaceholder">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3004/3004412.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3004/3004412.png">
+
+    <style>
+        :root {
+            --primary: #1a5e3a;
+            --primary-dark: #0d3d22;
+            --secondary: #d4af37;
+            --bg: #f5f0e1;
+            --text: #2c2c2c;
+            --card: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        body.dark-mode {
+            --bg: #1a1a2e;
+            --text: #f0f0f0;
+            --card: #16213e;
+            --shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s, color 0.3s; }
+
+        /* Splash Screen */
+        .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
+        .splash-screen.hidden { opacity: 0; pointer-events: none; }
+        .splash-content { text-align: center; color: white; }
+        .splash-logo { font-size: 5em; margin-bottom: 20px; animation: pulse 2s infinite; }
+        .splash-title { font-size: 2.5em; color: var(--secondary); margin-bottom: 10px; }
+        .splash-subtitle { font-size: 1.2em; margin-bottom: 30px; }
+        .splash-loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Offline & Install Prompt */
+        .install-prompt { position: fixed; bottom: 110px; left: 20px; right: 20px; background: var(--card); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 999; max-width: 500px; margin: 0 auto; display: flex; align-items: center; padding: 15px; gap: 15px; border-top: 3px solid var(--secondary); }
+        .install-prompt.hidden { display: none; }
+        .install-text { flex: 1; }
+        .install-text h3 { color: var(--primary); font-size: 1.1em; }
+        .install-text p { font-size: 0.85em; opacity: 0.8; }
+        .install-action { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .install-close { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text); }
+
+        .offline-indicator { position: fixed; top: 10px; right: 10px; background: #e74c3c; color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8em; z-index: 998; display: flex; align-items: center; gap: 6px; }
+        .offline-indicator.hidden { display: none; }
+
+        /* Header */
+        .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
+        .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 20px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
+        .site-title { color: #fff; font-size: 2em; margin-bottom: 5px; font-weight: bold; }
+        .banner-text { color: var(--secondary); font-size: 1.1em; }
+
+        /* Player Bar */
+        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); padding: 12px 20px; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 1000; flex-wrap: wrap; border-top: 3px solid var(--secondary); }
+        .player-info { flex: 1; min-width: 140px; }
+        #currentSurahName { font-weight: bold; color: var(--primary); display: block; }
+        #currentSheikhName { font-size: 0.8em; opacity: 0.7; }
+        .player-controls { display: flex; gap: 8px; align-items: center; }
+        .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; }
+        .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary); font-size: 1.3em; }
+        .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 180px; font-size: 0.8em; }
+        #progressBar { flex: 1; height: 6px; accent-color: var(--primary); cursor: pointer; }
+        .volume-control { display: flex; align-items: center; gap: 5px; }
+        #volumeBar { width: 70px; height: 6px; accent-color: var(--primary); cursor: pointer; }
+
+        /* Navigation */
+        .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 8px; box-shadow: var(--shadow); flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9em; }
+        .nav-btn.active, .nav-btn:hover { background: var(--primary); color: white; }
+
+        /* Main Content */
+        .content { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .section-title { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; font-size: 1.3em; }
+
+        .welcome-card { background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; margin-bottom: 20px; border-top: 4px solid var(--primary); }
+        .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+        .stat-card { background: var(--card); padding: 12px; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow); }
+
+        .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; }
+        .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+
+        .surahs-list { display: flex; flex-direction: column; gap: 8px; }
+        .surah-item { background: var(--card); padding: 10px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .surah-num { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: bold; }
+
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: 15px; margin-top: 30px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">📖</div>
+            <h1 class="splash-title">لا باركوه</h1>
+            <p class="splash-subtitle">للقرآن الكريم</p>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <div id="installPrompt" class="install-prompt hidden">
+        <span style="font-size: 1.8em;">📲</span>
+        <div class="install-text">
+            <h3>ثبّت التطبيق</h3>
+            <p>للوصول السريع والعمل بدون إنترنت</p>
+        </div>
+        <button id="installBtn" class="install-action">تثبيت</button>
+        <button id="dismissInstall" class="install-close">✕</button>
+    </div>
+
+    <div id="offlineIndicator" class="offline-indicator hidden">
+        <span>🔴</span> <span>وضع عدم الاتصال</span>
+    </div>
+
+    <header class="main-header">
+        <div class="old-banner">
+            <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
+            <p class="banner-text">﷽ صدقة جارية عن جميع أمة الإسلام ﷽</p>
+        </div>
+    </header>
+
+    <div class="player-bar" id="playerBar">
+        <div class="player-info">
+            <span id="currentSurahName">اختر سورة للاستماع</span>
+            <span id="currentSheikhName"></span>
+        </div>
+        <div class="player-controls">
+            <button id="prevBtn" class="control-btn">⏮</button>
+            <button id="playBtn" class="control-btn play-btn">▶</button>
+            <button id="nextBtn" class="control-btn">⏭</button>
+            <button id="stopBtn" class="control-btn">⏹</button>
+        </div>
+        <div class="player-progress">
+            <span id="currentTime">00:00</span>
+            <input type="range" id="progressBar" value="0" min="0" max="100">
+            <span id="duration">00:00</span>
+        </div>
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" id="volumeBar" value="100" min="0" max="100">
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <button class="nav-btn active" data-section="home">🏠 الرئيسية</button>
+        <button class="nav-btn" data-section="sheikhs">👤 المشايخ</button>
+        <button class="nav-btn" data-section="surahs">📖 السور</button>
+        <button class="nav-btn" data-section="settings">⚙ الإعدادات</button>
+    </nav>
+
+    <main class="content">
+        <section id="home" class="section active">
+            <div class="welcome-card">
+                <h2>🕌 مرحباً بك في تطبيق لا باركوه</h2>
+                <p>استمع لتلاوات عطرة لكبار مشايخ العالم الإسلامي</p>
+            </div>
+            <div class="quick-stats">
+                <div class="stat-card"><h3>المشايخ</h3><p>5</p></div>
+                <div class="stat-card"><h3>السور</h3><p>114</p></div>
+                <div class="stat-card"><h3>بدون نت</h3><p>✓ PWA</p></div>
+            </div>
+        </section>
+
+        <section id="sheikhs" class="section">
+            <h2 class="section-title">🌙 مشايخ القرآن الكريم</h2>
+            <div class="search-box"><input type="text" id="sheikhSearch" placeholder="🔍 ابحث عن شيخ..."></div>
+            <div id="sheikhsList" class="sheikhs-grid"></div>
+        </section>
+
+        <section id="surahs" class="section">
+            <h2 class="section-title">📖 سور القرآن الكريم</h2>
+            <div class="search-box"><input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة..."></div>
+            <div id="surahsList" class="surahs-list"></div>
+        </section>
+
+        <section id="settings" class="section">
+            <h2 class="section-title">⚙ الإعدادات</h2>
+            <div class="setting-item">
+                <label>الوضع الليلي</label>
+                <label class="switch"><input type="checkbox" id="darkMode"><span class="slider"></span></label>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>صدقة جارية عن جميع أمة الإسلام - 2026</p>
+    </footer>
+
+    <!-- Logic & PWA Script Integration -->
+    <script>
+        // 1. Data Setup
+        const QURAN_DATA = {
+            sheikhs: [
+                { id: 'mishary', name: 'مشارى راشد العفاسي', server: 'https://server8.mp3quran.net/afs/' },
+                { id: 'abdulbasit', name: 'عبد الباسط عبد الصمد', server: 'https://server7.mp3quran.net/basit/' },
+                { id: 'alhusary', name: 'محمود خليل الحصري', server: 'https://server13.mp3quran.net/hussary/' },
+                { id: 'minshawi', name: 'محمد صديق المنشاوي', server: 'https://server10.mp3quran.net/minsh/' },
+                { id: 'sudais', name: 'عبد الرحمن السديس', server: 'https://server11.mp3quran.net/sds/' }
+            ],
+            surahs: [
+                { id: 1, name: 'الفاتحة', verses: 7 }, { id: 2, name: 'البقرة', verses: 286 },
+                { id: 3, name: 'آل عمران', verses: 200 }, { id: 18, name: 'الكهف', verses: 110 },
+                { id: 36, name: 'يس', verses: 83 }, { id: 55, name: 'الرحمن', verses: 78 },
+                { id: 67, name: 'الملك', verses: 30 }, { id: 112, name: 'الإخلاص', verses: 4 },
+                { id: 113, name: 'الفلق', verses: 5 }, { id: 114, name: 'الناس', verses: 6 }
+            ]
+        };
+
+        // 2. Audio Player Logic
+        class QuranPlayer {
+            constructor() {
+                this.audio = new Audio();
+                this.currentSheikh = QURAN_DATA.sheikhs[0];
+                this.currentSurahIndex = 0;
+                this.isPlaying = false;
+                this.initListeners();
+            }
+
+            initListeners() {
+                this.audio.addEventListener('timeupdate', () => {
+                    if (this.audio.duration) {
+                        const progress = (this.audio.currentTime / this.audio.duration) * 100;
+                        document.getElementById('progressBar').value = progress;
+                        document.getElementById('currentTime').textContent = this.formatTime(this.audio.currentTime);
+                        document.getElementById('duration').textContent = this.formatTime(this.audio.duration);
+                    }
+                });
+                this.audio.addEventListener('ended', () => this.next());
+            }
+
+            playSurah(surahId) {
+                const index = QURAN_DATA.surahs.findIndex(s => s.id === Number(surahId));
+                if (index !== -1) {
+                    this.currentSurahIndex = index;
+                    const surah = QURAN_DATA.surahs[this.currentSurahIndex];
+                    const paddedId = String(surah.id).padStart(3, '0');
+                    this.audio.src = `${this.currentSheikh.server}${paddedId}.mp3`;
+                    document.getElementById('currentSurahName').textContent = `سورة ${surah.name}`;
+                    document.getElementById('currentSheikhName').textContent = `القارئ: ${this.currentSheikh.name}`;
+                    this.play();
+                }
+            }
+
+            play() {
+                if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
+                this.audio.play().then(() => {
+                    this.isPlaying = true;
+                    document.getElementById('playBtn').textContent = '⏸';
+                }).catch(() => alert('تعذر تشغيل الصوت. يرجى التحقق من الاتصال بالإنترنت.'));
+            }
+
+            pause() {
+                this.audio.pause();
+                this.isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶';
+            }
+
+            stop() {
+                this.pause();
+                this.audio.currentTime = 0;
+                document.getElementById('progressBar').value = 0;
+            }
+
+            next() {
+                this.currentSurahIndex = (this.currentSurahIndex + 1) % QURAN_DATA.surahs.length;
+                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
+            }
+
+            prev() {
+                this.currentSurahIndex = (this.currentSurahIndex - 1 + QURAN_DATA.surahs.length) % QURAN_DATA.surahs.length;
+                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
+            }
+
+            formatTime(secs) {
+                const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
+                return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }
+        }
+
+        // 3. Application Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => document.getElementById('splashScreen')?.classList.add('hidden'), 1000);
+            window.player = new QuranPlayer();
+
+            // Render Views
+            renderSheikhs();
+            renderSurahs();
+            setupNavigation();
+            setupEvents();
+            setupPWA();
+        });
+
+        function renderSheikhs(filter = '') {
+            const list = document.getElementById('sheikhsList');
+            list.innerHTML = '';
+            QURAN_DATA.sheikhs.filter(s => s.name.includes(filter)).forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'sheikh-card';
+                el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
+                el.onclick = () => {
+                    window.player.currentSheikh = s;
+                    alert(`تم اختيار: ${s.name}`);
+                    document.querySelector('[data-section="surahs"]').click();
+                };
+                list.appendChild(el);
+            });
+        }
+
+        function renderSurahs(filter = '') {
+            const list = document.getElementById('surahsList');
+            list.innerHTML = '';
+            QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'surah-item';
+                el.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><div class="surah-num">${s.id}</div><strong>سورة ${s.name}</strong></div><span>${s.verses} آية</span>`;
+                el.onclick = () => window.player.playSurah(s.id);
+                list.appendChild(el);
+            });
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.section).classList.add('active');
+                };
+            });
+        }
+
+        function setupEvents() {
+            document.getElementById('playBtn').onclick = () => window.player.isPlaying ? window.player.pause() : window.player.play();
+            document.getElementById('prevBtn').onclick = () => window.player.prev();
+            document.getElementById('nextBtn').onclick = () => window.player.next();
+            document.getElementById('stopBtn').onclick = () => window.player.stop();
+            document.getElementById('progressBar').oninput = (e) => window.player.audio.currentTime = (e.target.value / 100) * window.player.audio.duration;
+            document.getElementById('volumeBar').oninput = (e) => window.player.audio.volume = e.target.value / 100;
+            
+            document.getElementById('sheikhSearch').oninput = (e) => renderSheikhs(e.target.value);
+            document.getElementById('surahSearch').oninput = (e) => renderSurahs(e.target.value);
+            document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
+        }
+
+        // 4. PWA Dynamic Registration (Manifest & Service Worker)
+        function setupPWA() {
+            // Dynamic Web App Manifest
+            const manifest = {
+                name: "لا باركوه للقرآن الكريم",
+                short_name: "لا باركوه",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#1a5e3a",
+                theme_color: "#1a5e3a",
+                icons: [{ src: "https://cdn-icons-png.flaticon.com/512/3004/3004412.png", sizes: "512x512", type: "image/png" }]
+            };
+            const stringManifest = JSON.stringify(manifest);
+            const blob = new Blob([stringManifest], {type: 'application/json'});
+            document.getElementById('manifestPlaceholder').setAttribute('href', URL.createObjectURL(blob));
+
+            // Dynamic Service Worker Injection
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'quran-pwa-v1';
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                    });
+                `;
+                const swBlob = new Blob([swCode], {type: 'text/javascript'});
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW setup skipped:', err));
+            }
+
+            // Install Prompt Listener
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installPrompt').classList.remove('hidden');
+            });
+
+            document.getElementById('installBtn').onclick = () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(() => {
+                        document.getElementById('installPrompt').classList.add('hidden');
+                    });
+                }
+            };
+            document.getElementById('dismissInstall').onclick = () => {
+                document.getElementById('installPrompt').classList.add('hidden');
+            };
+
+            // Offline status handler
+            window.addEventListener('online', () => document.getElementById('offlineIndicator').classList.add('hidden'));
+            window.addEventListener('offline', () => document.getElementById('offlineIndicator').classList.remove('hidden'));
+        }
+    </script>
+</body>
+</html>
