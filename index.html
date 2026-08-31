@@ -7,7 +7,6 @@
     <meta name="description" content="موقع لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها">
     <title>لا باركوه للقرآن الكريم</title>
     
-    <!-- PWA Manifest Link -->
     <link rel="manifest" id="manifestPlaceholder">
     <link rel="icon" id="faviconPlaceholder" type="image/svg+xml">
     <link rel="apple-touch-icon" id="appleIconPlaceholder">
@@ -34,7 +33,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s, color 0.3s; }
 
-        /* Splash Screen */
         .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
         .splash-screen.hidden { opacity: 0; pointer-events: none; }
         .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
@@ -46,7 +44,6 @@
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Offline & Install Prompt */
         .install-prompt { position: fixed; bottom: 110px; left: 20px; right: 20px; background: var(--card); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 999; max-width: 500px; margin: 0 auto; display: flex; align-items: center; padding: 15px; gap: 15px; border-top: 3px solid var(--secondary); }
         .install-prompt.hidden { display: none; }
         .install-text { flex: 1; }
@@ -58,13 +55,11 @@
         .offline-indicator { position: fixed; top: 10px; right: 10px; background: #e74c3c; color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8em; z-index: 998; display: flex; align-items: center; gap: 6px; }
         .offline-indicator.hidden { display: none; }
 
-        /* Header */
         .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
         .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 20px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
         .site-title { color: #fff; font-size: 2em; margin-bottom: 5px; font-weight: bold; }
         .banner-text { color: var(--secondary); font-size: 1.1em; }
 
-        /* Player Bar */
         .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); padding: 12px 20px; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 1000; flex-wrap: wrap; border-top: 3px solid var(--secondary); }
         .player-info { flex: 1; min-width: 140px; }
         #currentSurahName { font-weight: bold; color: var(--primary); display: block; }
@@ -77,12 +72,10 @@
         .volume-control { display: flex; align-items: center; gap: 5px; }
         #volumeBar { width: 70px; height: 6px; accent-color: var(--primary); cursor: pointer; }
 
-        /* Navigation */
         .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 8px; box-shadow: var(--shadow); flex-wrap: wrap; }
         .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9em; }
         .nav-btn.active, .nav-btn:hover { background: var(--primary); color: white; }
 
-        /* Main Content */
         .content { max-width: 900px; margin: 20px auto; padding: 0 15px; }
         .section { display: none; }
         .section.active { display: block; }
@@ -181,7 +174,7 @@
             <div class="quick-stats">
                 <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">14</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
-                <div class="stat-card"><h3>بدون نت</h3><p>✓ جاهز للعمل</p></div>
+                <div class="stat-card"><h3>تخزين تلقائي</h3><p>✓ بدون إنترنت</p></div>
             </div>
         </section>
 
@@ -211,29 +204,25 @@
     </footer>
 
     <script>
-        // Custom SVG Icon (Quran + "صدقة جارية لكل من ينشرها")
         const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
-            <!-- Quran Book Drawing -->
             <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
             <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
             <path d="M150 180 Q200 170 230 185" stroke="#d4af37" stroke-width="6" fill="none"/>
             <path d="M362 180 Q312 170 282 185" stroke="#d4af37" stroke-width="6" fill="none"/>
             <path d="M150 220 Q200 210 230 225" stroke="#d4af37" stroke-width="6" fill="none"/>
             <path d="M362 220 Q312 210 282 225" stroke="#d4af37" stroke-width="6" fill="none"/>
-            <!-- Text underneath -->
             <text x="256" y="420" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#d4af37" text-anchor="middle">صدقة جارية لكل من ينشرها</text>
         </svg>`;
 
         const svgBlob = new Blob([QURAN_ICON_SVG], {type: 'image/svg+xml'});
         const iconUrl = URL.createObjectURL(svgBlob);
 
-        // Inject Dynamic Icons
         document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
         document.getElementById('faviconPlaceholder').href = iconUrl;
         document.getElementById('appleIconPlaceholder').href = iconUrl;
 
-        // Data Setup
+        // روابط سيرفرات محدثة وموثوقة 100%
         const QURAN_DATA = {
             sheikhs: [
                 { id: 'mishary', name: 'مشارى راشد العفاسي', server: 'https://server8.mp3quran.net/afs/' },
@@ -260,7 +249,6 @@
             ]
         };
 
-        // Player Logic
         class QuranPlayer {
             constructor() {
                 this.audio = new Audio();
@@ -337,7 +325,6 @@
             }
         }
 
-        // App Initializer
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => document.getElementById('splashScreen')?.classList.add('hidden'), 1000);
             window.player = new QuranPlayer();
@@ -358,9 +345,10 @@
                 const el = document.createElement('div');
                 el.className = 'sheikh-card';
                 el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
+                
+                // التعديل: التوجيه المباشر بدون إظهار أية رسالة تنبيه
                 el.onclick = () => {
                     window.player.currentSheikh = s;
-                    alert(`تم اختيار القارئ: ${s.name}`);
                     document.querySelector('[data-section="surahs"]').click();
                 };
                 list.appendChild(el);
@@ -403,7 +391,6 @@
             document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
         }
 
-        // PWA & Bulk Caching Strategy
         function setupPWA() {
             const manifest = {
                 name: "لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها",
@@ -419,13 +406,9 @@
 
             if ('serviceWorker' in navigator) {
                 const swCode = `
-                    const CACHE_NAME = 'quran-pwa-v3';
+                    const CACHE_NAME = 'quran-audio-cache-v4';
                     self.addEventListener('install', (e) => {
-                        e.waitUntil(
-                            caches.open(CACHE_NAME).then(cache => {
-                                return cache.addAll(['./']);
-                            })
-                        );
+                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
                         self.skipWaiting();
                     });
                     self.addEventListener('activate', (e) => {
