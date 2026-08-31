@@ -31,73 +31,73 @@
         .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease-out; }
         .splash-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
-        .splash-logo { width: 100px; height: 100px; margin-bottom: 15px; }
-        .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: 5px; }
-        .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
-        .splash-loader { width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
+        .splash-logo { width: 100px; height:  ‏100px; margin-bottom: ‏15px; }
+        .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: ‏5px; }
+        .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: ‏20px; }
+        .splash-loader { width: ‏35px; height: ‏35px; border: ‏4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: ‏50%; animation: spin 1s linear infinite; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
-        .site-title { color: #fff; font-size: 1.8em; margin-bottom: 5px; font-weight: bold; }
+        .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: ‏25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: ‏4px solid var(--secondary); }
+        .site-title { color: #fff; font-size: 1.8em; margin-bottom: ‏5px; font-weight: bold; }
         .banner-text { color: var(--secondary); font-size: 1em; }
 
-        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); padding: 12px 20px; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 1000; flex-wrap: wrap; border-top: 3px solid var(--secondary); }
-        .player-info { flex: 1; min-width: 140px; }
+        .player-bar { position: fixed; bottom: ‏0; left: ‏0; right: ‏0; background: var(--card); padding: ‏12px 20px; box-shadow: ‏0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: ‏15px; z-index: ‏1000; flex-wrap: wrap; border-top: ‏3px solid var(--secondary); }
+        .player-info { flex: 1; min-width: ‏140px; }
         #currentSurahName { font-weight: bold; color: var(--primary); display: block; }
         #currentSheikhName { font-size: 0.8em; opacity: 0.7; display: block; }
-        .player-controls { display: flex; gap: 8px; align-items: center; }
-        .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; }
+        .player-controls { display: flex; gap: ‏8px; align-items: center; }
+        .control-btn { background: var(--primary); color: white; border: none; width: ‏38px; height: ‏38px; border-radius: ‏50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; }
         .control-btn:hover { transform: scale(1.1); background: var(--primary-dark); }
-        .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary-dark); font-size: 1.3em; }
+        .play-btn { width: ‏48px; height: ‏48px; background: var(--secondary); color: var(--primary-dark); font-size: 1.3em; }
         .play-btn:hover { background: #e6c234; }
-        .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 180px; font-size:; }
-        #volumeBar { width: 70px; height: 6px; accent-color: var(--primary); cursor: pointer; }
+        .player-progress { flex: 2; display: flex; align-items: center; gap: ‏8px; min-width: ‏180px; font-size: 0.9em; }
+        #volumeBar { width: ‏70px; height: ‏6px; accent-color: var(--primary); cursor: pointer; }
 
-        .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 8px; box-shadow: var(--shadow); flex-wrap: wrap; }
-        .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9em; transition: all 0.3s; }
+        .main-nav { display: flex; justify-content: center; background: var(--card); padding: ‏10px; gap: ‏8px; box-shadow: var(--shadow); flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: ‏1.5px solid var(--primary); color: var(--primary); padding: ‏6px 14px; border-radius: ‏20px; font-weight: bold; cursor: pointer; font-size: 0.9em; transition: all 0.3s; }
         .nav-btn.active, .nav-btn:hover { background: var(--primary); color: white; }
 
-        .content { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .content { max-width: ‏900px; margin: ‏20px auto; padding: ‏0 15px; }
         .section { display: none; }
         .section.active { display: block; }
-        .section-title { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; font-size: 1.3em; }
+        .section-title { color: var(--primary); margin-bottom: ‏15px; border-bottom: ‏2px solid var(--secondary); padding-bottom: ‏5px; font-size: 1.3em; }
 
-        .welcome-card { background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; margin-bottom: 20px; border-top: 4px solid var(--primary); }
-        .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
-        .stat-card { background: var(--card); padding: 12px; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow); }
+        .welcome-card { background: var(--card); padding: ‏20px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; margin-bottom: ‏20px; border-top: ‏4px solid var(--primary); }
+        .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: ‏10px; }
+        .stat-card { background: var(--card); padding: ‏12px; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow); }
 
-        .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; transition: border-color 0.3s; }
+        .search-box input { width: 100%; padding: ‏10px; border: ‏1px solid #ccc; border-radius: var(--radius); margin-bottom: ‏15px; background: var(--card); color: var(--text); outline: none; transition: border-color 0.3s; }
         .search-box input:focus { border-color: var(--primary); }
-        .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s, border-color 0.2s; }
+        .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: ‏12px; }
+        .sheikh-card { background: var(--card); padding: ‏12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: ‏1px solid rgba(0,0,0,0.05); transition: transform 0.2s, border-color 0.2s; }
         .sheikh-card:hover { transform: translateY(-3px); }
-        .sheikh-card.selected { border: 2px solid var(--secondary); background: rgba(212, 175, 55, 0.1); }
-        .country-tag { font-size: 0.75em; background: rgba(26,94,58,0.1); color: var(--primary); padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+        .sheikh-card.selected { border: ‏2px solid var(--secondary); background: rgba(212, 175, 55, 0.1); }
+        .country-tag { font-size: 0.75em; background: rgba(26,94,58,0.1); color: var(--primary); padding: ‏2px 8px; border-radius: ‏10px; margin-top: ‏4px; display: inline-block; }
 
-        .surahs-list { display: flex; flex-direction: column; gap: 8px; }
-        .surah-item { background: var(--card); padding: 12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
-        .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; }
-        .surah-num { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
+        .surahs-list { display: flex; flex-direction: column; gap: ‏8px; }
+        .surah-item { background: var(--card); padding: ‏12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
+        .surah-info { display: flex; gap: ‏12px; align-items: center; cursor: pointer; flex: 1; }
+        .surah-num { background: var(--primary); color: white; width: ‏32px; height: ‏32px; border-radius: ‏50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
         
-        .action-btns { display: flex; gap: 8px; align-items: center; }
-        .save-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .action-btns { display: flex; gap: ‏8px; align-items: center; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: ‏6px 12px; border-radius: ‏18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: ‏4px; transition: all 0.2s; }
         .save-btn:hover { background: var(--primary-dark); }
         .save-btn.saved { background: #27ae60; }
-        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; display: inline-block; }
+        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: ‏6px 10px; border-radius: ‏18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; display: inline-block; }
         .direct-download:hover { transform: scale(1.05); }
 
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: ‏10px 0; border-bottom: ‏1px solid #eee; }
+        .switch { position: relative; display: inline-block; width: ‏40px; height: ‏20px; }
+        .switch input { opacity: ‏0; width: ‏0; height: ‏0; }
+        .slider { position: absolute; cursor: pointer; top: ‏0; left: ‏0; right: ‏0; bottom: ‏0; background-color: #ccc; transition: .4s; border-radius: ‏20px; }
+        .slider:before { position: absolute; content: ""; height: ‏14px; width: ‏14px; left: ‏3px; bottom: ‏3px; background-color: white; transition: .4s; border-radius: ‏50%; }
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: 15px; margin-top: 30px; font-size: 0.85em; }
+        .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: ‏15px; margin-top: ‏30px; font-size: 0.85em; }
 
-        .no-results { text-align: center; padding: 20px; color: #666; }
+        .no-results { text-align: center; padding: ‏20px; color: #666; }
     </style>
 </head>
 <body>
@@ -158,4 +158,264 @@
                 <p>استمع واحفظ تلاوات القرآن الكريم بسهولة</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card
+                <div class="stat-card">
+                    <h3>📖 السور</h3>
+                    <p id="totalSurahs">114</p>
+                </div>
+                <div class="stat-card">
+                    <h3>👤 المشايخ</h3>
+                    <p id="totalSheikhs">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>⭐ المحفوظات</h3>
+                    <p id="totalSaved">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم المشايخ -->
+        <section id="sheikhs" class="section">
+            <h2 class="section-title">👤 المشايخ</h2>
+            <div class="search-box">
+                <input type="text" id="sheikhSearch" placeholder="ابحث عن شيخ...">
+            </div>
+            <div class="sheikhs-grid" id="sheikhsGrid">
+                <!-- سيتم تعبئة المشايخ هنا عبر JavaScript -->
+            </div>
+        </section>
+
+        <!-- قسم السور -->
+        <section id="surahs" class="section">
+            <h2 class="section-title">📖 السور</h2>
+            <div class="search-box">
+                <input type="text" id="surahSearch" placeholder="ابحث عن سورة...">
+            </div>
+            <div class="surahs-list" id="surahsList">
+                <!-- سيتم تعبئة السور هنا عبر JavaScript -->
+            </div>
+        </section>
+
+        <!-- قسم الإعدادات -->
+        <section id="settings" class="section">
+            <h2 class="section-title">⚙ الإعدادات</h2>
+            <div class="setting-item">
+                <span>🌙 الوضع الليلي</span>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span>🔊 جودة الصوت</span>
+                <select id="qualitySelect">
+                    <option value="128">128 kbps</option>
+                    <option value="64">64 kbps</option>
+                    <option value="32">32 kbps</option>
+                </select>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="main-footer">
+        <p>لا باركوه للقرآن الكريم © 2026 - صدقة جارية</p>
+    </footer>
+
+    <script>
+        // إخفاء شاشة البداية بعد التحميل
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('splashScreen').classList.add('hidden');
+            }, 2000);
+        });
+
+        // التنقل بين الأقسام
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(this.dataset.section).classList.add('active');
+            });
+        });
+
+        // التحكم في الوضع الليلي
+        document.getElementById('darkModeToggle').addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode', this.checked);
+        });
+
+        // عناصر مشغل الصوت
+        const audio = new Audio();
+        let currentSurahIndex = 0;
+        let currentSheikh = null;
+        let surahs = [];
+        let sheikhs = [];
+
+        // دالة تحميل المشايخ (مثال)
+        function loadSheikhs() {
+            sheikhs = [
+                { id: 1, name: 'مشاري العفاسي', country: 'الكويت' },
+                { id: 2, name: 'عبد الباسط عبد الصمد', country: 'مصر' },
+                { id: 3, name: 'محمد صديق المنشاوي', country: 'مصر' }
+            ];
+            renderSheikhs();
+        }
+
+        // عرض المشايخ
+        function renderSheikhs() {
+            const grid = document.getElementById('sheikhsGrid');
+            grid.innerHTML = '';
+            sheikhs.forEach(sheikh => {
+                const card = document.createElement('div');
+                card.className = 'sheikh-card';
+                card.innerHTML = `<h3>${sheikh.name}</h3><span class="country-tag">${sheikh.country}</span>`;
+                card.addEventListener('click', () => selectSheikh(sheikh));
+                grid.appendChild(card);
+            });
+            document.getElementById('totalSheikhs').textContent = sheikhs.length;
+        }
+
+        // اختيار شيخ
+        function selectSheikh(sheikh) {
+            currentSheikh = sheikh;
+            document.querySelectorAll('.sheikh-card').forEach(c => c.classList.remove('selected'));
+            event.target.closest('.sheikh-card').classList.add('selected');
+            loadSurahs();
+        }
+
+        // تحميل السور (مثال)
+        function loadSurahs() {
+            surahs = [
+                { id: 1, name: 'الفاتحة', ayahs: 7 },
+                { id: 2, name: 'البقرة', ayahs:  ‏286 },
+                { id:  ‏3, name: 'آل عمران', ayahs:  ‏200 }
+            ];
+            renderSurahs();
+        }
+
+        // عرض السور
+        function renderSurahs() {
+            const list = document.getElementById('surahsList');
+            list.innerHTML = '';
+            surahs.forEach((surah, index) => {
+                const item = document.createElement('div');
+                item.className = 'surah-item';
+                item.innerHTML = `
+                    <div class="surah-info">
+                        <span class="surah-num">${surah.id}</span>
+                        <div>
+                            <strong>${surah.name}</strong>
+                            <small>${surah.ayahs} آية</small>
+                        </div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="save-btn" onclick="toggleSave(${index})">⭐ حفظ</button>
+                        <a class="direct-download" href="#" onclick="playSurah(${index}); return false;">▶ استماع</a>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            document.getElementById('totalSurahs').textContent = surahs.length;
+        }
+
+        // تشغيل سورة
+        function playSurah(index) {
+            currentSurahIndex = index;
+            const surah = surahs[index];
+            document.getElementById('currentSurahName').textContent = surah.name;
+            document.getElementById('currentSheikhName').textContent = currentSheikh ? currentSheikh.name : '';
+            // هنا يمكن إضافة رابط التلاوة الفعلي
+            audio.src = `https://example.com/audio/${currentSheikh.id}/${surah.id}.mp3`;
+            audio.play();
+            document.getElementById('playBtn').textContent = '⏸';
+        }
+
+        // إيقاف/تشغيل
+        document.getElementById('playBtn').addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play();
+                this.textContent = '⏸';
+            } else {
+                audio.pause();
+                this.textContent = '▶';
+            }
+        });
+
+        // إيقاف
+        document.getElementById('stopBtn').addEventListener('click', function() {
+            audio.pause();
+            audio.currentTime = 0;
+            document.getElementById('playBtn').textContent = '▶';
+        });
+
+        // السورة التالية
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (currentSurahIndex < surahs.length - 1) {
+                playSurah(currentSurahIndex + 1);
+            }
+        });
+
+        // السورة السابقة
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentSurahIndex > 0) {
+                playSurah(currentSurahIndex - 1);
+            }
+        });
+
+        // شريط التقدم
+        audio.addEventListener('timeupdate', function() {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progressBar').value = progress;
+            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+            document.getElementById('duration').textContent = formatTime(audio.duration);
+        });
+
+        // التحكم في شريط التقدم
+        document.getElementById('progressBar').addEventListener('input', function() {
+            audio.currentTime = (this.value / 100) * audio.duration;
+        });
+
+        // التحكم في الصوت
+        document.getElementById('volumeBar').addEventListener('input', function() {
+            audio.volume = this.value / 100;
+        });
+
+        // تنسيق الوقت
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // حفظ سورة
+        function toggleSave(index) {
+            const btn = event.target;
+            btn.classList.toggle('saved');
+            btn.textContent = btn.classList.contains('saved') ? '⭐ محفوظ' : '⭐ حفظ';
+            const savedCount = document.querySelectorAll('.save-btn.saved').length;
+            document.getElementById('totalSaved').textContent = savedCount;
+        }
+
+        // البحث في المشايخ
+        document.getElementById('sheikhSearch').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('.sheikh-card').forEach(card => {
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                card.style.display = name.includes(query) ? 'block' : 'none';
+            });
+        });
+
+        // البحث في السور
+        document.getElementById('surahSearch').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('.surah-item').forEach(item => {
+                const name = item.querySelector('strong').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        });
+
+        // تهيئة التطبيق
+        loadSheikhs();
+    </script>
+</body>
+</html>
