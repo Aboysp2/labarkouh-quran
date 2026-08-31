@@ -71,6 +71,7 @@
         .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; }
         .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
         .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+        .country-tag { font-size: 0.75em; background: rgba(26,94,58,0.1); color: var(--primary); padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
 
         .surahs-list { display: flex; flex-direction: column; gap: 8px; }
         .surah-item { background: var(--card); padding: 10px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -138,10 +139,10 @@
         <section id="home" class="section active">
             <div class="welcome-card">
                 <h2>🕌 مرحباً بك في تطبيق لا باركوه</h2>
-                <p>استمع لتلاوات عطرة لكبار مشايخ العالم الإسلامي</p>
+                <p>استمع لتلاوات عطرة لكبار مشايخ العالم الإسلامي (يعمل بدون إنترنت)</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">8</p></div>
+                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">13</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
             </div>
         </section>
@@ -172,6 +173,39 @@
     </footer>
 
     <script>
+        // إعداد Service Worker للتكشيش والعمل بدون نت
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'quran-app-v1';
+                self.addEventListener('install', e => {
+                    e.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => cache.addAll(['./']))
+                    );
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', e => {
+                    e.waitUntil(self.clients.claim());
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(
+                        caches.match(e.request).then(response => {
+                            if (response) return response;
+                            return fetch(e.request).then(fetchRes => {
+                                return caches.open(CACHE_NAME).then(cache => {
+                                    if (e.request.url.startsWith('http')) {
+                                        cache.put(e.request, fetchRes.clone());
+                                    }
+                                    return fetchRes;
+                                });
+                            });
+                        }).catch(() => caches.match('./'))
+                    );
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW setup:', err));
+        }
+
         const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
             <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
@@ -197,14 +231,20 @@
 
         const QURAN_DATA = {
             sheikhs: [
-                { id: 'Alafasy_128kbps', fallbackId: 'ar.alafasy', name: 'مشاري راشد العفاسي' },
-                { id: 'AbdulSamad_64kbps_QuranExplorer.Com', fallbackId: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد' },
-                { id: 'Husary_128kbps', fallbackId: 'ar.husary', name: 'محمود خليل الحصري' },
-                { id: 'Minshawy_Murattal_128kbps', fallbackId: 'ar.minshawi', name: 'محمد صديق المنشاوي' },
-                { id: 'Abdurrahmaan_As-Sudais_192kbps', fallbackId: 'ar.sudais', name: 'عبد الرحمن السديس' },
-                { id: 'Hudhaify_128kbps', fallbackId: 'ar.hudhaify', name: 'على بن عبد الرحمن الحذيفي' },
-                { id: 'Muhammad_Ayyoub_128kbps', fallbackId: 'ar.ayyoub', name: 'محمد أيوب' },
-                { id: 'Saood_ash-Shuraym_128kbps', fallbackId: 'ar.saoodshuraym', name: 'سعود الشريم' }
+                { id: 'Alafasy_128kbps', fallbackId: 'ar.alafasy', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
+                { id: 'AbdulSamad_64kbps_QuranExplorer.Com', fallbackId: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
+                { id: 'Husary_128kbps', fallbackId: 'ar.husary', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
+                { id: 'Minshawy_Murattal_128kbps', fallbackId: 'ar.minshawi', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
+                { id: 'Abdurrahmaan_As-Sudais_192kbps', fallbackId: 'ar.sudais', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
+                { id: 'Hudhaify_128kbps', fallbackId: 'ar.hudhaify', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
+                { id: 'Muhammad_Ayyoub_128kbps', fallbackId: 'ar.ayyoub', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
+                { id: 'Saood_ash-Shuraym_128kbps', fallbackId: 'ar.saoodshuraym', name: 'سعود الشريم', country: 'السعودية 🇸🇦' },
+                // مشايخ إفريقيا الخمسة الجدد:
+                { id: 'Noreen_Mohammad_Siddiq_128kbps', fallbackId: 'ar.noreen', name: 'نورين محمد صديق', country: 'السودان 🇸🇩' },
+                { id: 'Abdulrasheed_Soufi_128kbps', fallbackId: 'ar.soufi', name: 'عبد الرشيد صوفي', country: 'الصومال 🇸🇴' },
+                { id: 'Alzain_Mohammad_Ahmad_128kbps', fallbackId: 'ar.alzain', name: 'الزين محمد أحمد', country: 'السودان 🇸🇩' },
+                { id: 'Alfateh_Alzoubeir_128kbps', fallbackId: 'ar.alfateh', name: 'الفاتح محمد الزبير', country: 'السودان 🇸🇩' },
+                { id: 'Mahmoud_Ali_Al_Banna_128kbps', fallbackId: 'ar.banna', name: 'محمود علي البنا', country: 'مصر 🇪🇬' }
             ],
             surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
         };
@@ -244,7 +284,7 @@
             }
 
             handleError() {
-                alert('تعذر تحميل الملف الصوتي من السيرفرات. يرجى التأكد من اتصال الإنترنت.');
+                alert('عذراً، لم يتم حفظ هذه السورة في الذاكرة بعد للعمل بدون نت.');
                 this.isPlaying = false;
                 document.getElementById('playBtn').textContent = '▶';
             }
@@ -329,7 +369,11 @@
             QURAN_DATA.sheikhs.filter(s => s.name.includes(filter)).forEach(s => {
                 const el = document.createElement('div');
                 el.className = 'sheikh-card';
-                el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
+                el.innerHTML = `
+                    <div style="font-size:2em;">👤</div>
+                    <strong>${s.name}</strong><br>
+                    <span class="country-tag">${s.country}</span>
+                `;
                 el.onclick = () => {
                     window.player.currentSheikh = s;
                     window.player.playSurah(QURAN_DATA.surahs[window.player.currentSurahIndex].id);
