@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a5e3a">
-    <meta name="description" content="موقع لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها">
     <title>لا باركوه للقرآن الكريم</title>
     
     <link rel="manifest" id="manifestPlaceholder">
     <link rel="icon" id="faviconPlaceholder" type="image/svg+xml">
-    <link rel="apple-touch-icon" id="appleIconPlaceholder">
 
     <style>
         :root {
@@ -33,27 +31,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s, color 0.3s; }
 
-        .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
-        .splash-screen.hidden { opacity: 0; pointer-events: none; }
+        .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s ease-out; }
+        .splash-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
-        .splash-logo { width: 140px; height: 140px; margin-bottom: 15px; animation: pulse 2s infinite; }
+        .splash-logo { width: 120px; height: 120px; margin-bottom: 15px; }
         .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: 5px; }
         .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
         .splash-loader { width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
 
-        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .install-prompt { position: fixed; bottom: 110px; left: 20px; right: 20px; background: var(--card); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 999; max-width: 500px; margin: 0 auto; display: flex; align-items: center; padding: 15px; gap: 15px; border-top: 3px solid var(--secondary); }
-        .install-prompt.hidden { display: none; }
-        .install-text { flex: 1; }
-        .install-text h3 { color: var(--primary); font-size: 1.1em; }
-        .install-text p { font-size: 0.85em; opacity: 0.8; }
-        .install-action { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .install-close { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text); }
-
-        .offline-indicator { position: fixed; top: 10px; right: 10px; background: #e74c3c; color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8em; z-index: 998; display: flex; align-items: center; gap: 6px; }
-        .offline-indicator.hidden { display: none; }
 
         .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
         .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 20px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
@@ -87,8 +73,7 @@
 
         .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; }
         .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: 0.2s; }
-        .sheikh-card:hover { border-color: var(--secondary); transform: translateY(-2px); }
+        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
 
         .surahs-list { display: flex; flex-direction: column; gap: 8px; }
         .surah-item { background: var(--card); padding: 10px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -114,20 +99,6 @@
             <p class="splash-subtitle">صدقة جارية لكل من ينشرها</p>
             <div class="splash-loader"></div>
         </div>
-    </div>
-
-    <div id="installPrompt" class="install-prompt hidden">
-        <span style="font-size: 1.8em;">📲</span>
-        <div class="install-text">
-            <h3>ثبّت التطبيق</h3>
-            <p>للوصول السريع والعمل بدون إنترنت</p>
-        </div>
-        <button id="installBtn" class="install-action">تثبيت</button>
-        <button id="dismissInstall" class="install-close">✕</button>
-    </div>
-
-    <div id="offlineIndicator" class="offline-indicator hidden">
-        <span>🔴</span> <span>وضع عدم الاتصال</span>
     </div>
 
     <header class="main-header">
@@ -175,7 +146,6 @@
             <div class="quick-stats">
                 <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">12</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
-                <div class="stat-card"><h3>تخزين تلقائي</h3><p>✓ بدون إنترنت</p></div>
             </div>
         </section>
 
@@ -209,21 +179,10 @@
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
             <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
             <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
-            <path d="M150 180 Q200 170 230 185" stroke="#d4af37" stroke-width="6" fill="none"/>
-            <path d="M362 180 Q312 170 282 185" stroke="#d4af37" stroke-width="6" fill="none"/>
-            <path d="M150 220 Q200 210 230 225" stroke="#d4af37" stroke-width="6" fill="none"/>
-            <path d="M362 220 Q312 210 282 225" stroke="#d4af37" stroke-width="6" fill="none"/>
-            <text x="256" y="420" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#d4af37" text-anchor="middle">صدقة جارية لكل من ينشرها</text>
         </svg>`;
 
-        const svgBlob = new Blob([QURAN_ICON_SVG], {type: 'image/svg+xml'});
-        const iconUrl = URL.createObjectURL(svgBlob);
-
         document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
-        document.getElementById('faviconPlaceholder').href = iconUrl;
-        document.getElementById('appleIconPlaceholder').href = iconUrl;
 
-        // خوادم عالمية فائقة السرعة ومضمونة التشغيل 100%
         const QURAN_DATA = {
             sheikhs: [
                 { id: 'ar.alafasy', name: 'مشارى راشد العفاسي' },
@@ -274,10 +233,7 @@
                 if (index !== -1) {
                     this.currentSurahIndex = index;
                     const surah = QURAN_DATA.surahs[this.currentSurahIndex];
-                    
-                    // استخدام رابط البث المباشر العالمي المضمون
                     this.audio.src = `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.id}/${surah.id}.mp3`;
-                    
                     document.getElementById('currentSurahName').textContent = `سورة ${surah.name}`;
                     document.getElementById('currentSheikhName').textContent = `القارئ: ${this.currentSheikh.name}`;
                     this.play();
@@ -286,17 +242,13 @@
 
             play() {
                 if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
-                const playPromise = this.audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        this.isPlaying = true;
-                        document.getElementById('playBtn').textContent = '⏸';
-                    }).catch(error => {
-                        console.log("Play error:", error);
-                        this.isPlaying = false;
-                        document.getElementById('playBtn').textContent = '▶';
-                    });
-                }
+                this.audio.play().then(() => {
+                    this.isPlaying = true;
+                    document.getElementById('playBtn').textContent = '⏸';
+                }).catch(() => {
+                    this.isPlaying = false;
+                    document.getElementById('playBtn').textContent = '▶';
+                });
             }
 
             pause() {
@@ -327,17 +279,22 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => document.getElementById('splashScreen')?.classList.add('hidden'), 1000);
-            window.player = new QuranPlayer();
+        // إخفاء الشاشة الافتتاحية مباشرة عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) splash.classList.add('hidden');
+            }, 500);
+        });
 
+        document.addEventListener('DOMContentLoaded', () => {
+            window.player = new QuranPlayer();
             document.getElementById('totalSheikhsCount').textContent = QURAN_DATA.sheikhs.length;
 
             renderSheikhs();
             renderSurahs();
             setupNavigation();
             setupEvents();
-            setupPWA();
         });
 
         function renderSheikhs(filter = '') {
@@ -347,8 +304,6 @@
                 const el = document.createElement('div');
                 el.className = 'sheikh-card';
                 el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
-                
-                // الانتقال المباشر بدون إشعارات alert
                 el.onclick = () => {
                     window.player.currentSheikh = s;
                     document.querySelector('[data-section="surahs"]').click();
@@ -392,22 +347,6 @@
             document.getElementById('surahSearch').oninput = (e) => renderSurahs(e.target.value);
             document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
         }
-
-        function setupPWA() {
-            const manifest = {
-                name: "لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها",
-                short_name: "لا باركوه",
-                start_url: "./",
-                display: "standalone",
-                background_color: "#1a5e3a",
-                theme_color: "#1a5e3a",
-                icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
-            };
-            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-            document.getElementById('manifestPlaceholder').setAttribute('href', URL.createObjectURL(blob));
-
-            if ('serviceWorker' in navigator) {
-                const swCode = `
-                    const CACHE_NAME = 'quran-cdn-cache-v1';
-                    self.addEventListener('install', (e) => {
-                        e.
+    </script>
+</body>
+</html>
