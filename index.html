@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a5e3a">
-    <meta name="description" content="موقع لا باركوه للقرآن الكريم - استمع لتلاوات عطرة لكبار المشايخ بدون إنترنت">
+    <meta name="description" content="موقع لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها">
     <title>لا باركوه للقرآن الكريم</title>
     
-    <!-- PWA Manifest Dynamic Link -->
+    <!-- PWA Manifest Link -->
     <link rel="manifest" id="manifestPlaceholder">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3004/3004412.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3004/3004412.png">
+    <link rel="icon" id="faviconPlaceholder" type="image/svg+xml">
+    <link rel="apple-touch-icon" id="appleIconPlaceholder">
 
     <style>
         :root {
@@ -37,13 +37,13 @@
         /* Splash Screen */
         .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
         .splash-screen.hidden { opacity: 0; pointer-events: none; }
-        .splash-content { text-align: center; color: white; }
-        .splash-logo { font-size: 5em; margin-bottom: 20px; animation: pulse 2s infinite; }
-        .splash-title { font-size: 2.5em; color: var(--secondary); margin-bottom: 10px; }
-        .splash-subtitle { font-size: 1.2em; margin-bottom: 30px; }
-        .splash-loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite; }
+        .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
+        .splash-logo { width: 140px; height: 140px; margin-bottom: 15px; animation: pulse 2s infinite; }
+        .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: 5px; }
+        .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
+        .splash-loader { width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
 
-        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Offline & Install Prompt */
@@ -115,9 +115,9 @@
 
     <div id="splashScreen" class="splash-screen">
         <div class="splash-content">
-            <div class="splash-logo">📖</div>
+            <div id="splashLogoContainer" class="splash-logo"></div>
             <h1 class="splash-title">لا باركوه</h1>
-            <p class="splash-subtitle">للقرآن الكريم</p>
+            <p class="splash-subtitle">صدقة جارية لكل من ينشرها</p>
             <div class="splash-loader"></div>
         </div>
     </div>
@@ -139,7 +139,7 @@
     <header class="main-header">
         <div class="old-banner">
             <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
-            <p class="banner-text">صدقة جارية عن جميع أمة الإسلام</p>
+            <p class="banner-text">صدقة جارية لكل من ينشرها</p>
         </div>
     </header>
 
@@ -181,7 +181,7 @@
             <div class="quick-stats">
                 <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">14</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
-                <div class="stat-card"><h3>بدون نت</h3><p>✓ PWA</p></div>
+                <div class="stat-card"><h3>بدون نت</h3><p>✓ جاهز للعمل</p></div>
             </div>
         </section>
 
@@ -207,12 +207,33 @@
     </main>
 
     <footer class="main-footer">
-        <p>صدقة جارية عن جميع أمة الإسلام</p>
+        <p>صدقة جارية لكل من ينشرها</p>
     </footer>
 
-    <!-- Logic & PWA Script Integration -->
     <script>
-        // Data Setup with updated sheikhs
+        // Custom SVG Icon (Quran + "صدقة جارية لكل من ينشرها")
+        const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+            <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
+            <!-- Quran Book Drawing -->
+            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
+            <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
+            <path d="M150 180 Q200 170 230 185" stroke="#d4af37" stroke-width="6" fill="none"/>
+            <path d="M362 180 Q312 170 282 185" stroke="#d4af37" stroke-width="6" fill="none"/>
+            <path d="M150 220 Q200 210 230 225" stroke="#d4af37" stroke-width="6" fill="none"/>
+            <path d="M362 220 Q312 210 282 225" stroke="#d4af37" stroke-width="6" fill="none"/>
+            <!-- Text underneath -->
+            <text x="256" y="420" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#d4af37" text-anchor="middle">صدقة جارية لكل من ينشرها</text>
+        </svg>`;
+
+        const svgBlob = new Blob([QURAN_ICON_SVG], {type: 'image/svg+xml'});
+        const iconUrl = URL.createObjectURL(svgBlob);
+
+        // Inject Dynamic Icons
+        document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
+        document.getElementById('faviconPlaceholder').href = iconUrl;
+        document.getElementById('appleIconPlaceholder').href = iconUrl;
+
+        // Data Setup
         const QURAN_DATA = {
             sheikhs: [
                 { id: 'mishary', name: 'مشارى راشد العفاسي', server: 'https://server8.mp3quran.net/afs/' },
@@ -276,10 +297,16 @@
 
             play() {
                 if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
-                this.audio.play().then(() => {
-                    this.isPlaying = true;
-                    document.getElementById('playBtn').textContent = '⏸';
-                }).catch(() => alert('تعذر تشغيل الصوت. يرجى التحقق من الاتصال بالإنترنت.'));
+                const playPromise = this.audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        this.isPlaying = true;
+                        document.getElementById('playBtn').textContent = '⏸';
+                    }).catch(error => {
+                        this.isPlaying = false;
+                        document.getElementById('playBtn').textContent = '▶';
+                    });
+                }
             }
 
             pause() {
@@ -376,27 +403,47 @@
             document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
         }
 
+        // PWA & Bulk Caching Strategy
         function setupPWA() {
             const manifest = {
-                name: "لا باركوه للقرآن الكريم",
+                name: "لا باركوه للقرآن الكريم - صدقة جارية لكل من ينشرها",
                 short_name: "لا باركوه",
                 start_url: "./",
                 display: "standalone",
                 background_color: "#1a5e3a",
                 theme_color: "#1a5e3a",
-                icons: [{ src: "https://cdn-icons-png.flaticon.com/512/3004/3004412.png", sizes: "512x512", type: "image/png" }]
+                icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
             };
             const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
             document.getElementById('manifestPlaceholder').setAttribute('href', URL.createObjectURL(blob));
 
             if ('serviceWorker' in navigator) {
                 const swCode = `
-                    const CACHE_NAME = 'quran-pwa-v2';
+                    const CACHE_NAME = 'quran-pwa-v3';
                     self.addEventListener('install', (e) => {
-                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(['./']);
+                            })
+                        );
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(self.clients.claim());
                     });
                     self.addEventListener('fetch', (e) => {
-                        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                        e.respondWith(
+                            caches.match(e.request).then(cachedResponse => {
+                                if (cachedResponse) return cachedResponse;
+                                return fetch(e.request).then(networkResponse => {
+                                    if(e.request.method === 'GET' && networkResponse.status === 200) {
+                                        const responseClone = networkResponse.clone();
+                                        caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseClone));
+                                    }
+                                    return networkResponse;
+                                }).catch(() => caches.match('./'));
+                            })
+                        );
                     });
                 `;
                 const swBlob = new Blob([swCode], {type: 'text/javascript'});
