@@ -79,9 +79,8 @@
         .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; }
         .surah-num { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
         
-        .download-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
-        .download-btn:hover { background: var(--primary); color: white; }
-        .download-btn.downloaded { border-color: #27ae60; background: #27ae60; color: white; }
+        .download-btn { background: var(--primary); color: white; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .download-btn:hover { background: var(--primary-dark); }
 
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -145,7 +144,7 @@
         <section id="home" class="section active">
             <div class="welcome-card">
                 <h2>🕌 مرحباً بك في تطبيق لا باركوه</h2>
-                <p>استمع واحفظ تلاوات القرآن الكريم للعمل كاملاً بدون إنترنت</p>
+                <p>استمع واحفظ تلاوات القرآن الكريم بسهولة</p>
             </div>
             <div class="quick-stats">
                 <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">13</p></div>
@@ -179,8 +178,6 @@
     </footer>
 
     <script>
-        const AUDIO_CACHE = 'quran-audio-v1';
-
         const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
             <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
@@ -258,7 +255,7 @@
             }
 
             handleError() {
-                alert('عذراً، لم يتم حفظ هذه السورة في الذاكرة بعد للعمل بدون نت.');
+                alert('يرجى الاتصال بالإنترنت للاستماع أول مرة أو اضغط على زر "تحميل" لتنزيل ملف الصوت مباشرة على جهازك.');
                 this.isPlaying = false;
                 document.getElementById('playBtn').textContent = '▶';
             }
@@ -325,14 +322,6 @@
             }
         }
 
-        // إخفاء الشاشة الافتتاحية فور تحميل الصفحة
-        function hideSplashScreen() {
-            const splash = document.getElementById('splashScreen');
-            if (splash) {
-                splash.classList.add('hidden');
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             window.player = new QuranPlayer();
             document.getElementById('totalSheikhsCount').textContent = QURAN_DATA.sheikhs.length;
@@ -342,7 +331,10 @@
             setupNavigation();
             setupEvents();
 
-            setTimeout(hideSplashScreen, 500);
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) splash.classList.add('hidden');
+            }, 500);
         });
 
         function renderSheikhs(filter = '') {
@@ -367,25 +359,12 @@
             });
         }
 
-        async function renderSurahs(filter = '') {
+        function renderSurahs(filter = '') {
             const list = document.getElementById('surahsList');
             list.innerHTML = '';
             
-            let cache = null;
-            if ('caches' in window) {
-                try { cache = await caches.open(AUDIO_CACHE); } catch(e){}
-            }
-
-            for (const s of QURAN_DATA.surahs.filter(s => s.name.includes(filter))) {
+            QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(s => {
                 const url = window.player.getSurahUrl(s.id);
-                let isCached = false;
-                if (cache) {
-                    try {
-                        const match = await cache.match(url);
-                        if (match) isCached = true;
-                    } catch(e){}
-                }
-
                 const el = document.createElement('div');
                 el.className = 'surah-item';
                 el.innerHTML = `
@@ -393,43 +372,12 @@
                         <div class="surah-num">${s.id}</div>
                         <strong>سورة ${s.name}</strong>
                     </div>
-                    <button class="download-btn ${isCached ? 'downloaded' : ''}" id="dl-btn-${s.id}">
-                        ${isCached ? '✅ محفوظة' : '📥 تحميل'}
-                    </button>
+                    <a href="${url}" target="_blank" download="سورة_${s.name}.mp3" class="download-btn">
+                        📥 تحميل MP3
+                    </a>
                 `;
-
-                const dlBtn = el.querySelector(`#dl-btn-${s.id}`);
-                dlBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (!dlBtn.classList.contains('downloaded')) {
-                        downloadSurah(s.id, url, dlBtn);
-                    }
-                };
-
                 list.appendChild(el);
-            }
-        }
-
-        async function downloadSurah(surahId, url, btn) {
-            btn.innerHTML = '⏳ جارٍ التنزيل...';
-            btn.style.opacity = '0.7';
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('فشل التنزيل');
-                
-                if ('caches' in window) {
-                    const cache = await caches.open(AUDIO_CACHE);
-                    await cache.put(url, response);
-                    btn.className = 'download-btn downloaded';
-                    btn.innerHTML = '✅ محفوظة';
-                    btn.style.opacity = '1';
-                }
-            } catch (err) {
-                btn.innerHTML = '📥 تحميل';
-                btn.style.opacity = '1';
-                alert('حدث خطأ أثناء تحميل السورة، تأكد من اتصال الإنترنت.');
-            }
+            });
         }
 
         function setupNavigation() {
