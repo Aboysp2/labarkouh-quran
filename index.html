@@ -207,24 +207,23 @@
 
         const QURAN_DATA = {
             sheikhs: [
-                { id: 'ar.alafasy', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
-                { id: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
-                { id: 'ar.husary', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
-                { id: 'ar.minshawi', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
-                { id: 'ar.sudais', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
-                { id: 'ar.hudhaify', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
-                { id: 'ar.ayyoub', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
-                { id: 'ar.shaatree', name: 'أبو بكر الشاطري', country: 'السعودية 🇸🇦' },
-                { id: 'ar.hanif', name: 'هانئ الرفاعي', country: 'السعودية 🇸🇦' },
-                { id: 'ar.ahmedajamy', name: 'أحمد بن علي العجمي', country: 'السعودية 🇸🇦' },
-                { id: 'ar.mahermuaiqly', name: 'ماهر المعيقلي', country: 'السعودية 🇸🇦' },
-                { id: 'ar.muhammadjibreel', name: 'محمد جبريل', country: 'مصر 🇪🇬' },
-                { id: 'ar.parhizgar', name: 'شهريار پرهيزكار', country: 'إيران 🇮🇷' }
+                { server: 'https://server8.mp3quran.net/afs/', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
+                { server: 'https://server7.mp3quran.net/basit/', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
+                { server: 'https://server13.mp3quran.net/husr/', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
+                { server: 'https://server10.mp3quran.net/minsh/', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
+                { server: 'https://server11.mp3quran.net/sds/', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
+                { server: 'https://server9.mp3quran.net/hthfi/', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server8.mp3quran.net/ayyoub/', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
+                { server: 'https://server11.mp3quran.net/shatri/', name: 'أبو بكر الشاطري', country: 'السعودية 🇸🇦' },
+                { server: 'https://server8.mp3quran.net/hrefe/', name: 'هانئ الرفاعي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server10.mp3quran.net/ajm/', name: 'أحمد بن علي العجمي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server12.mp3quran.net/maher/', name: 'ماهر المعيقلي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server8.mp3quran.net/jbrl/', name: 'محمد جبريل', country: 'مصر 🇪🇬' },
+                { server: 'https://server10.mp3quran.net/shur/', name: 'سعود الشريم', country: 'السعودية 🇸🇦' }
             ],
             surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
         };
 
-        // تسجيل الـ Service Worker لتفعيل وضع العمل بدون نت
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register fail', err));
         }
@@ -253,13 +252,14 @@
             }
 
             handleError() {
-                alert('لم يتم التمكن من تشغيل السورة. تأكد من وجود اتصال بالإنترنت أو قم بحفظها مسبقاً للاستماع بدون نت.');
+                alert('عذراً، تعذر تشغيل السورة. تأكد من وجود اتصال بالإنترنت أو حفظها مسبقاً.');
                 this.isPlaying = false;
                 document.getElementById('playBtn').textContent = '▶';
             }
 
             getSurahUrl(surahId) {
-                return `https://cdn.islamic.network/quran/audio-surah/128/${this.currentSheikh.id}/${surahId}.mp3`;
+                const formattedId = String(surahId).padStart(3, '0');
+                return `${this.currentSheikh.server}${formattedId}.mp3`;
             }
 
             playSurah(surahId) {
@@ -335,7 +335,7 @@
             const list = document.getElementById('sheikhsList');
             list.innerHTML = '';
             QURAN_DATA.sheikhs.filter(s => s.name.includes(filter)).forEach(s => {
-                const isSelected = window.player.currentSheikh.id === s.id;
+                const isSelected = window.player.currentSheikh.server === s.server;
                 const el = document.createElement('div');
                 el.className = `sheikh-card ${isSelected ? 'selected' : ''}`;
                 el.innerHTML = `
@@ -378,7 +378,7 @@
                         <strong>سورة ${s.name}</strong>
                     </div>
                     <div class="action-btns">
-                        <button class="save-btn ${isSaved ? 'saved' : ''}" id="saveBtn-${s.id}" onclick="toggleSaveSurah('${url}',${s.id})">
+                        <button class="save-btn ${isSaved ? 'saved' : ''}" id="saveBtn-${s.id}" onclick="toggleSaveSurah('${url}', ${s.id})">
                             ${isSaved ? '✔ محفوظة بدون نت' : '💾 حفظ للعمل بدون نت'}
                         </button>
                         <a href="${url}" target="_blank" download="سورة_${s.name}.mp3" class="direct-download">📥 MP3</a>
@@ -406,7 +406,7 @@
                 btn.className = 'save-btn loading';
                 btn.innerHTML = '⏳ جارٍ الحفظ...';
                 try {
-                    const response = await fetch(url);
+                    const response = await fetch(url, { mode: 'cors' });
                     if (!response.ok) throw new Error('Download failed');
                     await cache.put(url, response);
                     btn.className = 'save-btn saved';
