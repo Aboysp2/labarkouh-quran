@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a5e3a">
-    <link rel="manifest" href="manifest.json">
     <title>لا باركوه للقرآن الكريم</title>
     
     <style>
@@ -40,7 +39,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
-        .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 15px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
         .site-title { color: #fff; font-size: 1.8em; margin-bottom: 5px; font-weight: bold; }
         .banner-text { color: var(--secondary); font-size: 1em; }
 
@@ -53,9 +51,7 @@
         .control-btn:hover { transform: scale(1.1); background: var(--primary-dark); }
         .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary-dark); font-size: 1.3em; }
         .play-btn:hover { background: #e6c234; }
-        .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 180px; font-size: 0.8em; }
-        #progressBar { flex: 1; height: 6px; accent-color: var(--primary); cursor: pointer; }
-        .volume-control { display: flex; align-items: center; gap: 5px; }
+        .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 180px; font-size:; }
         #volumeBar { width: 70px; height: 6px; accent-color: var(--primary); cursor: pointer; }
 
         .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 8px; box-shadow: var(--shadow); flex-wrap: wrap; }
@@ -88,7 +84,6 @@
         .save-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
         .save-btn:hover { background: var(--primary-dark); }
         .save-btn.saved { background: #27ae60; }
-        .save-btn.loading { background: #e67e22; opacity: 0.8; cursor: wait; }
         .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; display: inline-block; }
         .direct-download:hover { transform: scale(1.05); }
 
@@ -101,6 +96,8 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: 15px; margin-top: 30px; font-size: 0.85em; }
+
+        .no-results { text-align: center; padding: 20px; color: #666; }
     </style>
 </head>
 <body>
@@ -117,10 +114,8 @@
 
     <!-- الهيدر -->
     <header class="main-header">
-        <div class="old-banner">
-            <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
-            <p class="banner-text">صدقة جارية لكل من ينشرها</p>
-        </div>
+        <h1 class="site-title">لا باركوه للقرآن الكريم</h1>
+        <p class="banner-text">صدقة جارية لكل من ينشرها</p>
     </header>
 
     <!-- مشغل الصوت -->
@@ -130,15 +125,23 @@
             <span id="currentSheikhName"></span>
         </div>
         <div class="player-controls">
-            <button id="prevBtn" class="control-btn">⏮</button>
-            <button id="playBtn" class="control-btn play-btn">▶</button>
-            <button id="nextBtn" class="control-btn">⏭</button>
-            <button id="stopBtn" class="control-btn">⏹</button>
+            <button id="prevBtn" class="control-btn" title="السورة السابقة">⏮</button>
+            <button id="playBtn" class="control-btn play-btn" title="تشغيل/إيقاف">▶</button>
+            <button id="nextBtn" class="control-btn" title="السورة التالية">⏭</button>
+            <button id="stopBtn" class="control-btn" title="إيقاف">⏹</button>
         </div>
         <div class="player-progress">
             <span id="currentTime">00:00</span>
             <input type="range" id="progressBar" value="0" min="0" max="100">
-            <span id="duration">00:00</spanقل -->
+            <span id="duration">00:00</span>
+        </div>
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" id="volumeBar" value="100" min="0" max="100">
+        </div>
+    </div>
+
+    <!-- شريط التنقل -->
     <nav class="main-nav">
         <button class="nav-btn active" data-section="home">🏠 الرئيسية</button>
         <button class="nav-btn" data-section="sheikhs">👤 المشايخ</button>
@@ -148,55 +151,11 @@
 
     <!-- المحتوى -->
     <main class="content">
+        <!-- قسم الرئيسية -->
         <section id="home" class="section active">
             <div class="welcome-card">
                 <h2>🕌 مرحباً بك في تطبيق لا باركوه</h2>
-                <p>استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت</p>
+                <p>استمع واحفظ تلاوات القرآن الكريم بسهولة</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">13</p></div>
-                <div class="stat-card"><h3>السور</h3><p>114</p></div>
-            </div>
-        </section>
-
-        <section id="sheikhs" class="section">
-            <h2 class="section-title">🌙 مشايخ القرآن الكريم</h2>
-            <div class="search-box">
-                <input type="text" id="sheikhSearch" placeholder="🔍 ابحث عن شيخ...">
-            </div>
-            <div id="sheikhsList" class="sheikhs-grid"></div>
-        </section>
-
-        <section id="surahs" class="section">
-            <h2 class="section-title">📖 سور القرآن الكريم</h2>
-            <div class="search-box">
-                <input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة...">
-            </div>
-           الوضع الليلي</label>
-                <label class="switch">
-                    <input type="checkbox" id="darkMode">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        <p>صدقة جارية لكل من ينشرها</p>
-    </footer>
-
-    <script>
-        // ====== الأيقونة SVG ======
-        const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-            <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
-            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
-            <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
-        </svg>`;
-
-        document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
-
-        // ====== بيانات القرآن ======
-        const SURAH_NAMES = [
-            "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
-            "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
-            "الأنبياء","
+                <div class="stat-card
