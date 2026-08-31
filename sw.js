@@ -30,7 +30,6 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Audio from mp3quran.net → Cache First for offline
   if (url.hostname.endsWith('mp3quran.net') && url.pathname.endsWith('.mp3')) {
     event.respondWith(
       caches.open(AUDIO_CACHE).then(async cache => {
@@ -51,7 +50,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Same-origin static assets
   if (event.request.method === 'GET' && url.origin === self.location.origin) {
     event.respondWith(
       caches.match(event.request).then(cached => {
@@ -72,7 +70,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Default network
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
