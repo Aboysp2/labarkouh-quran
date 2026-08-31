@@ -6,9 +6,6 @@
     <meta name="theme-color" content="#1a5e3a">
     <title>لا باركوه للقرآن الكريم</title>
     
-    <link rel="manifest" id="manifestPlaceholder">
-    <link rel="icon" id="faviconPlaceholder" type="image/svg+xml">
-
     <style>
         :root {
             --primary: #1a5e3a;
@@ -34,7 +31,7 @@
         .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s ease-out; }
         .splash-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
         .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
-        .splash-logo { width: 120px; height: 120px; margin-bottom: 15px; }
+        .splash-logo { width: 100px; height: 100px; margin-bottom: 15px; }
         .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: 5px; }
         .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
         .splash-loader { width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -42,14 +39,14 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
-        .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 20px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
-        .site-title { color: #fff; font-size: 2em; margin-bottom: 5px; font-weight: bold; }
-        .banner-text { color: var(--secondary); font-size: 1.1em; }
+        .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 15px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
+        .site-title { color: #fff; font-size: 1.8em; margin-bottom: 5px; font-weight: bold; }
+        .banner-text { color: var(--secondary); font-size: 1em; }
 
         .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); padding: 12px 20px; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 1000; flex-wrap: wrap; border-top: 3px solid var(--secondary); }
         .player-info { flex: 1; min-width: 140px; }
         #currentSurahName { font-weight: bold; color: var(--primary); display: block; }
-        #currentSheikhName { font-size: 0.8em; opacity: 0.7; }
+        #currentSheikhName { font-size: 0.8em; opacity: 0.7; display: block; }
         .player-controls { display: flex; gap: 8px; align-items: center; }
         .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; }
         .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary); font-size: 1.3em; }
@@ -144,7 +141,7 @@
                 <p>استمع لتلاوات عطرة لكبار مشايخ العالم الإسلامي</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">12</p></div>
+                <div class="stat-card"><h3>المشايخ</h3><p id="totalSheikhsCount">8</p></div>
                 <div class="stat-card"><h3>السور</h3><p>114</p></div>
             </div>
         </section>
@@ -183,20 +180,17 @@
 
         document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
 
+        // قائمة القراء بأسماء المعرفات الصحيحة المعتمدة رسمياً في CDN
         const QURAN_DATA = {
             sheikhs: [
-                { id: 'ar.alafasy', name: 'مشارى راشد العفاسي' },
-                { id: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد' },
+                { id: 'ar.alafasy', name: 'مشاري راشد العفاسي' },
+                { id: 'ar.abdulbasit', name: 'عبد الباسط عبد الصمد' },
                 { id: 'ar.husary', name: 'محمود خليل الحصري' },
                 { id: 'ar.minshawi', name: 'محمد صديق المنشاوي' },
                 { id: 'ar.sudais', name: 'عبد الرحمن السديس' },
-                { id: 'ar.hudhaify', name: 'عبد الرحمن الحذيفي' },
-                { id: 'ar.ayyoub', name: 'محمد أيوب' },
-                { id: 'ar.shaatree', name: 'أبو بكر الشاطري' },
-                { id: 'ar.hanrifai', name: 'هاني الرفاعي' },
-                { id: 'ar.saoodshuraym', name: 'سعود الشريم' },
-                { id: 'ar.mahermuaiqly', name: 'ماهر المعيقلي' },
-                { id: 'ar.parhizgar', name: 'شهريار پرهيزكار' }
+                { id: 'ar.hudhaify', name: 'علي بن عبد الرحمن الحذيفي' },
+                { id: 'ar.muhammadayoub', name: 'محمد أيوب' },
+                { id: 'ar.shuraim', name: 'سعود الشريم' }
             ],
             surahs: [
                 { id: 1, name: 'الفاتحة', verses: 7 }, { id: 2, name: 'البقرة', verses: 286 },
@@ -225,7 +219,14 @@
                         document.getElementById('duration').textContent = this.formatTime(this.audio.duration);
                     }
                 });
+
                 this.audio.addEventListener('ended', () => this.next());
+
+                this.audio.addEventListener('error', () => {
+                    alert('تعذر تشغيل هذه السورة حالياً لهذا القارئ، يرجى اختيار قارئ آخر.');
+                    this.isPlaying = false;
+                    document.getElementById('playBtn').textContent = '▶';
+                });
             }
 
             playSurah(surahId) {
@@ -241,11 +242,14 @@
             }
 
             play() {
-                if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
+                if (!this.audio.src) {
+                    return this.playSurah(QURAN_DATA.surahs[0].id);
+                }
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     document.getElementById('playBtn').textContent = '⏸';
-                }).catch(() => {
+                }).catch(err => {
+                    console.error("Audio playback error:", err);
                     this.isPlaying = false;
                     document.getElementById('playBtn').textContent = '▶';
                 });
@@ -274,17 +278,17 @@
             }
 
             formatTime(secs) {
+                if (isNaN(secs)) return '00:00';
                 const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
                 return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             }
         }
 
-        // إخفاء الشاشة الافتتاحية مباشرة عند تحميل الصفحة
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 if (splash) splash.classList.add('hidden');
-            }, 500);
+            }, 300);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -306,6 +310,7 @@
                 el.innerHTML = `<div style="font-size:2em;">👤</div><strong>${s.name}</strong>`;
                 el.onclick = () => {
                     window.player.currentSheikh = s;
+                    window.player.playSurah(QURAN_DATA.surahs[window.player.currentSurahIndex].id);
                     document.querySelector('[data-section="surahs"]').click();
                 };
                 list.appendChild(el);
@@ -340,7 +345,11 @@
             document.getElementById('prevBtn').onclick = () => window.player.prev();
             document.getElementById('nextBtn').onclick = () => window.player.next();
             document.getElementById('stopBtn').onclick = () => window.player.stop();
-            document.getElementById('progressBar').oninput = (e) => window.player.audio.currentTime = (e.target.value / 100) * window.player.audio.duration;
+            document.getElementById('progressBar').oninput = (e) => {
+                if (window.player.audio.duration) {
+                    window.player.audio.currentTime = (e.target.value / 100) * window.player.audio.duration;
+                }
+            };
             document.getElementById('volumeBar').oninput = (e) => window.player.audio.volume = e.target.value / 100;
             
             document.getElementById('sheikhSearch').oninput = (e) => renderSheikhs(e.target.value);
