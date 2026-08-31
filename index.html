@@ -49,15 +49,17 @@
         #currentSurahName { font-weight: bold; color: var(--primary); display: block; }
         #currentSheikhName { font-size: 0.8em; opacity: 0.7; display: block; }
         .player-controls { display: flex; gap: 8px; align-items: center; }
-        .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; }
-        .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary); font-size: 1.3em; }
+        .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; }
+        .control-btn:hover { transform: scale(1.1); background: var(--primary-dark); }
+        .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary-dark); font-size: 1.3em; }
+        .play-btn:hover { background: #e6c234; }
         .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 180px; font-size: 0.8em; }
         #progressBar { flex: 1; height: 6px; accent-color: var(--primary); cursor: pointer; }
         .volume-control { display: flex; align-items: center; gap: 5px; }
         #volumeBar { width: 70px; height: 6px; accent-color: var(--primary); cursor: pointer; }
 
         .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 8px; box-shadow: var(--shadow); flex-wrap: wrap; }
-        .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9em; }
+        .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9em; transition: all 0.3s; }
         .nav-btn.active, .nav-btn:hover { background: var(--primary); color: white; }
 
         .content { max-width: 900px; margin: 20px auto; padding: 0 15px; }
@@ -69,22 +71,27 @@
         .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
         .stat-card { background: var(--card); padding: 12px; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow); }
 
-        .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; }
+        .search-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 15px; background: var(--card); color: var(--text); outline: none; transition: border-color 0.3s; }
+        .search-box input:focus { border-color: var(--primary); }
         .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+        .sheikh-card { background: var(--card); padding: 12px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s, border-color 0.2s; }
+        .sheikh-card:hover { transform: translateY(-3px); }
         .sheikh-card.selected { border: 2px solid var(--secondary); background: rgba(212, 175, 55, 0.1); }
         .country-tag { font-size: 0.75em; background: rgba(26,94,58,0.1); color: var(--primary); padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
 
         .surahs-list { display: flex; flex-direction: column; gap: 8px; }
-        .surah-item { background: var(--card); padding: 12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; }
+        .surah-item { background: var(--card); padding: 12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
+        .surah-item:hover { transform: translateX(-5px); }
         .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; }
         .surah-num { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; }
         
         .action-btns { display: flex; gap: 8px; align-items: center; }
         .save-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .save-btn:hover { background: var(--primary-dark); }
         .save-btn.saved { background: #27ae60; }
-        .save-btn.loading { background: #e67e22; opacity: 0.8; }
-        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; }
+        .save-btn.loading { background: #e67e22; opacity: 0.8; cursor: wait; }
+        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 6px 10px; border-radius: 18px; font-size: 0.8em; font-weight: bold; transition: transform 0.2s; }
+        .direct-download:hover { transform: scale(1.05); }
 
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -182,270 +189,7 @@
     </footer>
 
     <script>
+        // ========== الأيقونة ==========
         const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
             <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
-            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
-            <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
-        </svg>`;
-
-        document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
-
-        const SURAH_NAMES = [
-            "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
-            "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
-            "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
-            "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
-            "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
-            "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
-            "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
-            "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
-            "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
-            "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
-            "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
-            "المسد","الإخلاص","الفلق","الناس"
-        ];
-
-        const QURAN_DATA = {
-            sheikhs: [
-                { server: 'https://everyayah.com/data/Alafasy_128kbps/', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
-                { server: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
-                { server: 'https://everyayah.com/data/Husary_128kbps/', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
-                { server: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
-                { server: 'https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Hudhaify_128kbps/', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Muhammad_Ayyoub_128kbps/', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/', name: 'أبو بكر الشاطري', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Hani_Rifai_192kbps/', name: 'هانئ الرفاعي', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net/', name: 'أحمد بن علي العجمي', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/MaherAlMuaiqly128kbps/', name: 'ماهر المعيقلي', country: 'السعودية 🇸🇦' },
-                { server: 'https://everyayah.com/data/Muhammad_Jibreel_128kbps/', name: 'محمد جبريل', country: 'مصر 🇪🇬' },
-                { server: 'https://everyayah.com/data/Saood_ash-Shuraym_128kbps/', name: 'سعود الشريم', country: 'السعودية 🇸🇦' }
-            ],
-            surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
-        };
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register fail', err));
-        }
-
-        class QuranPlayer {
-            constructor() {
-                this.audio = new Audio();
-                this.currentSheikh = QURAN_DATA.sheikhs[0];
-                this.currentSurahIndex = 0;
-                this.isPlaying = false;
-                this.initListeners();
-            }
-
-            initListeners() {
-                this.audio.addEventListener('timeupdate', () => {
-                    if (this.audio.duration) {
-                        const progress = (this.audio.currentTime / this.audio.duration) * 100;
-                        document.getElementById('progressBar').value = progress;
-                        document.getElementById('currentTime').textContent = this.formatTime(this.audio.currentTime);
-                        document.getElementById('duration').textContent = this.formatTime(this.audio.duration);
-                    }
-                });
-
-                this.audio.addEventListener('ended', () => this.next());
-                this.audio.addEventListener('error', () => this.handleError());
-            }
-
-            handleError() {
-                alert('عذراً، تعذر تشغيل السورة. تأكد من وجود اتصال بالإنترنت أو حفظها مسبقاً.');
-                this.isPlaying = false;
-                document.getElementById('playBtn').textContent = '▶';
-            }
-
-            getSurahUrl(surahId) {
-                const formattedId = String(surahId).padStart(3, '0');
-                return `${this.currentSheikh.server}${formattedId}.mp3`;
-            }
-
-            playSurah(surahId) {
-                const index = QURAN_DATA.surahs.findIndex(s => s.id === Number(surahId));
-                if (index !== -1) {
-                    this.currentSurahIndex = index;
-                    const surah = QURAN_DATA.surahs[this.currentSurahIndex];
-                    const url = this.getSurahUrl(surah.id);
-                    
-                    this.audio.src = url;
-                    document.getElementById('currentSurahName').textContent = `سورة ${surah.name}`;
-                    document.getElementById('currentSheikhName').textContent = `القارئ: ${this.currentSheikh.name}`;
-                    this.play();
-                }
-            }
-
-            play() {
-                if (!this.audio.src) return this.playSurah(QURAN_DATA.surahs[0].id);
-                this.audio.play().then(() => {
-                    this.isPlaying = true;
-                    document.getElementById('playBtn').textContent = '⏸';
-                }).catch(() => {
-                    this.isPlaying = false;
-                    document.getElementById('playBtn').textContent = '▶';
-                });
-            }
-
-            pause() {
-                this.audio.pause();
-                this.isPlaying = false;
-                document.getElementById('playBtn').textContent = '▶';
-            }
-
-            stop() {
-                this.pause();
-                this.audio.currentTime = 0;
-                document.getElementById('progressBar').value = 0;
-            }
-
-            next() {
-                this.currentSurahIndex = (this.currentSurahIndex + 1) % QURAN_DATA.surahs.length;
-                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
-            }
-
-            prev() {
-                this.currentSurahIndex = (this.currentSurahIndex - 1 + QURAN_DATA.surahs.length) % QURAN_DATA.surahs.length;
-                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
-            }
-
-            formatTime(secs) {
-                if (isNaN(secs)) return '00:00';
-                const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
-                return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            window.player = new QuranPlayer();
-            document.getElementById('totalSheikhsCount').textContent = QURAN_DATA.sheikhs.length;
-
-            renderSheikhs();
-            renderSurahs();
-            setupNavigation();
-            setupEvents();
-
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                if (splash) splash.classList.add('hidden');
-            }, 500);
-        });
-
-        function renderSheikhs(filter = '') {
-            const list = document.getElementById('sheikhsList');
-            list.innerHTML = '';
-            QURAN_DATA.sheikhs.filter(s => s.name.includes(filter)).forEach(s => {
-                const isSelected = window.player.currentSheikh.server === s.server;
-                const el = document.createElement('div');
-                el.className = `sheikh-card ${isSelected ? 'selected' : ''}`;
-                el.innerHTML = `
-                    <div style="font-size:2em;">👤</div>
-                    <strong>${s.name}</strong><br>
-                    <span class="country-tag">${s.country}</span>
-                `;
-                el.onclick = () => {
-                    window.player.currentSheikh = s;
-                    renderSheikhs(filter);
-                    renderSurahs();
-                    window.player.playSurah(QURAN_DATA.surahs[window.player.currentSurahIndex].id);
-                };
-                list.appendChild(el);
-            });
-        }
-
-        async function checkSavedStatus(url) {
-            if ('caches' in window) {
-                const cache = await caches.open('quran-audio-v1');
-                const match = await cache.match(url);
-                return !!match;
-            }
-            return false;
-        }
-
-        function renderSurahs(filter = '') {
-            const list = document.getElementById('surahsList');
-            list.innerHTML = '';
-            
-            QURAN_DATA.surahs.filter(s => s.name.includes(filter)).forEach(async s => {
-                const url = window.player.getSurahUrl(s.id);
-                const isSaved = await checkSavedStatus(url);
-
-                const el = document.createElement('div');
-                el.className = 'surah-item';
-                el.innerHTML = `
-                    <div class="surah-info" onclick="window.player.playSurah(${s.id})">
-                        <div class="surah-num">${s.id}</div>
-                        <strong>سورة ${s.name}</strong>
-                    </div>
-                    <div class="action-btns">
-                        <button class="save-btn ${isSaved ? 'saved' : ''}" id="saveBtn-${s.id}" onclick="toggleSaveSurah('${url}', ${s.id})">
-                            ${isSaved ? '✔ محفوظة بدون نت' : '💾 حفظ للعمل بدون نت'}
-                        </button>
-                        <a href="${url}" target="_blank" download="سورة_${s.name}.mp3" class="direct-download">📥 MP3</a>
-                    </div>
-                `;
-                list.appendChild(el);
-            });
-        }
-
-        async function toggleSaveSurah(url, surahId) {
-            const btn = document.getElementById(`saveBtn-${surahId}`);
-            if (!('caches' in window)) {
-                alert('متصفحك لا يدعم خاصية الحفظ المحلي.');
-                return;
-            }
-
-            const cache = await caches.open('quran-audio-v1');
-            const isSaved = await cache.match(url);
-
-            if (isSaved) {
-                await cache.delete(url);
-                btn.className = 'save-btn';
-                btn.innerHTML = '💾 حفظ للعمل بدون نت';
-            } else {
-                btn.className = 'save-btn loading';
-                btn.innerHTML = '⏳ جارٍ الحفظ...';
-                try {
-                    const response = await fetch(url, { mode: 'cors' });
-                    if (!response.ok) throw new Error('Download failed');
-                    await cache.put(url, response);
-                    btn.className = 'save-btn saved';
-                    btn.innerHTML = '✔ محفوظة بدون نت';
-                } catch (e) {
-                    btn.className = 'save-btn';
-                    btn.innerHTML = '💾 حفظ للعمل بدون نت';
-                    alert('حدث خطأ أثناء حفظ السورة. تأكد من وجود اتصال بالإنترنت.');
-                }
-            }
-        }
-
-        function setupNavigation() {
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.onclick = () => {
-                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.section).classList.add('active');
-                };
-            });
-        }
-
-        function setupEvents() {
-            document.getElementById('playBtn').onclick = () => window.player.isPlaying ? window.player.pause() : window.player.play();
-            document.getElementById('prevBtn').onclick = () => window.player.prev();
-            document.getElementById('nextBtn').onclick = () => window.player.next();
-            document.getElementById('stopBtn').onclick = () => window.player.stop();
-            document.getElementById('progressBar').oninput = (e) => {
-                if (window.player.audio.duration) {
-                    window.player.audio.currentTime = (e.target.value / 100) * window.player.audio.duration;
-                }
-            };
-            document.getElementById('volumeBar').oninput = (e) => window.player.audio.volume = e.target.value / 100;
-            
-            document.getElementById('sheikhSearch').oninput = (e) => renderSheikhs(e.target.value);
-            document.getElementById('surahSearch').oninput = (e) => renderSurahs(e.target.value);
-            document.getElementById('darkMode').onchange = (e) => document.body.classList.toggle('dark-mode', e.target.checked);
-        }
-    </script>
-</body>
-</html>
+            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392
