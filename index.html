@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a5e3a">
+    <meta name="description" content="تطبيق لا باركوه لاستماع وحفظ تلاوات القرآن الكريم للعمل بدون إنترنت">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a5e3a'/><path d='M25 30 C35 25, 45 30, 50 35 C55 30, 65 25, 75 30 L75 70 C65 65, 55 70, 50 75 C45 70, 35 65, 25 70 Z' fill='white' stroke='%23d4af37' stroke-width='3'/><path d='M50 35 L50 75' stroke='%231a5e3a' stroke-width='2'/></svg>">
+    <title>لا باركوه للقرآن الكريم</title>
+    
+    <style>
+        :root {
+            --primary: #1a5e3a;
+            --primary-dark: #0d3d22;
+            --secondary: #d4af37;
+            --bg: #f5f0e1;
+            --text: #2c2c2c;
+            --card: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        body.dark-mode {
+            --bg: #1a1a2e;
+            --text: #f0f0f0;
+            --card: #16213e;
+            --shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 140px; transition: background 0.3s, color 0.3s; }
+
+        .splash-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s ease-out; }
+        .splash-screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+        .splash-content { text-align: center; color: white; display: flex; flex-direction: column; align-items: center; }
+        .splash-logo { width: 100px; height: 100px; margin-bottom: 15px; }
+        .splash-title { font-size: 2.2em; color: var(--secondary); margin-bottom: 5px; }
+        .splash-subtitle { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
+        .splash-loader { width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .main-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 22px 15px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--secondary); }
+        .old-banner { background: linear-gradient(135deg, #1a5e3a, #155229); border: 2px double var(--secondary); padding: 14px; border-radius: 8px; max-width: 800px; margin: 0 auto; }
+        .site-title { color: #fff; font-size: 1.7em; margin-bottom: 4px; font-weight: bold; }
+        .banner-text { color: var(--secondary); font-size: 0.95em; }
+
+        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); padding: 12px 16px; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; z-index: 1000; flex-wrap: wrap; border-top: 3px solid var(--secondary); }
+        .player-info { flex: 1; min-width: 130px; }
+        #currentSurahName { font-weight: bold; color: var(--primary); display: block; font-size: 0.95em; }
+        #currentSheikhName { font-size: 0.78em; opacity: 0.7; display: block; }
+        .player-controls { display: flex; gap: 6px; align-items: center; }
+        .control-btn { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; transition: transform 0.12s; }
+        .control-btn:active { transform: scale(0.9); }
+        .play-btn { width: 48px; height: 48px; background: var(--secondary); color: var(--primary); font-size: 1.25em; }
+        .player-progress { flex: 2; display: flex; align-items: center; gap: 8px; min-width: 160px; font-size: 0.78em; }
+        #progressBar { flex: 1; height: 6px; accent-color: var(--primary); cursor: pointer; }
+        .volume-control { display: flex; align-items: center; gap: 4px; }
+        #volumeBar { width: 65px; height: 6px; accent-color: var(--primary); cursor: pointer; }
+
+        .main-nav { display: flex; justify-content: center; background: var(--card); padding: 10px; gap: 6px; box-shadow: var(--shadow); flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
+        .nav-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.88em; transition: all 0.2s; }
+        .nav-btn.active, .nav-btn:hover { background: var(--primary); color: white; }
+
+        .content { max-width: 900px; margin: 18px auto; padding: 0 14px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .section-title { color: var(--primary); margin-bottom: 14px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; font-size: 1.25em; }
+
+        .welcome-card { background: var(--card); padding: 18px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; margin-bottom: 18px; border-top: 4px solid var(--primary); }
+        .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+        .stat-card { background: var(--card); padding: 12px; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow); }
+        .stat-card h3 { font-size: 0.9em; opacity: 0.8; }
+        .stat-card p { font-size: 1.4em; font-weight: bold; color: var(--primary); margin-top: 4px; }
+
+        .search-box input { width: 100%; padding: 11px 14px; border: 1px solid #ccc; border-radius: var(--radius); margin-bottom: 14px; background: var(--card); color: var(--text); outline: none; font-size: 1em; }
+        body.dark-mode .search-box input { border-color: #444; }
+
+        .sheikhs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+        .sheikh-card { background: var(--card); padding: 14px 10px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 2px solid transparent; transition: transform 0.15s, border-color 0.2s; }
+        .sheikh-card:hover { transform: translateY(-2px); }
+        .sheikh-card.selected { border-color: var(--secondary); background: rgba(212, 175, 55, 0.12); }
+        .country-tag { font-size: 0.72em; background: rgba(26,94,58,0.12); color: var(--primary); padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+
+        .surahs-list { display: flex; flex-direction: column; gap: 8px; }
+        .surah-item { background: var(--card); padding: 12px 14px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .surah-info { display: flex; gap: 12px; align-items: center; cursor: pointer; flex: 1; min-width: 150px; }
+        .surah-num { background: var(--primary); color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; flex-shrink: 0; }
+        
+        .action-btns { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: 7px 12px; border-radius: 18px; font-size: 0.8em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; white-space: nowrap; }
+        .save-btn.saved { background: #27ae60; }
+        .save-btn.loading { background: #e67e22; opacity: 0.85; }
+        .direct-download { background: var(--secondary); color: var(--primary-dark); text-decoration: none; padding: 7px 11px; border-radius: 18px; font-size: 0.8em; font-weight: bold; white-space: nowrap; }
+
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid rgba(0,0,0,0.08); gap: 12px; }
+        body.dark-mode .setting-item { border-bottom-color: rgba(255,255,255,0.1); }
+        .switch { position: relative; display: inline-block; width: 42px; height: 22px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .35s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .35s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: 16px; margin-top: 28px; font-size: 0.85em; }
+
+        .toast { position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: var(--primary-dark); color: white; padding: 10px 20px; border-radius: 25px; font-size: 0.9em; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 600px) {
+            .player-bar { padding: 10px 12px; gap: 8px; }
+            .player-progress { min-width: 100%; order: 3; }
+            .volume-control { display: none; }
+            .site-title { font-size: 1.35em; }
+            .sheikhs-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-content">
+            <div id="splashLogoContainer" class="splash-logo"></div>
+            <h1 class="splash-title" data-i18n="splashTitle">لا باركوه</h1>
+            <p class="splash-subtitle" data-i18n="sadaqa">صدقة جارية لكل من ينشرها</p>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="old-banner">
+            <h1 class="site-title" data-i18n="appTitle">لا باركوه للقرآن الكريم</h1>
+            <p class="banner-text" data-i18n="sadaqa">صدقة جارية لكل من ينشرها</p>
+        </div>
+    </header>
+
+    <div class="player-bar" id="playerBar">
+        <div class="player-info">
+            <span id="currentSurahName" data-i18n="chooseSurah">اختر سورة للاستماع</span>
+            <span id="currentSheikhName"></span>
+        </div>
+        <div class="player-controls">
+            <button id="prevBtn" class="control-btn" title="السابق" aria-label="السابق">⏮</button>
+            <button id="playBtn" class="control-btn play-btn" title="تشغيل/إيقاف" aria-label="تشغيل">▶️</button>
+            <button id="nextBtn" class="control-btn" title="التالي" aria-label="التالي">⏭</button>
+            <button id="stopBtn" class="control-btn" title="إيقاف" aria-label="إيقاف">⏹</button>
+        </div>
+        <div class="player-progress">
+            <span id="currentTime">00:00</span>
+            <input type="range" id="progressBar" value="0" min="0" max="100" aria-label="التقدم">
+            <span id="duration">00:00</span>
+        </div>
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" id="volumeBar" value="100" min="0" max="100" aria-label="الصوت">
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <button class="nav-btn active" data-section="home" data-i18n="navHome">🏠 الرئيسية</button>
+        <button class="nav-btn" data-section="sheikhs" data-i18n="navSheikhs">👤 المشايخ</button>
+        <button class="nav-btn" data-section="surahs" data-i18n="navSurahs">📖 السور</button>
+        <button class="nav-btn" data-section="settings" data-i18n="navSettings">⚙ الإعدادات</button>
+    </nav>
+
+    <main class="content">
+        <section id="home" class="section active">
+            <div class="welcome-card">
+                <h2 data-i18n="welcomeTitle">🕌 مرحباً بك في تطبيق لا باركوه</h2>
+                <p style="margin-top:8px;opacity:0.85;line-height:1.5" data-i18n="welcomeDesc">استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت</p>
+            </div>
+            <div class="quick-stats">
+                <div class="stat-card"><h3 data-i18n="statSheikhs">المشايخ</h3><p id="totalSheikhsCount">30</p></div>
+                <div class="stat-card"><h3 data-i18n="statSurahs">السور</h3><p>114</p></div>
+                <div class="stat-card"><h3 data-i18n="statSaved">محفوظة</h3><p id="savedCount">0</p></div>
+            </div>
+        </section>
+
+        <section id="sheikhs" class="section">
+            <h2 class="section-title" data-i18n="sheikhsTitle">🌙 مشايخ القرآن الكريم</h2>
+            <div class="search-box"><input type="text" id="sheikhSearch" placeholder="🔍 ابحث عن شيخ..." data-i18n-placeholder="searchSheikh" autocomplete="off"></div>
+            <div id="sheikhsList" class="sheikhs-grid"></div>
+        </section>
+
+        <section id="surahs" class="section">
+            <h2 class="section-title" data-i18n="surahsTitle">📖 سور القرآن الكريم</h2>
+            <div class="search-box"><input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة..." data-i18n-placeholder="searchSurah" autocomplete="off"></div>
+            <div id="surahsList" class="surahs-list"></div>
+        </section>
+
+        <section id="settings" class="section">
+            <h2 class="section-title" data-i18n="settingsTitle">⚙ الإعدادات</h2>
+            <div class="setting-item">
+                <label data-i18n="language">اللغة</label>
+                <select id="langSelect" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--primary);background:var(--card);color:var(--text);font-size:0.95em;min-width:140px;">
+                    <option value="ar">العربية</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="ha">Hausa</option>
+                    <option value="so">Soomaali</option>
+                    <option value="ur">اردو</option>
+                    <option value="es">Español</option>
+                    <option value="it">Italiano</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="de">Deutsch</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="ku">Kurdî</option>
+                    <option value="pt">Português</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label data-i18n="darkMode">الوضع الليلي</label>
+                <label class="switch"><input type="checkbox" id="darkMode"><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+                <label data-i18n="clearCache">مسح جميع التلاوات المحفوظة</label>
+                <button id="clearCacheBtn" class="save-btn" style="background:#c0392b" data-i18n="clearAll">🗑 مسح الكل</button>
+            </div>
+            <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+                <label data-i18n="appInfo">معلومات التطبيق</label>
+                <p id="appInfoText" style="font-size:0.85em;opacity:0.8;line-height:1.5">لا باركوه - صدقة جارية<br>يعمل بدون إنترنت بعد حفظ التلاوات<br>المصدر: mp3quran.net</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p data-i18n="sadaqa">صدقة جارية لكل من ينشرها</p>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const QURAN_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+            <rect width="512" height="512" rx="100" fill="#1a5e3a"/>
+            <path d="M120 140 C180 120, 240 140, 256 160 C272 140, 332 120, 392 140 L392 340 C332 320, 272 340, 256 355 C240 340, 180 320, 120 340 Z" fill="#ffffff" stroke="#d4af37" stroke-width="12"/>
+            <path d="M256 160 L256 355" stroke="#1a5e3a" stroke-width="8"/>
+        </svg>`;
+
+        document.getElementById('splashLogoContainer').innerHTML = QURAN_ICON_SVG;
+
+        const SURAH_NAMES = [
+            "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
+            "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+            "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+            "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
+            "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
+            "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
+            "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
+            "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
+            "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+            "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
+            "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
+            "المسد","الإخلاص","الفلق","الناس"
+        ];
+
+        // مصادر صحيحة من mp3quran.net (سور كاملة + CORS مفتوح)
+        const QURAN_DATA = {
+            sheikhs: [
+                // --- الخليج ---
+                { server: 'https://server8.mp3quran.net/afs/', name: 'مشاري راشد العفاسي', country: 'الكويت 🇰🇼' },
+                { server: 'https://server11.mp3quran.net/sds/', name: 'عبد الرحمن السديس', country: 'السعودية 🇸🇦' },
+                { server: 'https://server7.mp3quran.net/shur/', name: 'سعود الشريم', country: 'السعودية 🇸🇦' },
+                { server: 'https://server12.mp3quran.net/maher/', name: 'ماهر المعيقلي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server11.mp3quran.net/yasser/', name: 'ياسر الدوسري', country: 'السعودية 🇸🇦' },
+                { server: 'https://server9.mp3quran.net/hthfi/', name: 'علي الحذيفي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server8.mp3quran.net/ayyub/', name: 'محمد أيوب', country: 'السعودية 🇸🇦' },
+                { server: 'https://server11.mp3quran.net/shatri/', name: 'أبو بكر الشاطري', country: 'السعودية 🇸🇦' },
+                { server: 'https://server10.mp3quran.net/ajm/128/', name: 'أحمد بن علي العجمي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server8.mp3quran.net/hani/', name: 'هانئ الرفاعي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server13.mp3quran.net/jhn/', name: 'عبد الله عواد الجهني', country: 'السعودية 🇸🇦' },
+                { server: 'https://server10.mp3quran.net/jleel/', name: 'خالد الجليل', country: 'السعودية 🇸🇦' },
+                { server: 'https://server10.mp3quran.net/bader/Rewayat-Hafs-A-n-Assem/', name: 'بدر التركي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server6.mp3quran.net/balilah/', name: 'بندر بليلة', country: 'السعودية 🇸🇦' },
+                { server: 'https://server6.mp3quran.net/thubti/', name: 'عبد البارئ الثبيتي', country: 'السعودية 🇸🇦' },
+                { server: 'https://server12.mp3quran.net/tnjy/', name: 'خليفة الطنيجي', country: 'الإمارات 🇦🇪' },
+                { server: 'https://server8.mp3quran.net/bu_khtr/', name: 'صلاح بو خاطر', country: 'الإمارات 🇦🇪' },
+                { server: 'https://server8.mp3quran.net/frs_a/', name: 'فارس عباد', country: 'اليمن 🇾🇪' },
+
+                // --- مصر ---
+                { server: 'https://server7.mp3quran.net/basit/', name: 'عبد الباسط عبد الصمد', country: 'مصر 🇪🇬' },
+                { server: 'https://server13.mp3quran.net/husr/', name: 'محمود خليل الحصري', country: 'مصر 🇪🇬' },
+                { server: 'https://server10.mp3quran.net/minsh/', name: 'محمد صديق المنشاوي', country: 'مصر 🇪🇬' },
+                { server: 'https://server8.mp3quran.net/jbrl/', name: 'محمد جبريل', country: 'مصر 🇪🇬' },
+
+                // --- أفريقيا ---
+                { server: 'https://server16.mp3quran.net/nourin_siddig/Rewayat-Aldori-A-n-Abi-Amr/', name: 'نورين محمد صديق', country: 'السودان 🇸🇩' },
+                { server: 'https://server6.mp3quran.net/abkr/', name: 'إدريس أبكر', country: 'السودان 🇸🇩' },
+                { server: 'https://server16.mp3quran.net/okasha/Rewayat-Albizi-A-n-Ibn-Katheer/', name: 'عكاشة كميني', country: 'السودان 🇸🇩' },
+                { server: 'https://server7.mp3quran.net/dokali/', name: 'الدوكالي محمد العالم', country: 'ليبيا 🇱🇾' },
+                { server: 'https://server16.mp3quran.net/soufi/Rewayat-Hafs-A-n-Assem/', name: 'عبد الرشيد صوفي', country: 'الصومال 🇸🇴' },
+                { server: 'https://server11.mp3quran.net/bilal/', name: 'موسى بلال', country: 'أفريقيا 🌍' },
+
+                // --- آسيا ---
+                { server: 'https://server6.mp3quran.net/khan/', name: 'محمد عثمان خان', country: 'الهند 🇮🇳' },
+                { server: 'https://server6.mp3quran.net/jamal/', name: 'جمال شاكر عبدالله', country: 'العراق 🇮🇶' }
+            ],
+            surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
+        };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail', err));
+            });
+        }
+
+        function showToast(msg, duration = 2500) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), duration);
+        }
+
+
+        const I18N = {
+            ar: {
+                appTitle: "لا باركوه للقرآن الكريم", splashTitle: "لا باركوه", sadaqa: "صدقة جارية لكل من ينشرها",
+                chooseSurah: "اختر سورة للاستماع", navHome: "🏠 الرئيسية", navSheikhs: "👤 المشايخ",
+                navSurahs: "📖 السور", navSettings: "⚙ الإعدادات",
+                welcomeTitle: "🕌 مرحباً بك في تطبيق لا باركوه",
+                welcomeDesc: "استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت",
+                statSheikhs: "المشايخ", statSurahs: "السور", statSaved: "محفوظة",
+                sheikhsTitle: "🌙 مشايخ القرآن الكريم", surahsTitle: "📖 سور القرآن الكريم",
+                searchSheikh: "🔍 ابحث عن شيخ...", searchSurah: "🔍 ابحث عن سورة...",
+                settingsTitle: "⚙ الإعدادات", language: "اللغة", darkMode: "الوضع الليلي",
+                clearCache: "مسح جميع التلاوات المحفوظة", clearAll: "🗑 مسح الكل",
+                appInfo: "معلومات التطبيق",
+                appInfoText: "لا باركوه - صدقة جارية<br>يعمل بدون إنترنت بعد حفظ التلاوات<br>المصدر: mp3quran.net",
+                save: "💾 حفظ", saved: "✔ محفوظة", saving: "⏳ جارٍ الحفظ...",
+                surahOf: "سورة", reader: "القارئ:", noResults: "لا توجد نتائج",
+                selected: "تم اختيار:", clearConfirm: "هل أنت متأكد من مسح جميع التلاوات المحفوظة؟",
+                cleared: "تم مسح جميع التلاوات المحفوظة", clearError: "حدث خطأ أثناء المسح",
+                saveOk: "تم الحفظ بنجاح ✓", saveFail: "فشل الحفظ. تحقق من الاتصال بالإنترنت",
+                saveDeleted: "تم حذف السورة من الحفظ", noCache: "متصفحك لا يدعم الحفظ المحلي",
+                playError: "تعذر تشغيل السورة.", netError: "مشكلة في الشبكة. تأكد من الاتصال أو احفظ السورة مسبقاً.",
+                fileError: "الملف غير متوفر أو الرابط خاطئ.", playRetry: "اضغط تشغيل مرة أخرى أو تحقق من الاتصال"
+            },
+            en: {
+                appTitle: "La Barkouh Quran", splashTitle: "La Barkouh", sadaqa: "Ongoing charity for all who share it",
+                chooseSurah: "Choose a Surah to listen", navHome: "🏠 Home", navSheikhs: "👤 Reciters",
+                navSurahs: "📖 Surahs", navSettings: "⚙ Settings",
+                welcomeTitle: "🕌 Welcome to La Barkouh",
+                welcomeDesc: "Listen and save Quran recitations for offline use",
+                statSheikhs: "Reciters", statSurahs: "Surahs", statSaved: "Saved",
+                sheikhsTitle: "🌙 Quran Reciters", surahsTitle: "📖 Quran Surahs",
+                searchSheikh: "🔍 Search reciter...", searchSurah: "🔍 Search surah...",
+                settingsTitle: "⚙ Settings", language: "Language", darkMode: "Dark mode",
+                clearCache: "Clear all saved recitations", clearAll: "🗑 Clear all",
+                appInfo: "App info",
+                appInfoText: "La Barkouh - Ongoing charity<br>Works offline after saving<br>Source: mp3quran.net",
+                save: "💾 Save", saved: "✔ Saved", saving: "⏳ Saving...",
+                surahOf: "Surah", reader: "Reciter:", noResults: "No results",
+                selected: "Selected:", clearConfirm: "Clear all saved recitations?",
+                cleared: "All saved recitations cleared", clearError: "Error while clearing",
+                saveOk: "Saved successfully ✓", saveFail: "Save failed. Check your connection",
+                saveDeleted: "Removed from offline storage", noCache: "Browser does not support offline save",
+                playError: "Could not play the Surah.", netError: "Network issue. Check connection or save first.",
+                fileError: "File unavailable or invalid link.", playRetry: "Try play again or check connection"
+            },
+            fr: {
+                appTitle: "La Barkouh Coran", splashTitle: "La Barkouh", sadaqa: "Charité continue pour ceux qui la partagent",
+                chooseSurah: "Choisissez une sourate", navHome: "🏠 Accueil", navSheikhs: "👤 Récitateurs",
+                navSurahs: "📖 Sourates", navSettings: "⚙ Paramètres",
+                welcomeTitle: "🕌 Bienvenue sur La Barkouh",
+                welcomeDesc: "Écoutez et enregistrez les récitations du Coran hors ligne",
+                statSheikhs: "Récitateurs", statSurahs: "Sourates", statSaved: "Enregistrées",
+                sheikhsTitle: "🌙 Récitateurs du Coran", surahsTitle: "📖 Sourates du Coran",
+                searchSheikh: "🔍 Rechercher un récitateur...", searchSurah: "🔍 Rechercher une sourate...",
+                settingsTitle: "⚙ Paramètres", language: "Langue", darkMode: "Mode sombre",
+                clearCache: "Effacer toutes les récitations", clearAll: "🗑 Tout effacer",
+                appInfo: "Infos",
+                appInfoText: "La Barkouh - Charité continue<br>Fonctionne hors ligne après enregistrement<br>Source: mp3quran.net",
+                save: "💾 Sauver", saved: "✔ Sauvé", saving: "⏳ Enregistrement...",
+                surahOf: "Sourate", reader: "Récitateur:", noResults: "Aucun résultat",
+                selected: "Sélectionné:", clearConfirm: "Effacer toutes les récitations enregistrées ?",
+                cleared: "Récitations effacées", clearError: "Erreur lors de l'effacement",
+                saveOk: "Enregistré avec succès ✓", saveFail: "Échec. Vérifiez la connexion",
+                saveDeleted: "Supprimé du stockage hors ligne", noCache: "Navigateur non compatible",
+                playError: "Impossible de lire la sourate.", netError: "Problème réseau.",
+                fileError: "Fichier indisponible.", playRetry: "Réessayez ou vérifiez la connexion"
+            },
+            ha: {
+                appTitle: "La Barkouh Alkur'ani", splashTitle: "La Barkouh", sadaqa: "Sadaka mai ci gaba ga duk wanda ya yada",
+                chooseSurah: "Zaɓi Sura don saurare", navHome: "🏠 Gida", navSheikhs: "👤 Qari'ai",
+                navSurahs: "📖 Surori", navSettings: "⚙ Saiti",
+                welcomeTitle: "🕌 Barka da zuwa La Barkouh",
+                welcomeDesc: "Saurari kuma ajiye karatun Alkur'ani ba tare da intanet ba",
+                statSheikhs: "Qari'ai", statSurahs: "Surori", statSaved: "An ajiye",
+                sheikhsTitle: "🌙 Qari'an Alkur'ani", surahsTitle: "📖 Surorin Alkur'ani",
+                searchSheikh: "🔍 Nemo qari...", searchSurah: "🔍 Nemo sura...",
+                settingsTitle: "⚙ Saiti", language: "Harshe", darkMode: "Yanayin dare",
+                clearCache: "Share duk abubuwan da aka ajiye", clearAll: "🗑 Share duka",
+                appInfo: "Bayani",
+                appInfoText: "La Barkouh - Sadaka mai ci gaba<br>Yana aiki ba tare da intanet ba bayan ajiye<br>Tushen: mp3quran.net",
+                save: "💾 Ajiye", saved: "✔ An ajiye", saving: "⏳ Ana ajiye...",
+                surahOf: "Sura", reader: "Qari:", noResults: "Babu sakamako",
+                selected: "An zaɓa:", clearConfirm: "A share duk abubuwan da aka ajiye?",
+                cleared: "An share duka", clearError: "Kuskure wajen sharewa",
+                saveOk: "An ajiye cikin nasara ✓", saveFail: "An kasa. Duba haɗin intanet",
+                saveDeleted: "An cire daga ajiya", noCache: "Browser bai goyi bayan ajiya ba",
+                playError: "An kasa kunna Sura.", netError: "Matsalar hanyar sadarwa.",
+                fileError: "Fayil ba ya samuwa.", playRetry: "Sake gwadawa ko duba haɗin"
+            },
+            so: {
+                appTitle: "La Barkouh Quraanka", splashTitle: "La Barkouh", sadaqa: "Sadaqo joogto ah kuwa faafiya",
+                chooseSurah: "Dooro Suurad si aad u dhageysato", navHome: "🏠 Hoyga", navSheikhs: "👤 Qariyaasha",
+                navSurahs: "📖 Suuradaha", navSettings: "⚙ Goobaha",
+                welcomeTitle: "🕌 Ku soo dhawoow La Barkouh",
+                welcomeDesc: "Dhageyso oo kaydi akhriska Quraanka offline",
+                statSheikhs: "Qariyaasha", statSurahs: "Suuradaha", statSaved: "La kaydiyay",
+                sheikhsTitle: "🌙 Qariyaasha Quraanka", surahsTitle: "📖 Suuradaha Quraanka",
+                searchSheikh: "🔍 Raadi qari...", searchSurah: "🔍 Raadi suurad...",
+                settingsTitle: "⚙ Goobaha", language: "Luqadda", darkMode: "Habka mugdiga",
+                clearCache: "Tirtir dhammaan kaydka", clearAll: "🗑 Tirtir dhammaan",
+                appInfo: "Macluumaad",
+                appInfoText: "La Barkouh - Sadaqo joogto<br>Waxay shaqeysaa offline ka dib kaydinta<br>Isha: mp3quran.net",
+                save: "💾 Kaydi", saved: "✔ La kaydiyay", saving: "⏳ Waa la kaydinayaa...",
+                surahOf: "Suurad", reader: "Qari:", noResults: "Natiijo ma jirto",
+                selected: "La doortay:", clearConfirm: "Ma tirtirtaa dhammaan kaydka?",
+                cleared: "Waa la tirtiray", clearError: "Khalad ayaa dhacay",
+                saveOk: "Si guul leh ayaa loo kaydiyay ✓", saveFail: "Waa fashilmay. Hubi internetka",
+                saveDeleted: "Waa laga saaray kaydka", noCache: "Browser-ku ma taageero kaydinta",
+                playError: "Suuradda lama ciyaari karo.", netError: "Dhibaato shabakad.",
+                fileError: "Faylka lama heli karo.", playRetry: "Isku day mar kale"
+            },
+            ur: {
+                appTitle: "لا بارکوہ قرآن", splashTitle: "لا بارکوہ", sadaqa: "جاری صدقہ سب کے لیے جو شیئر کریں",
+                chooseSurah: "سننے کے لیے سورت منتخب کریں", navHome: "🏠 ہوم", navSheikhs: "👤 قاری",
+                navSurahs: "📖 سورتیں", navSettings: "⚙ ترتیبات",
+                welcomeTitle: "🕌 لا بارکوہ میں خوش آمدید",
+                welcomeDesc: "قرآن کی تلاوت سنیں اور آف لائن محفوظ کریں",
+                statSheikhs: "قاری", statSurahs: "سورتیں", statSaved: "محفوظ",
+                sheikhsTitle: "🌙 قاریانِ قرآن", surahsTitle: "📖 سورتیں",
+                searchSheikh: "🔍 قاری تلاش کریں...", searchSurah: "🔍 سورت تلاش کریں...",
+                settingsTitle: "⚙ ترتیبات", language: "زبان", darkMode: "ڈارک موڈ",
+                clearCache: "تمام محفوظ تلاوتیں حذف کریں", clearAll: "🗑 سب حذف کریں",
+                appInfo: "معلومات",
+                appInfoText: "لا بارکوہ - جاری صدقہ<br>محفوظ کرنے کے بعد آف لائن کام کرتا ہے<br>ماخذ: mp3quran.net",
+                save: "💾 محفوظ", saved: "✔ محفوظ شدہ", saving: "⏳ محفوظ ہو رہا ہے...",
+                surahOf: "سورت", reader: "قاری:", noResults: "کوئی نتیجہ نہیں",
+                selected: "منتخب:", clearConfirm: "تمام محفوظ تلاوتیں حذف کریں؟",
+                cleared: "سب حذف ہو گئیں", clearError: "حذف میں خرابی",
+                saveOk: "کامیابی سے محفوظ ✓", saveFail: "ناکام۔ کنکشن چیک کریں",
+                saveDeleted: "آف لائن سے ہٹا دیا گیا", noCache: "براؤزر سپورٹ نہیں کرتا",
+                playError: "سورت نہیں چل سکی۔", netError: "نیٹ ورک مسئلہ۔",
+                fileError: "فائل دستیاب نہیں۔", playRetry: "دوبارہ کوشش کریں"
+            },
+            es: {
+                appTitle: "La Barkouh Corán", splashTitle: "La Barkouh", sadaqa: "Caridad continua para quien la comparta",
+                chooseSurah: "Elige una sura para escuchar", navHome: "🏠 Inicio", navSheikhs: "👤 Recitadores",
+                navSurahs: "📖 Suras", navSettings: "⚙ Ajustes",
+                welcomeTitle: "🕌 Bienvenido a La Barkouh",
+                welcomeDesc: "Escucha y guarda recitaciones del Corán sin conexión",
+                statSheikhs: "Recitadores", statSurahs: "Suras", statSaved: "Guardadas",
+                sheikhsTitle: "🌙 Recitadores del Corán", surahsTitle: "📖 Suras del Corán",
+                searchSheikh: "🔍 Buscar recitador...", searchSurah: "🔍 Buscar sura...",
+                settingsTitle: "⚙ Ajustes", language: "Idioma", darkMode: "Modo oscuro",
+                clearCache: "Borrar todas las recitaciones", clearAll: "🗑 Borrar todo",
+                appInfo: "Info",
+                appInfoText: "La Barkouh - Caridad continua<br>Funciona sin conexión tras guardar<br>Fuente: mp3quran.net",
+                save: "💾 Guardar", saved: "✔ Guardado", saving: "⏳ Guardando...",
+                surahOf: "Sura", reader: "Recitador:", noResults: "Sin resultados",
+                selected: "Seleccionado:", clearConfirm: "¿Borrar todas las recitaciones guardadas?",
+                cleared: "Todo borrado", clearError: "Error al borrar",
+                saveOk: "Guardado con éxito ✓", saveFail: "Error. Revisa la conexión",
+                saveDeleted: "Eliminado del almacenamiento", noCache: "Navegador no compatible",
+                playError: "No se pudo reproducir.", netError: "Problema de red.",
+                fileError: "Archivo no disponible.", playRetry: "Inténtalo de nuevo"
+            },
+            it: {
+                appTitle: "La Barkouh Corano", splashTitle: "La Barkouh", sadaqa: "Carità continua per chi la condivide",
+                chooseSurah: "Scegli una sura da ascoltare", navHome: "🏠 Home", navSheikhs: "👤 Recitatori",
+                navSurahs: "📖 Sure", navSettings: "⚙ Impostazioni",
+                welcomeTitle: "🕌 Benvenuto su La Barkouh",
+                welcomeDesc: "Ascolta e salva le recitazioni del Corano offline",
+                statSheikhs: "Recitatori", statSurahs: "Sure", statSaved: "Salvate",
+                sheikhsTitle: "🌙 Recitatori del Corano", surahsTitle: "📖 Sure del Corano",
+                searchSheikh: "🔍 Cerca recitatore...", searchSurah: "🔍 Cerca sura...",
+                settingsTitle: "⚙ Impostazioni", language: "Lingua", darkMode: "Modalità scura",
+                clearCache: "Cancella tutte le recitazioni", clearAll: "🗑 Cancella tutto",
+                appInfo: "Info",
+                appInfoText: "La Barkouh - Carità continua<br>Funziona offline dopo il salvataggio<br>Fonte: mp3quran.net",
+                save: "💾 Salva", saved: "✔ Salvato", saving: "⏳ Salvataggio...",
+                surahOf: "Sura", reader: "Recitatore:", noResults: "Nessun risultato",
+                selected: "Selezionato:", clearConfirm: "Cancellare tutte le recitazioni salvate?",
+                cleared: "Tutto cancellato", clearError: "Errore durante la cancellazione",
+                saveOk: "Salvato con successo ✓", saveFail: "Fallito. Controlla la connessione",
+                saveDeleted: "Rimosso dall'archivio offline", noCache: "Browser non supportato",
+                playError: "Impossibile riprodurre.", netError: "Problema di rete.",
+                fileError: "File non disponibile.", playRetry: "Riprova o controlla la connessione"
+            },
+            tr: {
+                appTitle: "La Barkouh Kur'an", splashTitle: "La Barkouh", sadaqa: "Paylaşan herkes için sürekli sadaka",
+                chooseSurah: "Dinlemek için sure seçin", navHome: "🏠 Ana sayfa", navSheikhs: "👤 Kariler",
+                navSurahs: "📖 Sureler", navSettings: "⚙ Ayarlar",
+                welcomeTitle: "🕌 La Barkouh'a hoş geldiniz",
+                welcomeDesc: "Kur'an tilavetlerini dinleyin ve çevrimdışı kaydedin",
+                statSheikhs: "Kariler", statSurahs: "Sureler", statSaved: "Kayıtlı",
+                sheikhsTitle: "🌙 Kur'an Karileri", surahsTitle: "📖 Kur'an Sureleri",
+                searchSheikh: "🔍 Kari ara...", searchSurah: "🔍 Sure ara...",
+                settingsTitle: "⚙ Ayarlar", language: "Dil", darkMode: "Karanlık mod",
+                clearCache: "Tüm kayıtlı tilavetleri sil", clearAll: "🗑 Tümünü sil",
+                appInfo: "Bilgi",
+                appInfoText: "La Barkouh - Sürekli sadaka<br>Kaydettikten sonra çevrimdışı çalışır<br>Kaynak: mp3quran.net",
+                save: "💾 Kaydet", saved: "✔ Kaydedildi", saving: "⏳ Kaydediliyor...",
+                surahOf: "Sure", reader: "Kari:", noResults: "Sonuç yok",
+                selected: "Seçildi:", clearConfirm: "Tüm kayıtlı tilavetler silinsin mi?",
+                cleared: "Hepsi silindi", clearError: "Silme hatası",
+                saveOk: "Başarıyla kaydedildi ✓", saveFail: "Başarısız. Bağlantıyı kontrol edin",
+                saveDeleted: "Çevrimdışı depodan kaldırıldı", noCache: "Tarayıcı desteklemiyor",
+                playError: "Sure çalınamadı.", netError: "Ağ sorunu.",
+                fileError: "Dosya mevcut değil.", playRetry: "Tekrar deneyin"
+            },
+            hi: {
+                appTitle: "ला बारकूह कुरान", splashTitle: "ला बारकूह", sadaqa: "साझा करने वालों के लिए सदका",
+                chooseSurah: "सुनने के लिए सूरह चुनें", navHome: "🏠 होम", navSheikhs: "👤 कारी",
+                navSurahs: "📖 सूरह", navSettings: "⚙ सेटिंग्स",
+                welcomeTitle: "🕌 ला बारकूह में आपका स्वागत है",
+                welcomeDesc: "कुरान की तिलावत सुनें और ऑफ़लाइन सहेजें",
+                statSheikhs: "कारी", statSurahs: "सूरह", statSaved: "सहेजा",
+                sheikhsTitle: "🌙 कुरान के कारी", surahsTitle: "📖 कुरान की सूरह",
+                searchSheikh: "🔍 कारी खोजें...", searchSurah: "🔍 सूरह खोजें...",
+                settingsTitle: "⚙ सेटिंग्स", language: "भाषा", darkMode: "डार्क मोड",
+                clearCache: "सभी सहेजी तिलावत हटाएँ", clearAll: "🗑 सब हटाएँ",
+                appInfo: "जानकारी",
+                appInfoText: "ला बारकूह - सतत सदका<br>सहेजने के बाद ऑफ़लाइन काम करता है<br>स्रोत: mp3quran.net",
+                save: "💾 सहेजें", saved: "✔ सहेजा गया", saving: "⏳ सहेजा जा रहा...",
+                surahOf: "सूरह", reader: "कारी:", noResults: "कोई परिणाम नहीं",
+                selected: "चयनित:", clearConfirm: "सभी सहेजी तिलावत हटाएँ?",
+                cleared: "सब हटा दिया गया", clearError: "हटाने में त्रुटि",
+                saveOk: "सफलतापूर्वक सहेजा ✓", saveFail: "विफल। कनेक्शन जाँचें",
+                saveDeleted: "ऑफ़लाइन से हटाया", noCache: "ब्राउज़र समर्थन नहीं करता",
+                playError: "सूरह नहीं चल सकी।", netError: "नेटवर्क समस्या।",
+                fileError: "फ़ाइल उपलब्ध नहीं।", playRetry: "फिर कोशिश करें"
+            },
+            de: {
+                appTitle: "La Barkouh Koran", splashTitle: "La Barkouh", sadaqa: "Fortlaufende Wohltätigkeit für alle, die teilen",
+                chooseSurah: "Sure zum Anhören wählen", navHome: "🏠 Start", navSheikhs: "👤 Rezitatoren",
+                navSurahs: "📖 Suren", navSettings: "⚙ Einstellungen",
+                welcomeTitle: "🕌 Willkommen bei La Barkouh",
+                welcomeDesc: "Koran-Rezitationen anhören und offline speichern",
+                statSheikhs: "Rezitatoren", statSurahs: "Suren", statSaved: "Gespeichert",
+                sheikhsTitle: "🌙 Koran-Rezitatoren", surahsTitle: "📖 Koran-Suren",
+                searchSheikh: "🔍 Rezitator suchen...", searchSurah: "🔍 Sure suchen...",
+                settingsTitle: "⚙ Einstellungen", language: "Sprache", darkMode: "Dunkelmodus",
+                clearCache: "Alle gespeicherten Rezitationen löschen", clearAll: "🗑 Alles löschen",
+                appInfo: "Info",
+                appInfoText: "La Barkouh - Fortlaufende Wohltätigkeit<br>Offline nach dem Speichern<br>Quelle: mp3quran.net",
+                save: "💾 Speichern", saved: "✔ Gespeichert", saving: "⏳ Speichern...",
+                surahOf: "Sure", reader: "Rezitator:", noResults: "Keine Ergebnisse",
+                selected: "Ausgewählt:", clearConfirm: "Alle gespeicherten Rezitationen löschen?",
+                cleared: "Alles gelöscht", clearError: "Fehler beim Löschen",
+                saveOk: "Erfolgreich gespeichert ✓", saveFail: "Fehlgeschlagen. Verbindung prüfen",
+                saveDeleted: "Aus Offline-Speicher entfernt", noCache: "Browser unterstützt das nicht",
+                playError: "Sure konnte nicht abgespielt werden.", netError: "Netzwerkproblem.",
+                fileError: "Datei nicht verfügbar.", playRetry: "Erneut versuchen"
+            },
+            id: {
+                appTitle: "La Barkouh Al-Qur'an", splashTitle: "La Barkouh", sadaqa: "Sedekah jariyah bagi yang membagikan",
+                chooseSurah: "Pilih surah untuk didengarkan", navHome: "🏠 Beranda", navSheikhs: "👤 Qari",
+                navSurahs: "📖 Surah", navSettings: "⚙ Pengaturan",
+                welcomeTitle: "🕌 Selamat datang di La Barkouh",
+                welcomeDesc: "Dengarkan dan simpan bacaan Al-Qur'an untuk offline",
+                statSheikhs: "Qari", statSurahs: "Surah", statSaved: "Tersimpan",
+                sheikhsTitle: "🌙 Qari Al-Qur'an", surahsTitle: "📖 Surah Al-Qur'an",
+                searchSheikh: "🔍 Cari qari...", searchSurah: "🔍 Cari surah...",
+                settingsTitle: "⚙ Pengaturan", language: "Bahasa", darkMode: "Mode gelap",
+                clearCache: "Hapus semua bacaan tersimpan", clearAll: "🗑 Hapus semua",
+                appInfo: "Info",
+                appInfoText: "La Barkouh - Sedekah jariyah<br>Bekerja offline setelah disimpan<br>Sumber: mp3quran.net",
+                save: "💾 Simpan", saved: "✔ Tersimpan", saving: "⏳ Menyimpan...",
+                surahOf: "Surah", reader: "Qari:", noResults: "Tidak ada hasil",
+                selected: "Dipilih:", clearConfirm: "Hapus semua bacaan tersimpan?",
+                cleared: "Semua dihapus", clearError: "Kesalahan saat menghapus",
+                saveOk: "Berhasil disimpan ✓", saveFail: "Gagal. Periksa koneksi",
+                saveDeleted: "Dihapus dari penyimpanan offline", noCache: "Browser tidak mendukung",
+                playError: "Tidak dapat memutar surah.", netError: "Masalah jaringan.",
+                fileError: "File tidak tersedia.", playRetry: "Coba lagi"
+            },
+            ms: {
+                appTitle: "La Barkouh Al-Quran", splashTitle: "La Barkouh", sadaqa: "Sedekah jariah untuk yang berkongsi",
+                chooseSurah: "Pilih surah untuk didengar", navHome: "🏠 Laman utama", navSheikhs: "👤 Qari",
+                navSurahs: "📖 Surah", navSettings: "⚙ Tetapan",
+                welcomeTitle: "🕌 Selamat datang ke La Barkouh",
+                welcomeDesc: "Dengar dan simpan bacaan Al-Quran untuk luar talian",
+                statSheikhs: "Qari", statSurahs: "Surah", statSaved: "Disimpan",
+                sheikhsTitle: "🌙 Qari Al-Quran", surahsTitle: "📖 Surah Al-Quran",
+                searchSheikh: "🔍 Cari qari...", searchSurah: "🔍 Cari surah...",
+                settingsTitle: "⚙ Tetapan", language: "Bahasa", darkMode: "Mod gelap",
+                clearCache: "Padam semua bacaan disimpan", clearAll: "🗑 Padam semua",
+                appInfo: "Maklumat",
+                appInfoText: "La Barkouh - Sedekah jariah<br>Berfungsi luar talian selepas simpan<br>Sumber: mp3quran.net",
+                save: "💾 Simpan", saved: "✔ Disimpan", saving: "⏳ Menyimpan...",
+                surahOf: "Surah", reader: "Qari:", noResults: "Tiada hasil",
+                selected: "Dipilih:", clearConfirm: "Padam semua bacaan disimpan?",
+                cleared: "Semua dipadam", clearError: "Ralat semasa memadam",
+                saveOk: "Berjaya disimpan ✓", saveFail: "Gagal. Semak sambungan",
+                saveDeleted: "Dibuang dari storan luar talian", noCache: "Pelayar tidak menyokong",
+                playError: "Tidak dapat mainkan surah.", netError: "Masalah rangkaian.",
+                fileError: "Fail tidak tersedia.", playRetry: "Cuba lagi"
+            },
+            ku: {
+                appTitle: "La Barkouh Quran", splashTitle: "La Barkouh", sadaqa: "Sedeqeya berdewam ji bo kesên parve dikin",
+                chooseSurah: "Sûreyekê hilbijêre", navHome: "🏠 Mal", navSheikhs: "👤 Qari",
+                navSurahs: "📖 Sûre", navSettings: "⚙ Mîheng",
+                welcomeTitle: "🕌 Bi xêr hatî La Barkouh",
+                welcomeDesc: "Xwendina Quranê guhdarî bike û offline tomar bike",
+                statSheikhs: "Qari", statSurahs: "Sûre", statSaved: "Hat tomarkirin",
+                sheikhsTitle: "🌙 Qariyên Quranê", surahsTitle: "📖 Sûreyên Quranê",
+                searchSheikh: "🔍 Qari bigere...", searchSurah: "🔍 Sûre bigere...",
+                settingsTitle: "⚙ Mîheng", language: "Ziman", darkMode: "Moda tarî",
+                clearCache: "Hemû tomarên jê bibe", clearAll: "🗑 Hemû jê bibe",
+                appInfo: "Agahî",
+                appInfoText: "La Barkouh - Sedeqeya berdewam<br>Piştî tomarkirinê offline dixebite<br>Çavkanî: mp3quran.net",
+                save: "💾 Tomar bike", saved: "✔ Hat tomarkirin", saving: "⏳ Tê tomarkirin...",
+                surahOf: "Sûre", reader: "Qari:", noResults: "Encamek nîne",
+                selected: "Hat hilbijartin:", clearConfirm: "Hemû tomar jê bibin?",
+                cleared: "Hemû hatin jêbirin", clearError: "Çewtiya jêbirinê",
+                saveOk: "Bi serkeftî hat tomarkirin ✓", saveFail: "Têk çû. Girêdanê kontrol bike",
+                saveDeleted: "Ji depoya offline hat rakirin", noCache: "Gerok piştgirî nake",
+                playError: "Sûre nehat lîstin.", netError: "Pirsgirêka torê.",
+                fileError: "Pel ne amade ye.", playRetry: "Dîsa biceribîne"
+            },
+            pt: {
+                appTitle: "La Barkouh Alcorão", splashTitle: "La Barkouh", sadaqa: "Caridade contínua para quem partilhar",
+                chooseSurah: "Escolha uma sura para ouvir", navHome: "🏠 Início", navSheikhs: "👤 Recitadores",
+                navSurahs: "📖 Suras", navSettings: "⚙ Definições",
+                welcomeTitle: "🕌 Bem-vindo ao La Barkouh",
+                welcomeDesc: "Ouça e guarde recitações do Alcorão offline",
+                statSheikhs: "Recitadores", statSurahs: "Suras", statSaved: "Guardadas",
+                sheikhsTitle: "🌙 Recitadores do Alcorão", surahsTitle: "📖 Suras do Alcorão",
+                searchSheikh: "🔍 Procurar recitador...", searchSurah: "🔍 Procurar sura...",
+                settingsTitle: "⚙ Definições", language: "Idioma", darkMode: "Modo escuro",
+                clearCache: "Apagar todas as recitações", clearAll: "🗑 Apagar tudo",
+                appInfo: "Info",
+                appInfoText: "La Barkouh - Caridade contínua<br>Funciona offline após guardar<br>Fonte: mp3quran.net",
+                save: "💾 Guardar", saved: "✔ Guardado", saving: "⏳ A guardar...",
+                surahOf: "Sura", reader: "Recitador:", noResults: "Sem resultados",
+                selected: "Selecionado:", clearConfirm: "Apagar todas as recitações guardadas?",
+                cleared: "Tudo apagado", clearError: "Erro ao apagar",
+                saveOk: "Guardado com sucesso ✓", saveFail: "Falhou. Verifique a ligação",
+                saveDeleted: "Removido do armazenamento offline", noCache: "Navegador não suportado",
+                playError: "Não foi possível reproduzir.", netError: "Problema de rede.",
+                fileError: "Ficheiro indisponível.", playRetry: "Tente novamente"
+            }
+        };
+
+        const RTL_LANGS = ['ar', 'ur', 'ku'];
+        let currentLang = localStorage.getItem('appLang') || 'ar';
+
+        function t(key) {
+            const pack = I18N[currentLang] || I18N.ar;
+            return pack[key] || I18N.ar[key] || key;
+        }
+
+        function applyLanguage(lang) {
+            if (!I18N[lang]) lang = 'ar';
+            currentLang = lang;
+            localStorage.setItem('appLang', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = RTL_LANGS.includes(lang) ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (key && t(key)) el.innerHTML = t(key);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (key && t(key)) el.placeholder = t(key);
+            });
+            const info = document.getElementById('appInfoText');
+            if (info) info.innerHTML = t('appInfoText');
+
+            // Refresh dynamic lists with new language
+            if (window.player) {
+                const sheikhFilter = (document.getElementById('sheikhSearch') || {}).value || '';
+                const surahFilter = (document.getElementById('surahSearch') || {}).value || '';
+                renderSheikhs(sheikhFilter);
+                renderSurahs(surahFilter);
+            }
+        }
+
+
+        class QuranPlayer {
+            constructor() {
+                this.audio = new Audio();
+                this.audio.preload = 'metadata';
+                this.currentSheikh = QURAN_DATA.sheikhs[0];
+                this.currentSurahIndex = 0;
+                this.isPlaying = false;
+                this.initListeners();
+            }
+
+            initListeners() {
+                this.audio.addEventListener('timeupdate', () => {
+                    if (this.audio.duration && isFinite(this.audio.duration)) {
+                        const progress = (this.audio.currentTime / this.audio.duration) * 100;
+                        document.getElementById('progressBar').value = progress || 0;
+                        document.getElementById('currentTime').textContent = this.formatTime(this.audio.currentTime);
+                        document.getElementById('duration').textContent = this.formatTime(this.audio.duration);
+                    }
+                });
+
+                this.audio.addEventListener('loadedmetadata', () => {
+                    document.getElementById('duration').textContent = this.formatTime(this.audio.duration);
+                });
+
+                this.audio.addEventListener('ended', () => this.next());
+                this.audio.addEventListener('error', (e) => this.handleError(e));
+                this.audio.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    document.getElementById('playBtn').textContent = '⏸';
+                });
+                this.audio.addEventListener('pause', () => {
+                    this.isPlaying = false;
+                    document.getElementById('playBtn').textContent = '▶️';
+                });
+            }
+
+            handleError(e) {
+                console.warn('Audio error', this.audio.error, e);
+                const code = this.audio.error ? this.audio.error.code : 0;
+                let msg = t('playError');
+                if (code === 2) msg = t('netError');
+                else if (code === 4) msg = t('fileError');
+                showToast(msg, 3500);
+                this.isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶️';
+            }
+
+            getSurahUrl(surahId) {
+                const formattedId = String(surahId).padStart(3, '0');
+                return this.currentSheikh.server + formattedId + '.mp3';
+            }
+
+            playSurah(surahId) {
+                const index = QURAN_DATA.surahs.findIndex(s => s.id === Number(surahId));
+                if (index === -1) return;
+
+                this.currentSurahIndex = index;
+                const surah = QURAN_DATA.surahs[this.currentSurahIndex];
+                const url = this.getSurahUrl(surah.id);
+
+                document.getElementById('progressBar').value = 0;
+                document.getElementById('currentTime').textContent = '00:00';
+                document.getElementById('duration').textContent = '00:00';
+
+                this.audio.src = url;
+                document.getElementById('currentSurahName').textContent = t('surahOf') + ' ' + surah.name;
+                document.getElementById('currentSheikhName').textContent = t('reader') + ' ' + this.currentSheikh.name;
+                this.play();
+            }
+
+            play() {
+                if (!this.audio.src) {
+                    this.playSurah(1);
+                    return;
+                }
+                this.audio.play().catch(err => {
+                    console.warn('Play failed', err);
+                    this.isPlaying = false;
+                    document.getElementById('playBtn').textContent = '▶️';
+                    showToast(t('playRetry'));
+                });
+            }
+
+            pause() {
+                this.audio.pause();
+            }
+
+            stop() {
+                this.pause();
+                this.audio.currentTime = 0;
+                document.getElementById('progressBar').value = 0;
+                document.getElementById('currentTime').textContent = '00:00';
+            }
+
+            next() {
+                this.currentSurahIndex = (this.currentSurahIndex + 1) % QURAN_DATA.surahs.length;
+                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
+            }
+
+            prev() {
+                this.currentSurahIndex = (this.currentSurahIndex - 1 + QURAN_DATA.surahs.length) % QURAN_DATA.surahs.length;
+                this.playSurah(QURAN_DATA.surahs[this.currentSurahIndex].id);
+            }
+
+            formatTime(secs) {
+                if (!secs || isNaN(secs) || !isFinite(secs)) return '00:00';
+                const m = Math.floor(secs / 60);
+                const s = Math.floor(secs % 60);
+                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            }
+        }
+
+        function hideSplash() {
+            const splash = document.getElementById('splashScreen');
+            if (splash) splash.classList.add('hidden');
+        }
+
+        // إخفاء الشاشة حتماً حتى لو حدث خطأ
+        setTimeout(hideSplash, 1200);
+        window.addEventListener('load', hideSplash);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.player = new QuranPlayer();
+                const countEl = document.getElementById('totalSheikhsCount');
+                if (countEl) countEl.textContent = QURAN_DATA.sheikhs.length;
+
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                    const dm = document.getElementById('darkMode');
+                    if (dm) dm.checked = true;
+                }
+
+                renderSheikhs();
+                renderSurahs();
+                updateSavedCount();
+                setupNavigation();
+                setupEvents();
+            } catch (err) {
+                console.error('Init error:', err);
+            } finally {
+                applyLanguage(currentLang);
+                const langSel = document.getElementById('langSelect');
+                if (langSel) {
+                    langSel.value = currentLang;
+                    langSel.onchange = (e) => applyLanguage(e.target.value);
+                }
+                hideSplash();
+            }
+        });
+
+        function renderSheikhs(filter) {
+            filter = filter || '';
+            const list = document.getElementById('sheikhsList');
+            list.innerHTML = '';
+            const filtered = QURAN_DATA.sheikhs.filter(s => s.name.includes(filter));
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.6;grid-column:1/-1">' + t('noResults') + '</p>';
+                return;
+            }
+            filtered.forEach(s => {
+                const isSelected = window.player.currentSheikh.server === s.server;
+                const el = document.createElement('div');
+                el.className = 'sheikh-card' + (isSelected ? ' selected' : '');
+                el.innerHTML = '<div style="font-size:1.8em;margin-bottom:4px">👤</div><strong style="font-size:0.95em">' + s.name + '</strong><br><span class="country-tag">' + s.country + '</span>';
+                el.onclick = () => {
+                    window.player.currentSheikh = s;
+                    renderSheikhs(filter);
+                    const searchVal = document.getElementById('surahSearch').value;
+                    renderSurahs(searchVal);
+                    // الانتقال مباشرة إلى قسم السور
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                    const surahsBtn = document.querySelector('.nav-btn[data-section="surahs"]');
+                    const surahsSec = document.getElementById('surahs');
+                    if (surahsBtn) surahsBtn.classList.add('active');
+                    if (surahsSec) surahsSec.classList.add('active');
+                    showToast(t('selected') + ' ' + s.name);
+                };
+                list.appendChild(el);
+            });
+        }
+
+        async function checkSavedStatus(url) {
+            if (!('caches' in window)) return false;
+            try {
+                const cache = await caches.open('quran-audio-v1');
+                const match = await cache.match(url);
+                return !!match;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function updateSavedCount() {
+            if (!('caches' in window)) return;
+            try {
+                const cache = await caches.open('quran-audio-v1');
+                const keys = await cache.keys();
+                document.getElementById('savedCount').textContent = keys.length;
+            } catch (e) {
+                document.getElementById('savedCount').textContent = '0';
+            }
+        }
+
+        function renderSurahs(filter) {
+            filter = filter || '';
+            const list = document.getElementById('surahsList');
+            list.innerHTML = '';
+            const filtered = QURAN_DATA.surahs.filter(s => s.name.includes(filter));
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.6">' + t('noResults') + '</p>';
+                return;
+            }
+
+            filtered.forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'surah-item';
+                el.innerHTML = '<div class="surah-info" data-id="' + s.id + '"><div class="surah-num">' + s.id + '</div><strong>' + t('surahOf') + ' ' + s.name + '</strong></div><div class="action-btns"><button class="save-btn" id="saveBtn-' + s.id + '" data-id="' + s.id + '">' + t('save') + '</button><a href="#" class="direct-download" id="dl-' + s.id + '" download="سورة_' + s.name + '.mp3" target="_blank" rel="noopener">📥 MP3</a></div>';
+                list.appendChild(el);
+
+                const url = window.player.getSurahUrl(s.id);
+                const btn = el.querySelector('#saveBtn-' + s.id);
+                const dl = el.querySelector('#dl-' + s.id);
+                const info = el.querySelector('.surah-info');
+
+                dl.href = url;
+                btn.dataset.url = url;
+
+                info.onclick = () => window.player.playSurah(s.id);
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleSaveSurah(btn, s.id);
+                };
+
+                checkSavedStatus(url).then(isSaved => {
+                    if (isSaved) {
+                        btn.className = 'save-btn saved';
+                        btn.innerHTML = t('saved');
+                    }
+                });
+            });
+        }
+
+        async function toggleSaveSurah(btn, surahId) {
+            const url = btn.dataset.url;
+            if (!url) return;
+
+            if (!('caches' in window)) {
+                showToast(t('noCache'));
+                return;
+            }
+
+            try {
+                const cache = await caches.open('quran-audio-v1');
+                const isSaved = await cache.match(url);
+
+                if (isSaved) {
+                    await cache.delete(url);
+                    btn.className = 'save-btn';
+                    btn.innerHTML = t('save');
+                    showToast(t('saveDeleted'));
+                } else {
+                    btn.className = 'save-btn loading';
+                    btn.innerHTML = t('saving');
+                    btn.disabled = true;
+
+                    const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                    await cache.put(url, response.clone());
+                    btn.className = 'save-btn saved';
+                    btn.innerHTML = t('saved');
+                    showToast(t('saveOk'));
+                }
+            } catch (e) {
+                console.error(e);
+                btn.className = 'save-btn';
+                btn.innerHTML = t('save');
+                showToast(t('saveFail'));
+            } finally {
+                btn.disabled = false;
+                updateSavedCount();
+            }
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.section).classList.add('active');
+
+                    if (btn.dataset.section === 'surahs') {
+                        renderSurahs(document.getElementById('surahSearch').value);
+                    }
+                    if (btn.dataset.section === 'home') {
+                        updateSavedCount();
+                    }
+                };
+            });
+        }
+
+        function setupEvents() {
+            document.getElementById('playBtn').onclick = () => {
+                if (window.player.isPlaying) window.player.pause();
+                else window.player.play();
+            };
+            document.getElementById('prevBtn').onclick = () => window.player.prev();
+            document.getElementById('nextBtn').onclick = () => window.player.next();
+            document.getElementById('stopBtn').onclick = () => window.player.stop();
+
+            document.getElementById('progressBar').oninput = (e) => {
+                if (window.player.audio.duration && isFinite(window.player.audio.duration)) {
+                    window.player.audio.currentTime = (e.target.value / 100) * window.player.audio.duration;
+                }
+            };
+            document.getElementById('volumeBar').oninput = (e) => {
+                window.player.audio.volume = e.target.value / 100;
+            };
+
+            document.getElementById('sheikhSearch').oninput = (e) => renderSheikhs(e.target.value.trim());
+            document.getElementById('surahSearch').oninput = (e) => renderSurahs(e.target.value.trim());
+
+            document.getElementById('darkMode').onchange = (e) => {
+                document.body.classList.toggle('dark-mode', e.target.checked);
+                localStorage.setItem('darkMode', e.target.checked);
+            };
+
+            document.getElementById('clearCacheBtn').onclick = async () => {
+                if (!confirm(t('clearConfirm'))) return;
+                try {
+                    if ('caches' in window) {
+                        await caches.delete('quran-audio-v1');
+                        await caches.open('quran-audio-v1');
+                    }
+                    updateSavedCount();
+                    renderSurahs(document.getElementById('surahSearch').value);
+                    showToast(t('cleared'));
+                } catch (e) {
+                    showToast(t('clearError'));
+                }
+            };
+        }
+    </script>
+</body>
+</html>
