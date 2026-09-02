@@ -9,6 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a5e3a'/><path d='M25 30 C35 25, 45 30, 50 35 C55 30, 65 25, 75 30 L75 70 C65 65, 55 70, 50 75 C45 70, 35 65, 25 70 Z' fill='white' stroke='%23d4af37' stroke-width='3'/><path d='M50 35 L50 75' stroke='%231a5e3a' stroke-width='2'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <title>لا باركوه للقرآن الكريم</title>
     
     <style>
@@ -82,7 +84,26 @@
         .sheikh-card { background: var(--card); padding: 14px 10px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; cursor: pointer; border: 2px solid transparent; transition: transform 0.15s, border-color 0.2s; }
         .sheikh-card:hover { transform: translateY(-2px); }
         .sheikh-card.selected { border-color: var(--secondary); background: rgba(212, 175, 55, 0.12); }
-        .country-tag { font-size: 0.72em; background: rgba(26,94,58,0.12); color: var(--primary); padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+        .country-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(26, 94, 58, 0.1);
+            color: var(--primary);
+            font-size: 0.88em;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+        .country-flag {
+            font-size: 1.35em;
+            line-height: 1;
+        }
+        .country-name {
+            font-size: 0.95em;
+        }
 
         .surahs-list { display: flex; flex-direction: column; gap: 8px; }
         .surah-item { background: var(--card); padding: 12px 14px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -104,7 +125,214 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .main-footer { background: var(--primary-dark); color: white; text-align: center; padding: 16px; margin-top: 28px; font-size: 0.85em; }
+
+        .mushaf-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .mushaf-select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1.5px solid #d4af37;
+            background: var(--card);
+            color: var(--text);
+            font-size: 0.95em;
+        }
+        .mushaf-nav-btn {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1.4em;
+            cursor: pointer;
+        }
+        .mushaf-frame {
+            background: #faf6e9;
+            border: 4px double #c9a227;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        body.dark-mode .mushaf-frame {
+            background: #1e1e2e;
+            border-color: #d4af37;
+        }
+        body.dark-mode .mushaf-frame {
+            background: linear-gradient(180deg, #1e1e2e 0%, #16213e 100%);
+        }
+        .mushaf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(201,162,39,0.15);
+            color: #8a6d1b;
+            font-size: 0.9em;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(201,162,39,0.35);
+        }
+        body.dark-mode .mushaf-header { color: #d4af37; }
+        .mushaf-page {
+            color: #1a1208;
+            padding: 12px 14px 28px;
+            line-height: 2.7;
+            font-size: 1.55em;
+            text-align: center;
+            direction: rtl;
+            font-family: "Amiri", "Scheherazade New", "Traditional Arabic", "Noto Naskh Arabic", serif;
+            min-height: 60vh;
+            background:
+                radial-gradient(ellipse at top, rgba(212,175,55,0.06), transparent 55%),
+                #faf6e9;
+        }
+        body.dark-mode .mushaf-page {
+            color: #f0e6d2;
+            background: radial-gradient(ellipse at top, rgba(212,175,55,0.08), transparent 55%), #1e1e2e;
+        }
+        body.dark-mode .mushaf-page { color: #f0e6d2; }
+        .mushaf-ayah { display: inline; }
+        .mushaf-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a5c12;
+            font-size: 0.48em;
+            margin: 0 5px;
+            font-family: system-ui, sans-serif;
+            border: 1.5px solid #c9a227;
+            border-radius: 50%;
+            min-width: 1.85em;
+            height: 1.85em;
+            line-height: 1;
+            vertical-align: middle;
+            background:
+                radial-gradient(circle at 30% 30%, #fffef5, #f0d978 60%, #d4af37);
+            font-weight: 700;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+        }
+        body.dark-mode .mushaf-num {
+            color: #f5e6b0;
+            background: radial-gradient(circle at 30% 30%, #3a3a4e, #2a2a3e);
+        }
+        .mushaf-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(201,162,39,0.12);
+            border-top: 1px solid rgba(201,162,39,0.3);
+            gap: 8px;
+        }
+        #repeatBtn.active {
+            background: var(--secondary) !important;
+            color: #1a1a1a !important;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        .cat-card .adhkar-items {
+            display: none;
+            text-align: right;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        .cat-card.open .adhkar-items { display: block; }
+        .cat-card.open { border-color: var(--secondary); grid-column: 1 / -1; }
+        .cat-card .adhkar-card { margin: 8px 0; text-align: right; }
+        .mushaf-page-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        #mushafStatus { font-size: 0.85em; opacity: 0.8; text-align: center; }
+        .adhkar-card {
+            background: var(--card);
+            padding: 14px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            border-right: 4px solid var(--primary);
+        }
+        .adhkar-card .adhkar-text {
+            font-size: 1.15em;
+            line-height: 1.9;
+            direction: rtl;
+            text-align: right;
+            margin: 8px 0;
+        }
+        .adhkar-card .adhkar-count {
+            font-size: 0.85em;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .adhkar-card .adhkar-ref {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+        .sheikh-label {
+            display: block;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            font-size: 0.78em;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin: 0 auto 10px;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+        .sheikh-name {
+            display: block;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.35;
+        }
+        .sheikh-card {
+            text-align: center;
+        }
+        .sheikh-card .country-tag {
+            display: inline-block;
+        }
+        .cat-card {
+            background: var(--card);
+            padding: 14px 10px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .cat-card.active, .cat-card:hover {
+            border-color: var(--secondary);
+        }
+
+        .sadaqa-bar, .main-footer, footer.sadaqa, #sadaqaBar {
+            font-size: 1.25em !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+            padding: 16px 12px !important;
+        }
+        .main-footer {
+            background: var(--primary-dark, #0d3d22);
+            color: #fff;
+            text-align: center;
+            padding: 18px 14px;
+            font-size: 1.25em;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
 
         .toast { position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: var(--primary-dark); color: white; padding: 10px 20px; border-radius: 25px; font-size: 0.9em; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
         .toast.show { opacity: 1; }
@@ -116,6 +344,44 @@
             .site-title { font-size: 1.35em; }
             .sheikhs-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); }
         }
+    
+        .share-tip-bar {
+            background: linear-gradient(90deg, #f5e6b8, #fff8e1, #f5e6b8);
+            color: #1a5e3a;
+            text-align: center;
+            padding: 12px 16px;
+            font-size: 0.95em;
+            font-weight: 700;
+            border-top: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+        body.dark-mode .share-tip-bar {
+            background: linear-gradient(90deg, #2a2a3e, #1e1e2e, #2a2a3e);
+            color: #d4af37;
+            border-color: #d4af37;
+        }
+        .mushaf-page-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            background: #faf6e9;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+    
+    
+        .saved-group { margin-bottom: 10px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26,94,58,0.2); }
+        .saved-group-head {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            background: var(--primary); color: #fff; border: none; padding: 12px 14px;
+            font-size: 0.95em; font-weight: 700; cursor: pointer; text-align: right;
+        }
+        .saved-group-body { background: var(--card); padding: 6px 8px 10px; }
+        .saved-group-body .surah-item { margin: 6px 0; }
     </style>
 </head>
 <body>
@@ -143,7 +409,8 @@
         </div>
         <div class="player-controls">
             <button id="prevBtn" class="control-btn" title="السابق" aria-label="السابق">⏮</button>
-            <button id="playBtn" class="control-btn play-btn" title="تشغيل/إيقاف" aria-label="تشغيل">▶️</button>
+            <button id="repeatBtn" class="control-btn" title="تكرار السورة" aria-label="تكرار">🔁</button>
+            <button type="button" id="playBtn" class="control-btn play-btn" title="تشغيل/إيقاف" aria-label="تشغيل">▶️</button>
             <button id="nextBtn" class="control-btn" title="التالي" aria-label="التالي">⏭</button>
             <button id="stopBtn" class="control-btn" title="إيقاف" aria-label="إيقاف">⏹</button>
         </div>
@@ -162,6 +429,8 @@
         <button class="nav-btn active" data-section="home" data-i18n="navHome">🏠 الرئيسية</button>
         <button class="nav-btn" data-section="sheikhs" data-i18n="navSheikhs">👤 المشايخ</button>
         <button class="nav-btn" data-section="surahs" data-i18n="navSurahs">📖 السور</button>
+        <button class="nav-btn" data-section="mushaf" data-i18n="navMushaf">📖 مصحف</button>
+        <button class="nav-btn" data-section="adhkar" data-i18n="navAdhkar">🤲 أذكار</button>
         <button class="nav-btn" data-section="settings" data-i18n="navSettings">⚙ الإعدادات</button>
     </nav>
 
@@ -169,12 +438,16 @@
         <section id="home" class="section active">
             <div class="welcome-card">
                 <h2 data-i18n="welcomeTitle">🕌 مرحباً بك في تطبيق لا باركوه</h2>
-                <p style="margin-top:8px;opacity:0.85;line-height:1.5" data-i18n="welcomeDesc">استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت</p>
+                <p style="margin-top:8px;opacity:0.85;line-height:1.5" data-i18n="welcomeDesc">احفظ سور القرآن الكريم واستمع بدون إنترنت. هذا التطبيق صدقة جارية لأمة الإسلام</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card"><h3 data-i18n="statSheikhs">المشايخ</h3><p id="totalSheikhsCount">30</p></div>
-                <div class="stat-card"><h3 data-i18n="statSurahs">السور</h3><p>114</p></div>
-                <div class="stat-card"><h3 data-i18n="statSaved">محفوظة</h3><p id="savedCount">0</p></div>
+                <div class="stat-card" id="statMushafCard" style="cursor:pointer"><h3 data-i18n="statMushaf">📖 المصحف</h3><p style="font-size:1.6em;line-height:1.2">📗</p></div>
+                <div class="stat-card" id="statAdhkarCard" style="cursor:pointer"><h3 data-i18n="statAdhkar">🤲 الأذكار</h3><p style="font-size:1.6em;line-height:1.2">📿</p></div>
+                <div class="stat-card" id="statSavedCard" style="cursor:pointer;border:2px solid var(--secondary)"><h3 data-i18n="statSaved">محفوظة</h3><p id="savedCount">0</p></div>
+            </div>
+            <div id="savedSurahsPanel" style="display:none;margin-top:20px">
+                <h2 class="section-title" data-i18n="savedList">💾 التلاوات المحفوظة</h2>
+                <div id="savedSurahsList" class="surahs-list"></div>
             </div>
         </section>
 
@@ -188,6 +461,34 @@
             <h2 class="section-title" data-i18n="surahsTitle">📖 سور القرآن الكريم</h2>
             <div class="search-box"><input type="text" id="surahSearch" placeholder="🔍 ابحث عن سورة..." data-i18n-placeholder="searchSurah" autocomplete="off"></div>
             <div id="surahsList" class="surahs-list"></div>
+        </section>
+
+        
+        <section id="mushaf" class="section">
+            <div class="mushaf-toolbar">
+                <button type="button" id="mushafPrev" class="mushaf-nav-btn">›</button>
+                <select id="mushafSurahSelect" class="mushaf-select"></select>
+                <button type="button" id="mushafNext" class="mushaf-nav-btn">‹</button>
+            </div>
+            <div class="mushaf-frame">
+                <div class="mushaf-header">
+                    <span id="mushafJuz">الجزء ١</span>
+                    <span id="mushafSurahLabel">الفاتحة</span>
+                    <span id="mushafPageNum">١</span>
+                </div>
+                <div id="mushafContent" class="mushaf-page"></div>
+                <div class="mushaf-footer">
+                    <button type="button" id="mushafPrev2" class="mushaf-page-btn" data-i18n="prevPage">الصفحة السابقة</button>
+                    <span id="mushafStatus">—</span>
+                    <button type="button" id="mushafNext2" class="mushaf-page-btn" data-i18n="nextPage">الصفحة التالية</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="adhkar" class="section">
+            <h2 class="section-title" data-i18n="adhkarTitle">🤲 الأذكار والأدعية</h2>
+            <div id="adhkarCategories" class="sheikhs-grid" style="margin-bottom:16px"></div>
+            <div id="adhkarContent" class="surahs-list"></div>
         </section>
 
         <section id="settings" class="section">
@@ -227,9 +528,12 @@
         </section>
     </main>
 
-    <footer class="main-footer">
-        <p data-i18n="sadaqa">صدقة جارية لكل من ينشرها</p>
+    <footer class="main-footer sadaqa-bar">
+        <p data-i18n="sadaqa" style="font-size:1.3em;font-weight:800;letter-spacing:0.5px;margin:0">صدقة جارية لكل من ينشرها</p>
     </footer>
+
+    <div class="share-tip-bar" id="shareTipBar"><span data-i18n="shareTip">لا تنسى نشر التطبيق فالدال على الخير كفاعله</span></div>
+
 
     <div id="toast" class="toast"></div>
 
@@ -256,6 +560,125 @@
             "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
             "المسد","الإخلاص","الفلق","الناس"
         ];
+
+        const SURAH_NAMES_EN = [
+            "Al-Fatihah",
+            "Al-Baqarah",
+            "Aal-Imran",
+            "An-Nisa",
+            "Al-Maidah",
+            "Al-Anam",
+            "Al-Araf",
+            "Al-Anfal",
+            "At-Tawbah",
+            "Yunus",
+            "Hud",
+            "Yusuf",
+            "Ar-Rad",
+            "Ibrahim",
+            "Al-Hijr",
+            "An-Nahl",
+            "Al-Isra",
+            "Al-Kahf",
+            "Maryam",
+            "Ta-Ha",
+            "Al-Anbiya",
+            "Al-Hajj",
+            "Al-Muminun",
+            "An-Nur",
+            "Al-Furqan",
+            "Ash-Shuara",
+            "An-Naml",
+            "Al-Qasas",
+            "Al-Ankabut",
+            "Ar-Rum",
+            "Luqman",
+            "As-Sajdah",
+            "Al-Ahzab",
+            "Saba",
+            "Fatir",
+            "Ya-Sin",
+            "As-Saffat",
+            "Sad",
+            "Az-Zumar",
+            "Ghafir",
+            "Fussilat",
+            "Ash-Shura",
+            "Az-Zukhruf",
+            "Ad-Dukhan",
+            "Al-Jathiyah",
+            "Al-Ahqaf",
+            "Muhammad",
+            "Al-Fath",
+            "Al-Hujurat",
+            "Qaf",
+            "Adh-Dhariyat",
+            "At-Tur",
+            "An-Najm",
+            "Al-Qamar",
+            "Ar-Rahman",
+            "Al-Waqiah",
+            "Al-Hadid",
+            "Al-Mujadila",
+            "Al-Hashr",
+            "Al-Mumtahanah",
+            "As-Saff",
+            "Al-Jumuah",
+            "Al-Munafiqun",
+            "At-Taghabun",
+            "At-Talaq",
+            "At-Tahrim",
+            "Al-Mulk",
+            "Al-Qalam",
+            "Al-Haqqah",
+            "Al-Maarij",
+            "Nuh",
+            "Al-Jinn",
+            "Al-Muzzammil",
+            "Al-Muddaththir",
+            "Al-Qiyamah",
+            "Al-Insan",
+            "Al-Mursalat",
+            "An-Naba",
+            "An-Naziat",
+            "Abasa",
+            "At-Takwir",
+            "Al-Infitar",
+            "Al-Mutaffifin",
+            "Al-Inshiqaq",
+            "Al-Buruj",
+            "At-Tariq",
+            "Al-Ala",
+            "Al-Ghashiyah",
+            "Al-Fajr",
+            "Al-Balad",
+            "Ash-Shams",
+            "Al-Layl",
+            "Ad-Duha",
+            "Ash-Sharh",
+            "At-Tin",
+            "Al-Alaq",
+            "Al-Qadr",
+            "Al-Bayyinah",
+            "Az-Zalzalah",
+            "Al-Adiyat",
+            "Al-Qariah",
+            "At-Takathur",
+            "Al-Asr",
+            "Al-Humazah",
+            "Al-Fil",
+            "Quraysh",
+            "Al-Maun",
+            "Al-Kawthar",
+            "Al-Kafirun",
+            "An-Nasr",
+            "Al-Masad",
+            "Al-Ikhlas",
+            "Al-Falaq",
+            "An-Nas"
+        ];
+
+        
 
         // مصادر صحيحة من mp3quran.net (سور كاملة + CORS مفتوح)
         const QURAN_DATA = {
@@ -296,7 +719,19 @@
 
                 // --- آسيا ---
                 { server: 'https://server6.mp3quran.net/khan/', name: 'محمد عثمان خان', country: 'الهند 🇮🇳' },
-                { server: 'https://server6.mp3quran.net/jamal/', name: 'جمال شاكر عبدالله', country: 'العراق 🇮🇶' }
+                { server: 'https://server6.mp3quran.net/jamal/', name: 'جمال شاكر عبدالله', country: 'العراق 🇮🇶' },
+                // --- شيوخ شباب ---
+                { server: 'https://server6.mp3quran.net/qtm/', name: 'ناصر القطامي', country: 'السعودية 🇸🇦', young: true },
+                { server: 'https://server7.mp3quran.net/s_gmd/', name: 'سعد الغامدي', country: 'السعودية 🇸🇦', young: true },
+                { server: 'https://server14.mp3quran.net/mansor/', name: 'منصور السالمي', country: 'السعودية 🇸🇦', young: true },
+                { server: 'https://server16.mp3quran.net/nufais/Rewayat-Hafs-A-n-Assem/', name: 'أحمد النفيس', country: 'الكويت 🇰🇼', young: true },
+                { server: 'https://server8.mp3quran.net/ra3ad/', name: 'مصطفى رعد العزاوي', country: 'العراق 🇮🇶', young: true },
+                { server: 'https://server16.mp3quran.net/h_dukhain/Rewayat-Hafs-A-n-Assem/', name: 'هيثم الدخين', country: 'السعودية 🇸🇦', young: true },
+                { server: 'https://server9.mp3quran.net/omar_warsh/', name: 'عمر القزابري', country: 'المغرب 🇲🇦', young: true },
+                { server: 'https://server14.mp3quran.net/mousa/Rewayat-Hafs-A-n-Assem/', name: 'عبدالله الموسى', country: 'السعودية 🇸🇦', young: true },
+                { server: 'https://server6.mp3quran.net/kurdi/', name: 'رعد محمد الكردي', country: 'العراق 🇮🇶', young: true },
+                { server: 'https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/', name: 'إسلام صبحي', country: 'مصر 🇪🇬', young: true }
+
             ],
             surahs: SURAH_NAMES.map((name, index) => ({ id: index + 1, name }))
         };
@@ -317,11 +752,18 @@
 
         const I18N = {
             ar: {
+                page: "صفحة",
+                shareTip: "لا تنسى نشر التطبيق فالدال على الخير كفاعله",
+                nextPage: "الصفحة التالية",
+                prevPage: "الصفحة السابقة",
+                pageLoadFail: "تعذر تحميل الصفحة. تحقق من الإنترنت.",
+                loadingPage: "جاري تحميل الصفحة...",
+                juz: "الجزء",
                 appTitle: "لا باركوه للقرآن الكريم", splashTitle: "لا باركوه", sadaqa: "صدقة جارية لكل من ينشرها",
                 chooseSurah: "اختر سورة للاستماع", navHome: "🏠 الرئيسية", navSheikhs: "👤 المشايخ",
                 navSurahs: "📖 السور", navSettings: "⚙ الإعدادات",
                 welcomeTitle: "🕌 مرحباً بك في تطبيق لا باركوه",
-                welcomeDesc: "استمع واحفظ تلاوات القرآن الكريم بسهولة للعمل بدون إنترنت",
+                welcomeDesc: "احفظ سور القرآن الكريم واستمع بدون إنترنت. هذا التطبيق صدقة جارية لأمة الإسلام",
                 statSheikhs: "المشايخ", statSurahs: "السور", statSaved: "محفوظة",
                 sheikhsTitle: "🌙 مشايخ القرآن الكريم", surahsTitle: "📖 سور القرآن الكريم",
                 searchSheikh: "🔍 ابحث عن شيخ...", searchSurah: "🔍 ابحث عن سورة...",
@@ -336,9 +778,27 @@
                 saveOk: "تم الحفظ بنجاح ✓", saveFail: "فشل الحفظ. تحقق من الاتصال بالإنترنت",
                 saveDeleted: "تم حذف السورة من الحفظ", noCache: "متصفحك لا يدعم الحفظ المحلي",
                 playError: "تعذر تشغيل السورة.", netError: "مشكلة في الشبكة. تأكد من الاتصال أو احفظ السورة مسبقاً.",
-                fileError: "الملف غير متوفر أو الرابط خاطئ.", playRetry: "اضغط تشغيل مرة أخرى أو تحقق من الاتصال"
+                fileError: "الملف غير متوفر أو الرابط خاطئ.", playRetry: "اضغط تشغيل مرة أخرى أو تحقق من الاتصال",
+                recentSheikhs: "🕐 آخر المشايخ", savedList: "💾 التلاوات المحفوظة",
+                noRecent: "لم تختر مشايخ بعد", noSaved: "لا توجد تلاوات محفوظة",
+                young: "شباب",
+                statMushaf: "📖 المصحف", openMushaf: "فتح", statAdhkar: "🤲 الأذكار", openAdhkar: "فتح",
+                mushafTitle: "📖 المصحف الشريف", adhkarTitle: "🤲 الأذكار والأدعية",
+                navMushaf: "📖 مصحف", navAdhkar: "🤲 أذكار",
+                loading: "جاري التحميل...", ayahs: "آية", mushafError: "تعذر تحميل المصحف. تحقق من الاتصال",
+                repeat: "التكرار",
+                repeatOn: "تكرار السورة مفعّل",
+                repeatOff: "تكرار السورة متوقف",
+                sheikhWord: "الشيخ"
             },
             en: {
+                shareTip: "Do not forget to share the app — guiding to good is like doing it",
+                page: "Page",
+                juz: "Juz",
+                loadingPage: "Loading page...",
+                pageLoadFail: "Could not load page. Check connection.",
+                prevPage: "Previous page",
+                nextPage: "Next page",
                 appTitle: "La Barkouh Quran", splashTitle: "La Barkouh", sadaqa: "Ongoing charity for all who share it",
                 chooseSurah: "Choose a Surah to listen", navHome: "🏠 Home", navSheikhs: "👤 Reciters",
                 navSurahs: "📖 Surahs", navSettings: "⚙ Settings",
@@ -358,7 +818,18 @@
                 saveOk: "Saved successfully ✓", saveFail: "Save failed. Check your connection",
                 saveDeleted: "Removed from offline storage", noCache: "Browser does not support offline save",
                 playError: "Could not play the Surah.", netError: "Network issue. Check connection or save first.",
-                fileError: "File unavailable or invalid link.", playRetry: "Try play again or check connection"
+                fileError: "File unavailable or invalid link.", playRetry: "Try play again or check connection",
+                recentSheikhs: "🕐 Recent reciters", savedList: "💾 Saved recitations",
+                noRecent: "No reciters selected yet", noSaved: "No saved recitations",
+                young: "Young",
+                statMushaf: "📖 Mushaf", openMushaf: "Open", statAdhkar: "🤲 Adhkar", openAdhkar: "Open",
+                mushafTitle: "📖 The Noble Quran", adhkarTitle: "🤲 Adhkar & Duas",
+                navMushaf: "📖 Mushaf", navAdhkar: "🤲 Adhkar",
+                loading: "Loading...", ayahs: "verses", mushafError: "Could not load Mushaf",
+                repeat: "Repeat",
+                repeatOn: "Surah repeat: ON",
+                repeatOff: "Surah repeat: OFF",
+                sheikhWord: "Sheikh"
             },
             fr: {
                 appTitle: "La Barkouh Coran", splashTitle: "La Barkouh", sadaqa: "Charité continue pour ceux qui la partagent",
@@ -380,7 +851,10 @@
                 saveOk: "Enregistré avec succès ✓", saveFail: "Échec. Vérifiez la connexion",
                 saveDeleted: "Supprimé du stockage hors ligne", noCache: "Navigateur non compatible",
                 playError: "Impossible de lire la sourate.", netError: "Problème réseau.",
-                fileError: "Fichier indisponible.", playRetry: "Réessayez ou vérifiez la connexion"
+                fileError: "Fichier indisponible.", playRetry: "Réessayez ou vérifiez la connexion",
+                recentSheikhs: "🕐 Récents", savedList: "💾 Récitations enregistrées",
+                noRecent: "Aucun récitateur sélectionné", noSaved: "Aucune récitation enregistrée",
+                young: "Jeunes"
             },
             ha: {
                 appTitle: "La Barkouh Alkur'ani", splashTitle: "La Barkouh", sadaqa: "Sadaka mai ci gaba ga duk wanda ya yada",
@@ -402,7 +876,10 @@
                 saveOk: "An ajiye cikin nasara ✓", saveFail: "An kasa. Duba haɗin intanet",
                 saveDeleted: "An cire daga ajiya", noCache: "Browser bai goyi bayan ajiya ba",
                 playError: "An kasa kunna Sura.", netError: "Matsalar hanyar sadarwa.",
-                fileError: "Fayil ba ya samuwa.", playRetry: "Sake gwadawa ko duba haɗin"
+                fileError: "Fayil ba ya samuwa.", playRetry: "Sake gwadawa ko duba haɗin",
+                recentSheikhs: "🕐 Qari na kwanan nan", savedList: "💾 An ajiye",
+                noRecent: "Babu qari", noSaved: "Babu ajiye",
+                young: "Matasa"
             },
             so: {
                 appTitle: "La Barkouh Quraanka", splashTitle: "La Barkouh", sadaqa: "Sadaqo joogto ah kuwa faafiya",
@@ -424,7 +901,10 @@
                 saveOk: "Si guul leh ayaa loo kaydiyay ✓", saveFail: "Waa fashilmay. Hubi internetka",
                 saveDeleted: "Waa laga saaray kaydka", noCache: "Browser-ku ma taageero kaydinta",
                 playError: "Suuradda lama ciyaari karo.", netError: "Dhibaato shabakad.",
-                fileError: "Faylka lama heli karo.", playRetry: "Isku day mar kale"
+                fileError: "Faylka lama heli karo.", playRetry: "Isku day mar kale",
+                recentSheikhs: "🕐 Qariyihii u dambeeyay", savedList: "💾 La kaydiyay",
+                noRecent: "Weli lama dooran", noSaved: "Ma jiraan",
+                young: "Dhallinyaro"
             },
             ur: {
                 appTitle: "لا بارکوہ قرآن", splashTitle: "لا بارکوہ", sadaqa: "جاری صدقہ سب کے لیے جو شیئر کریں",
@@ -446,7 +926,10 @@
                 saveOk: "کامیابی سے محفوظ ✓", saveFail: "ناکام۔ کنکشن چیک کریں",
                 saveDeleted: "آف لائن سے ہٹا دیا گیا", noCache: "براؤزر سپورٹ نہیں کرتا",
                 playError: "سورت نہیں چل سکی۔", netError: "نیٹ ورک مسئلہ۔",
-                fileError: "فائل دستیاب نہیں۔", playRetry: "دوبارہ کوشش کریں"
+                fileError: "فائل دستیاب نہیں۔", playRetry: "دوبارہ کوشش کریں",
+                recentSheikhs: "🕐 حالیہ قاری", savedList: "💾 محفوظ تلاوتیں",
+                noRecent: "ابھی کوئی نہیں", noSaved: "کچھ محفوظ نہیں",
+                young: "نوجوان"
             },
             es: {
                 appTitle: "La Barkouh Corán", splashTitle: "La Barkouh", sadaqa: "Caridad continua para quien la comparta",
@@ -468,7 +951,10 @@
                 saveOk: "Guardado con éxito ✓", saveFail: "Error. Revisa la conexión",
                 saveDeleted: "Eliminado del almacenamiento", noCache: "Navegador no compatible",
                 playError: "No se pudo reproducir.", netError: "Problema de red.",
-                fileError: "Archivo no disponible.", playRetry: "Inténtalo de nuevo"
+                fileError: "Archivo no disponible.", playRetry: "Inténtalo de nuevo",
+                recentSheikhs: "🕐 Recientes", savedList: "💾 Guardadas",
+                noRecent: "Ninguno aún", noSaved: "Nada guardado",
+                young: "Jóvenes"
             },
             it: {
                 appTitle: "La Barkouh Corano", splashTitle: "La Barkouh", sadaqa: "Carità continua per chi la condivide",
@@ -490,7 +976,10 @@
                 saveOk: "Salvato con successo ✓", saveFail: "Fallito. Controlla la connessione",
                 saveDeleted: "Rimosso dall'archivio offline", noCache: "Browser non supportato",
                 playError: "Impossibile riprodurre.", netError: "Problema di rete.",
-                fileError: "File non disponibile.", playRetry: "Riprova o controlla la connessione"
+                fileError: "File non disponibile.", playRetry: "Riprova o controlla la connessione",
+                recentSheikhs: "🕐 Recenti", savedList: "💾 Salvate",
+                noRecent: "Nessuno ancora", noSaved: "Nessuna salvata",
+                young: "Giovani"
             },
             tr: {
                 appTitle: "La Barkouh Kur'an", splashTitle: "La Barkouh", sadaqa: "Paylaşan herkes için sürekli sadaka",
@@ -512,7 +1001,10 @@
                 saveOk: "Başarıyla kaydedildi ✓", saveFail: "Başarısız. Bağlantıyı kontrol edin",
                 saveDeleted: "Çevrimdışı depodan kaldırıldı", noCache: "Tarayıcı desteklemiyor",
                 playError: "Sure çalınamadı.", netError: "Ağ sorunu.",
-                fileError: "Dosya mevcut değil.", playRetry: "Tekrar deneyin"
+                fileError: "Dosya mevcut değil.", playRetry: "Tekrar deneyin",
+                recentSheikhs: "🕐 Son kariler", savedList: "💾 Kayıtlı",
+                noRecent: "Henüz yok", noSaved: "Kayıt yok",
+                young: "Genç"
             },
             hi: {
                 appTitle: "ला बारकूह कुरान", splashTitle: "ला बारकूह", sadaqa: "साझा करने वालों के लिए सदका",
@@ -534,7 +1026,10 @@
                 saveOk: "सफलतापूर्वक सहेजा ✓", saveFail: "विफल। कनेक्शन जाँचें",
                 saveDeleted: "ऑफ़लाइन से हटाया", noCache: "ब्राउज़र समर्थन नहीं करता",
                 playError: "सूरह नहीं चल सकी।", netError: "नेटवर्क समस्या।",
-                fileError: "फ़ाइल उपलब्ध नहीं।", playRetry: "फिर कोशिश करें"
+                fileError: "फ़ाइल उपलब्ध नहीं।", playRetry: "फिर कोशिश करें",
+                recentSheikhs: "🕐 हाल के कारी", savedList: "💾 सहेजी तिलावत",
+                noRecent: "अभी कोई नहीं", noSaved: "कुछ सहेजा नहीं",
+                young: "युवा"
             },
             de: {
                 appTitle: "La Barkouh Koran", splashTitle: "La Barkouh", sadaqa: "Fortlaufende Wohltätigkeit für alle, die teilen",
@@ -556,7 +1051,10 @@
                 saveOk: "Erfolgreich gespeichert ✓", saveFail: "Fehlgeschlagen. Verbindung prüfen",
                 saveDeleted: "Aus Offline-Speicher entfernt", noCache: "Browser unterstützt das nicht",
                 playError: "Sure konnte nicht abgespielt werden.", netError: "Netzwerkproblem.",
-                fileError: "Datei nicht verfügbar.", playRetry: "Erneut versuchen"
+                fileError: "Datei nicht verfügbar.", playRetry: "Erneut versuchen",
+                recentSheikhs: "🕐 Zuletzt", savedList: "💾 Gespeichert",
+                noRecent: "Noch keine", noSaved: "Nichts gespeichert",
+                young: "Junge"
             },
             id: {
                 appTitle: "La Barkouh Al-Qur'an", splashTitle: "La Barkouh", sadaqa: "Sedekah jariyah bagi yang membagikan",
@@ -578,7 +1076,10 @@
                 saveOk: "Berhasil disimpan ✓", saveFail: "Gagal. Periksa koneksi",
                 saveDeleted: "Dihapus dari penyimpanan offline", noCache: "Browser tidak mendukung",
                 playError: "Tidak dapat memutar surah.", netError: "Masalah jaringan.",
-                fileError: "File tidak tersedia.", playRetry: "Coba lagi"
+                fileError: "File tidak tersedia.", playRetry: "Coba lagi",
+                recentSheikhs: "🕐 Terbaru", savedList: "💾 Tersimpan",
+                noRecent: "Belum ada", noSaved: "Belum tersimpan",
+                young: "Muda"
             },
             ms: {
                 appTitle: "La Barkouh Al-Quran", splashTitle: "La Barkouh", sadaqa: "Sedekah jariah untuk yang berkongsi",
@@ -600,7 +1101,10 @@
                 saveOk: "Berjaya disimpan ✓", saveFail: "Gagal. Semak sambungan",
                 saveDeleted: "Dibuang dari storan luar talian", noCache: "Pelayar tidak menyokong",
                 playError: "Tidak dapat mainkan surah.", netError: "Masalah rangkaian.",
-                fileError: "Fail tidak tersedia.", playRetry: "Cuba lagi"
+                fileError: "Fail tidak tersedia.", playRetry: "Cuba lagi",
+                recentSheikhs: "🕐 Terkini", savedList: "💾 Disimpan",
+                noRecent: "Belum ada", noSaved: "Tiada disimpan",
+                young: "Muda"
             },
             ku: {
                 appTitle: "La Barkouh Quran", splashTitle: "La Barkouh", sadaqa: "Sedeqeya berdewam ji bo kesên parve dikin",
@@ -622,7 +1126,10 @@
                 saveOk: "Bi serkeftî hat tomarkirin ✓", saveFail: "Têk çû. Girêdanê kontrol bike",
                 saveDeleted: "Ji depoya offline hat rakirin", noCache: "Gerok piştgirî nake",
                 playError: "Sûre nehat lîstin.", netError: "Pirsgirêka torê.",
-                fileError: "Pel ne amade ye.", playRetry: "Dîsa biceribîne"
+                fileError: "Pel ne amade ye.", playRetry: "Dîsa biceribîne",
+                recentSheikhs: "🕐 Dawîn", savedList: "💾 Tomarkirî",
+                noRecent: "Hîn tune", noSaved: "Tune tomarkirî",
+                young: "Ciwan"
             },
             pt: {
                 appTitle: "La Barkouh Alcorão", splashTitle: "La Barkouh", sadaqa: "Caridade contínua para quem partilhar",
@@ -647,6 +1154,18 @@
                 fileError: "Ficheiro indisponível.", playRetry: "Tente novamente"
             }
         };
+
+        
+        // دمج ترجمات واجهة كاملة
+        (function() {
+            const FULL_I18N = {"ar": {"appTitle": "لا باركوه للقرآن الكريم", "splashTitle": "لا باركوه", "sadaqa": "صدقة جارية لكل من ينشرها", "chooseSurah": "اختر سورة للاستماع", "navHome": "🏠 الرئيسية", "navSheikhs": "👤 المشايخ", "navSurahs": "📖 السور", "navMushaf": "📖 مصحف", "navAdhkar": "🤲 أذكار", "navSettings": "⚙ الإعدادات", "welcomeTitle": "🕌 مرحباً بك في تطبيق لا باركوه", "welcomeDesc": "احفظ سور القرآن الكريم واستمع بدون إنترنت. هذا التطبيق صدقة جارية لأمة الإسلام", "statSheikhs": "المشايخ", "statSurahs": "السور", "statSaved": "محفوظة", "statMushaf": "المصحف", "statAdhkar": "الأذكار", "sheikhsTitle": "🌙 مشايخ القرآن الكريم", "surahsTitle": "📖 سور القرآن الكريم", "mushafTitle": "📖 المصحف الشريف", "adhkarTitle": "🤲 الأذكار والأدعية", "searchSheikh": "🔍 ابحث عن شيخ...", "searchSurah": "🔍 ابحث عن سورة...", "settingsTitle": "⚙ الإعدادات", "language": "اللغة", "darkMode": "الوضع الليلي", "clearCache": "مسح جميع التلاوات المحفوظة", "clearAll": "🗑 مسح الكل", "appInfo": "معلومات التطبيق", "save": "💾 حفظ", "saved": "✔ محفوظة", "saving": "⏳ جارٍ الحفظ...", "surahOf": "سورة", "reader": "القارئ:", "noResults": "لا توجد نتائج", "noSaved": "لا توجد تلاوات محفوظة", "savedList": "التلاوات المحفوظة", "sheikhWord": "الشيخ", "young": "شاب", "page": "صفحة", "juz": "الجزء", "loadingPage": "جاري تحميل الصفحة...", "pageLoadFail": "تعذر تحميل الصفحة. تحقق من الإنترنت.", "prevPage": "الصفحة السابقة", "nextPage": "الصفحة التالية", "shareTip": "لا تنسى نشر التطبيق فالدال على الخير كفاعله", "repeatOn": "تكرار السورة مفعّل", "repeatOff": "تكرار السورة متوقف"}, "en": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Home", "navSheikhs": "👤 Reciters", "navSurahs": "📖 Surahs", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Settings", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Language", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Surah", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Sheikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "fr": {"appTitle": "La Barkouh Coran", "splashTitle": "La Barkouh", "sadaqa": "Charité continue pour ceux qui la partagent", "chooseSurah": "Choisissez une sourate", "navHome": "🏠 Accueil", "navSheikhs": "👤 Récitateurs", "navSurahs": "📖 Sourates", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Paramètres", "welcomeTitle": "🕌 Bienvenue sur La Barkouh", "welcomeDesc": "Enregistrez les sourates et écoutez hors ligne. Cette application est une charité continue", "statSheikhs": "Récitateurs", "statSurahs": "Sourates", "statSaved": "Enregistrés", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Récitateurs du Coran", "surahsTitle": "📖 Sourates du Coran", "mushafTitle": "📖 Saint Mushaf", "adhkarTitle": "🤲 Adhkar et invocations", "searchSheikh": "🔍 Rechercher un récitateur...", "searchSurah": "🔍 Rechercher une sourate...", "settingsTitle": "⚙ Paramètres", "language": "Langue", "darkMode": "Mode sombre", "clearCache": "Effacer toutes les récitations", "clearAll": "🗑 Tout effacer", "appInfo": "Infos", "save": "💾 Sauver", "saved": "✔ Sauvé", "saving": "⏳...", "surahOf": "Sourate", "reader": "Récitateur:", "noResults": "Aucun résultat", "noSaved": "Aucune récitation enregistrée", "savedList": "Récitations enregistrées", "sheikhWord": "Cheikh", "young": "Jeune", "page": "Page", "juz": "Jouz", "loadingPage": "Chargement...", "pageLoadFail": "Échec du chargement.", "prevPage": "Page précédente", "nextPage": "Page suivante", "shareTip": "N'oubliez pas de partager l'application — guider vers le bien c'est comme le faire", "repeatOn": "Répétition: ON", "repeatOff": "Répétition: OFF"}, "hi": {"appTitle": "ला बारकूह कुरान", "splashTitle": "ला बारकूह", "sadaqa": "साझा करने वालों के लिए सदका", "chooseSurah": "सुनने के लिए सूरह चुनें", "navHome": "🏠 होम", "navSheikhs": "👤 कारी", "navSurahs": "📖 सूरह", "navMushaf": "📖 मुस्हफ़", "navAdhkar": "🤲 अज़कार", "navSettings": "⚙ सेटिंग्स", "welcomeTitle": "🕌 ला बारकूह में आपका स्वागत है", "welcomeDesc": "कुरान की तिलावत सुनें और ऑफ़लाइन सहेजें", "statSheikhs": "कारी", "statSurahs": "सूरह", "statSaved": "सहेजा", "statMushaf": "मुस्हफ़", "statAdhkar": "अज़कार", "sheikhsTitle": "🌙 कुरान के कारी", "surahsTitle": "📖 कुरान की सूरहें", "mushafTitle": "📖 पवित्र मुस्हफ़", "adhkarTitle": "🤲 अज़कार और दुआएँ", "searchSheikh": "🔍 कारी खोजें...", "searchSurah": "🔍 सूरह खोजें...", "settingsTitle": "⚙ सेटिंग्स", "language": "भाषा", "darkMode": "डार्क मोड", "clearCache": "सभी सहेजी तिलावत हटाएँ", "clearAll": "🗑 सब साफ़", "appInfo": "ऐप जानकारी", "save": "💾 सहेजें", "saved": "✔ सहेजा", "saving": "⏳...", "surahOf": "सूरह", "reader": "कारी:", "noResults": "कोई परिणाम नहीं", "noSaved": "कोई सहेजी तिलावत नहीं", "savedList": "सहेजी तिलावत", "sheikhWord": "शेख", "young": "युवा", "page": "पृष्ठ", "juz": "जुज़", "loadingPage": "पृष्ठ लोड हो रहा है...", "pageLoadFail": "पृष्ठ लोड नहीं हुआ।", "prevPage": "पिछला पृष्ठ", "nextPage": "अगला पृष्ठ", "shareTip": "ऐप साझा करना न भूलें — भलाई का रास्ता दिखाने वाला करने वाले जैसा है", "repeatOn": "दोहराव चालू", "repeatOff": "दोहराव बंद"}, "ha": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Gida", "navSheikhs": "👤 Qari", "navSurahs": "📖 Sura", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Azkar", "navSettings": "⚙ Saiti", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Harshe", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sura", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Sheikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "so": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Hoy", "navSheikhs": "👤 Qaari", "navSurahs": "📖 Suurad", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Xus", "navSettings": "⚙ Settings", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Luuqad", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Suurad", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Sheekh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "ur": {"appTitle": "لا بارکوہ قرآن", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 ہوم", "navSheikhs": "👤 قاری", "navSurahs": "📖 سورتیں", "navMushaf": "📖 مصحف", "navAdhkar": "🤲 اذکار", "navSettings": "⚙ ترتیبات", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "مصحف", "statAdhkar": "اذکار", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 مصحف شریف", "adhkarTitle": "🤲 اذکار و ادعیہ", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "زبان", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "سورہ", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "شیخ", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "پچھلا صفحہ", "nextPage": "اگلا صفحہ", "shareTip": "ایپ شیئر کرنا نہ بھولیں", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "es": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Inicio", "navSheikhs": "👤 Recitadores", "navSurahs": "📖 Suras", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Ajustes", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Idioma", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sura", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Jeque", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "it": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Home", "navSheikhs": "👤 Recitatori", "navSurahs": "📖 Sure", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Impostazioni", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Lingua", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sura", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Sheikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "tr": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Ana sayfa", "navSheikhs": "👤 Kariler", "navSurahs": "📖 Sureler", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Zikirler", "navSettings": "⚙ Ayarlar", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Zikirler", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Zikirler ve dualar", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Dil", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sure", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Şeyh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Önceki sayfa", "nextPage": "Sonraki sayfa", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "de": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Start", "navSheikhs": "👤 Rezitatoren", "navSurahs": "📖 Suren", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Einstellungen", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Sprache", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sure", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Scheich", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "id": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Beranda", "navSheikhs": "👤 Qari", "navSurahs": "📖 Surah", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Dzikir", "navSettings": "⚙ Pengaturan", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Bahasa", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Surah", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Syaikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "ms": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Laman", "navSheikhs": "👤 Qari", "navSurahs": "📖 Surah", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Zikir", "navSettings": "⚙ Tetapan", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Bahasa", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Surah", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Syeikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "ku": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 سەرەتا", "navSheikhs": "👤 قاری", "navSurahs": "📖 سورەت", "navMushaf": "📖 مصحەف", "navAdhkar": "🤲 زیکر", "navSettings": "⚙ ڕێکخستن", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "زمان", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "سورەت", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "شێخ", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}, "pt": {"appTitle": "La Barkouh Quran", "splashTitle": "La Barkouh", "sadaqa": "Ongoing charity for all who share it", "chooseSurah": "Choose a Surah to listen", "navHome": "🏠 Início", "navSheikhs": "👤 Recitadores", "navSurahs": "📖 Suras", "navMushaf": "📖 Mushaf", "navAdhkar": "🤲 Adhkar", "navSettings": "⚙ Configurações", "welcomeTitle": "🕌 Welcome to La Barkouh", "welcomeDesc": "Save Quran surahs and listen offline. This app is ongoing charity for the Ummah", "statSheikhs": "Reciters", "statSurahs": "Surahs", "statSaved": "Saved", "statMushaf": "Mushaf", "statAdhkar": "Adhkar", "sheikhsTitle": "🌙 Quran Reciters", "surahsTitle": "📖 Quran Surahs", "mushafTitle": "📖 Holy Mushaf", "adhkarTitle": "🤲 Adhkar & Duas", "searchSheikh": "🔍 Search reciter...", "searchSurah": "🔍 Search surah...", "settingsTitle": "⚙ Settings", "language": "Idioma", "darkMode": "Dark mode", "clearCache": "Clear all saved recitations", "clearAll": "🗑 Clear all", "appInfo": "App info", "save": "💾 Save", "saved": "✔ Saved", "saving": "⏳ Saving...", "surahOf": "Sura", "reader": "Reciter:", "noResults": "No results", "noSaved": "No saved recitations", "savedList": "Saved recitations", "sheikhWord": "Sheikh", "young": "Young", "page": "Page", "juz": "Juz", "loadingPage": "Loading page...", "pageLoadFail": "Could not load page. Check connection.", "prevPage": "Previous page", "nextPage": "Next page", "shareTip": "Do not forget to share the app — guiding to good is like doing it", "repeatOn": "Surah repeat: ON", "repeatOff": "Surah repeat: OFF"}};
+            Object.keys(FULL_I18N).forEach(lang => {
+                if (!I18N[lang]) I18N[lang] = {};
+                Object.assign(I18N[lang], FULL_I18N[lang], I18N[lang]);
+                // FULL overrides empty, but keep existing richer keys: prefer FULL for UI keys
+                Object.keys(FULL_I18N[lang]).forEach(k => { I18N[lang][k] = FULL_I18N[lang][k]; });
+            });
+        })();
 
         const RTL_LANGS = ['ar', 'ur', 'ku'];
         let currentLang = localStorage.getItem('appLang') || 'ar';
@@ -679,10 +1198,41 @@
                 const sheikhFilter = (document.getElementById('sheikhSearch') || {}).value || '';
                 const surahFilter = (document.getElementById('surahSearch') || {}).value || '';
                 renderSheikhs(sheikhFilter);
+                if (typeof renderMushafPageImage === 'function' && document.getElementById('mushaf')?.classList.contains('active')) { try { const sel = document.getElementById('mushafSurahSelect'); if (sel) sel.innerHTML=''; renderMushafPageImage(); } catch(e){} }
                 renderSurahs(surahFilter);
+                
             }
         }
 
+
+
+        
+        const COUNTRY_I18N = {"ar": {"السعودية": "السعودية", "الكويت": "الكويت", "مصر": "مصر", "السودان": "السودان", "ليبيا": "ليبيا", "الصومال": "الصومال", "المغرب": "المغرب", "اليمن": "اليمن", "الإمارات": "الإمارات", "العراق": "العراق", "الهند": "الهند", "أفريقيا": "أفريقيا"}, "en": {"السعودية": "Saudi Arabia", "الكويت": "Kuwait", "مصر": "Egypt", "السودان": "Sudan", "ليبيا": "Libya", "الصومال": "Somalia", "المغرب": "Morocco", "اليمن": "Yemen", "الإمارات": "UAE", "العراق": "Iraq", "الهند": "India", "أفريقيا": "Africa"}, "fr": {"السعودية": "Arabie saoudite", "الكويت": "Koweït", "مصر": "Égypte", "السودان": "Soudan", "ليبيا": "Libye", "الصومال": "Somalie", "المغرب": "Maroc", "اليمن": "Yémen", "الإمارات": "Émirats", "العراق": "Irak", "الهند": "Inde", "أفريقيا": "Afrique"}, "tr": {"السعودية": "Suudi Arabistan", "الكويت": "Kuveyt", "مصر": "Mısır", "السودان": "Sudan", "ليبيا": "Libya", "الصومال": "Somali", "المغرب": "Fas", "اليمن": "Yemen", "الإمارات": "BAE", "العراق": "Irak", "الهند": "Hindistan", "أفريقيا": "Afrika"}, "ur": {"السعودية": "سعودی عرب", "الكويت": "کویت", "مصر": "مصر", "السودان": "سوڈان", "ليبيا": "لیبیا", "الصومال": "صومالیہ", "المغرب": "مراکش", "اليمن": "یمن", "الإمارات": "متحدہ عرب امارات", "العراق": "عراق", "الهند": "بھارت", "أفريقيا": "افریقہ"}, "id": {"السعودية": "Arab Saudi", "الكويت": "Kuwait", "مصر": "Mesir", "السودان": "Sudan", "ليبيا": "Libya", "الصومال": "Somalia", "المغرب": "Maroko", "اليمن": "Yaman", "الإمارات": "UEA", "العراق": "Irak", "الهند": "India", "أفريقيا": "Afrika"}, "ms": {"السعودية": "Arab Saudi", "الكويت": "Kuwait", "مصر": "Mesir", "السودان": "Sudan", "ليبيا": "Libya", "الصومال": "Somalia", "المغرب": "Maghribi", "اليمن": "Yaman", "الإمارات": "UAE", "العراق": "Iraq", "الهند": "India", "أفريقيا": "Afrika"}, "ha": {"السعودية": "Saudi Arabia", "الكويت": "Kuwait", "مصر": "Masar", "السودان": "Sudan", "ليبيا": "Libya", "الصومال": "Somaliya", "المغرب": "Maroko", "اليمن": "Yaman", "الإمارات": "UAE", "العراق": "Iraq", "الهند": "Indiya", "أفريقيا": "Afirka"}, "so": {"السعودية": "Sacuudi Carabiya", "الكويت": "Kuwayt", "مصر": "Masar", "السودان": "Suudaan", "ليبيا": "Liibiya", "الصومال": "Soomaaliya", "المغرب": "Morocco", "اليمن": "Yaman", "الإمارات": "Imaaraadka", "العراق": "Ciraaq", "الهند": "Hindiya", "أفريقيا": "Afrika"}, "es": {"السعودية": "Arabia Saudita", "الكويت": "Kuwait", "مصر": "Egipto", "السودان": "Sudán", "ليبيا": "Libia", "الصومال": "Somalia", "المغرب": "Marruecos", "اليمن": "Yemen", "الإمارات": "EAU", "العراق": "Irak", "الهند": "India", "أفريقيا": "África"}, "it": {"السعودية": "Arabia Saudita", "الكويت": "Kuwait", "مصر": "Egitto", "السودان": "Sudan", "ليبيا": "Libia", "الصومال": "Somalia", "المغرب": "Marocco", "اليمن": "Yemen", "الإمارات": "EAU", "العراق": "Iraq", "الهند": "India", "أفريقيا": "Africa"}, "de": {"السعودية": "Saudi-Arabien", "الكويت": "Kuwait", "مصر": "Ägypten", "السودان": "Sudan", "ليبيا": "Libyen", "الصومال": "Somalia", "المغرب": "Marokko", "اليمن": "Jemen", "الإمارات": "VAE", "العراق": "Irak", "الهند": "Indien", "أفريقيا": "Afrika"}, "pt": {"السعودية": "Arábia Saudita", "الكويت": "Kuwait", "مصر": "Egito", "السودان": "Sudão", "ليبيا": "Líbia", "الصومال": "Somália", "المغرب": "Marrocos", "اليمن": "Iêmen", "الإمارات": "EAU", "العراق": "Iraque", "الهند": "Índia", "أفريقيا": "África"}, "hi": {"السعودية": "सऊदी अरब", "الكويت": "कुवैत", "مصر": "मिस्र", "السودان": "सूडान", "ليبيا": "लीबिया", "الصومال": "सोमालिया", "المغرب": "मोरक्को", "اليمن": "यमन", "الإمارات": "यूएई", "العراق": "इराक", "الهند": "भारत", "أفريقيا": "अफ़्रीका"}, "ku": {"السعودية": "عەرەبستانی سعوودی", "الكويت": "کوێت", "مصر": "میسر", "السودان": "سوودان", "ليبيا": "لیبیا", "الصومال": "سۆمالیا", "المغرب": "مەغریب", "اليمن": "یەمەن", "الإمارات": "ئیماڕات", "العراق": "عێراق", "الهند": "هیندستان", "أفريقيا": "ئەفریقا"}};
+        const COUNTRY_FLAGS = {"السعودية": "🇸🇦", "الكويت": "🇰🇼", "مصر": "🇪🇬", "السودان": "🇸🇩", "ليبيا": "🇱🇾", "الصومال": "🇸🇴", "المغرب": "🇲🇦", "اليمن": "🇾🇪", "الإمارات": "🇦🇪", "العراق": "🇮🇶", "الهند": "🇮🇳", "أفريقيا": "🌍"};
+
+        function getCountryBase(raw) {
+            if (!raw) return '';
+            // إزالة الأعلام والرموز
+            return String(raw).replace(/[\uD800-\uDFFF]/g, '').replace(/[\u2600-\u27BF]/g, '').trim();
+        }
+
+        function getCountryLabel(raw) {
+            const base = getCountryBase(raw);
+            const flag = COUNTRY_FLAGS[base] || '';
+            const pack = COUNTRY_I18N[currentLang] || COUNTRY_I18N.en || COUNTRY_I18N.ar;
+            const name = (pack && pack[base]) || (COUNTRY_I18N.ar && COUNTRY_I18N.ar[base]) || base || raw;
+            return '<span class="country-flag">' + flag + '</span> <span class="country-name">' + name + '</span>';
+        }
+
+        function getSurahName(id) {
+            const idx = id - 1;
+            if (currentLang === 'ar') return SURAH_NAMES[idx] || '';
+            return SURAH_NAMES_EN[idx] || SURAH_NAMES[idx] || '';
+        }
+
+        function getSurahDisplay(id) {
+            return t('surahOf') + ' ' + getSurahName(id);
+        }
 
         class QuranPlayer {
             constructor() {
@@ -749,7 +1299,7 @@
                 document.getElementById('duration').textContent = '00:00';
 
                 this.audio.src = url;
-                document.getElementById('currentSurahName').textContent = t('surahOf') + ' ' + surah.name;
+                document.getElementById('currentSurahName').textContent = getSurahDisplay(surah.id);
                 document.getElementById('currentSheikhName').textContent = t('reader') + ' ' + this.currentSheikh.name;
                 this.play();
             }
@@ -796,6 +1346,590 @@
             }
         }
 
+
+        function rememberSheikh(sheikh) {
+            try {
+                let recent = JSON.parse(localStorage.getItem('recentSheikhs') || '[]');
+                recent = recent.filter(r => r.server !== sheikh.server);
+                recent.unshift({ server: sheikh.server, name: sheikh.name, country: sheikh.country });
+                recent = recent.slice(0, 6);
+                localStorage.setItem('recentSheikhs', JSON.stringify(recent));
+                
+            } catch (e) {}
+        }
+
+        function renderRecentSheikhs() {
+            const list = document.getElementById('recentSheikhsList');
+            if (!list) return;
+            let recent = [];
+            try { recent = JSON.parse(localStorage.getItem('recentSheikhs') || '[]'); } catch (e) {}
+            list.innerHTML = '';
+            if (!recent.length) {
+                list.innerHTML = '<p style="opacity:0.6;grid-column:1/-1;text-align:center">' + t('noRecent') + '</p>';
+                return;
+            }
+            recent.forEach(s => {
+                const full = QURAN_DATA.sheikhs.find(x => x.server === s.server) || s;
+                const el = document.createElement('div');
+                el.className = 'sheikh-card';
+                el.innerHTML = '<div class="sheikh-label">' + (t('sheikhWord') || 'الشيخ') + '</div><div class="sheikh-name">' + full.name + '</div><span class="country-tag">' + (full.country || '') + '</span>';
+                el.onclick = () => {
+                    window.player.currentSheikh = full;
+                    
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                    document.querySelector('.nav-btn[data-section="surahs"]').classList.add('active');
+                    document.getElementById('surahs').classList.add('active');
+                    renderSurahs(document.getElementById('surahSearch').value || '');
+                    showToast(t('selected') + ' ' + full.name);
+                };
+                list.appendChild(el);
+            });
+        }
+
+        async function renderSavedSurahs() {
+            const panel = document.getElementById('savedSurahsPanel');
+            const list = document.getElementById('savedSurahsList');
+            if (!panel || !list) return;
+            panel.style.display = 'block';
+            list.innerHTML = '';
+            if (!('caches' in window)) {
+                list.innerHTML = '<p style="opacity:0.6">' + t('noSaved') + '</p>';
+                return;
+            }
+            try {
+                const cache = await caches.open('quran-audio-v1');
+                const keys = await cache.keys();
+                if (!keys.length) {
+                    list.innerHTML = '<p style="opacity:0.6">' + t('noSaved') + '</p>';
+                    return;
+                }
+                const groups = {};
+                keys.forEach(req => {
+                    const url = req.url;
+                    const m = url.match(/(\d{3})\.mp3$/);
+                    const surahId = m ? parseInt(m[1], 10) : 0;
+                    let sheikh = null;
+                    for (const sh of QURAN_DATA.sheikhs) {
+                        const pathPart = sh.server.replace(/https?:\/\/[^/]+/, '');
+                        if (pathPart && url.indexOf(pathPart) >= 0) { sheikh = sh; break; }
+                        if (url.startsWith(sh.server)) { sheikh = sh; break; }
+                    }
+                    const key = sheikh ? sheikh.server : 'unknown';
+                    if (!groups[key]) groups[key] = { sheikh: sheikh, items: [] };
+                    groups[key].items.push({ url: url, surahId: surahId });
+                });
+                Object.keys(groups).forEach(key => {
+                    const g = groups[key];
+                    const wrap = document.createElement('div');
+                    wrap.className = 'saved-group';
+                    const head = document.createElement('button');
+                    head.type = 'button';
+                    head.className = 'saved-group-head';
+                    const name = g.sheikh ? g.sheikh.name : '?';
+                    head.innerHTML = '<span>' + (t('sheikhWord') || '') + ' ' + name + ' (' + g.items.length + ')</span><span class="chev">▼</span>';
+                    const body = document.createElement('div');
+                    body.className = 'saved-group-body';
+                    body.style.display = 'none';
+                    g.items.sort((a,b) => a.surahId - b.surahId).forEach(item => {
+                        const el = document.createElement('div');
+                        el.className = 'surah-item';
+                        el.innerHTML = '<div class="surah-info"><div class="surah-num">' + (item.surahId || '?') + '</div><div><strong>' + getSurahName(item.surahId) + '</strong></div></div>';
+                        el.onclick = (e) => {
+                            e.stopPropagation();
+                            if (g.sheikh) window.player.currentSheikh = g.sheikh;
+                            if (item.surahId) window.player.playSurah(item.surahId);
+                        };
+                        body.appendChild(el);
+                    });
+                    head.onclick = () => {
+                        const open = body.style.display !== 'none';
+                        body.style.display = open ? 'none' : 'block';
+                        head.querySelector('.chev').textContent = open ? '▼' : '▲';
+                    };
+                    wrap.appendChild(head);
+                    wrap.appendChild(body);
+                    list.appendChild(wrap);
+                });
+            } catch (e) {
+                list.innerHTML = '<p style="opacity:0.6">' + t('noSaved') + '</p>';
+            }
+        }
+
+
+        const ADHKAR_DATA = [
+            {
+                id: 'morning',
+                title: { ar: 'أذكار الصباح', en: 'Morning Adhkar', fr: 'Adhkar du matin', hi: 'सुबह के अज़कार', tr: 'Sabah zikirleri', ur: 'صبح کے اذکار', id: 'Dzikir pagi', es: 'Adhkar de la mañana', de: 'Morgen-Adhkar' },
+                icon: '🌅',
+                items: [
+                    { text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.', count: 1, ref: 'حصن المسلم - الترمذي' },
+                    { text: 'اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.', count: 1, ref: 'حصن المسلم - سيد الاستغفار' },
+                    { text: 'اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لاَ إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ.', count: 4, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَهَ إِلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لاَ إِلَهَ إِلاَّ أَنْتَ.', count: 3, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'حَسْبِيَ اللهُ لاَ إِلَهَ إِلاَّ هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.', count: 7, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.', count: 1, ref: 'حصن المسلم - الترمذي' },
+                    { text: 'بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.', count: 3, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'رَضِيتُ بِاللهِ رَبًّا، وَبِالإِسْلاَمِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.', count: 3, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ.', count: 1, ref: 'حصن المسلم - الحاكم' },
+                    { text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'أَصْبَحْنَا عَلَى فِطْرَةِ الإِسْلاَمِ، وَعَلَى كَلِمَةِ الإِخْلاَصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ.', count: 1, ref: 'حصن المسلم - أحمد' },
+                    { text: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ.', count: 100, ref: 'حصن المسلم - مسلم' },
+                    { text: 'لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.', count: 10, ref: 'حصن المسلم - البخاري' },
+                    { text: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.', count: 3, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً.', count: 1, ref: 'حصن المسلم - ابن ماجه' }
+                ]
+            },
+            {
+                id: 'evening',
+                title: { ar: 'أذكار المساء', en: 'Evening Adhkar', fr: 'Adhkar du soir', hi: 'शाम के अज़कार', tr: 'Akşam zikirleri', ur: 'شام کے اذکار', id: 'Dzikir sore', es: 'Adhkar de la tarde', de: 'Abend-Adhkar' },
+                icon: '🌙',
+                items: [
+                    { text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.', count: 1, ref: 'حصن المسلم - الترمذي' },
+                    { text: 'اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.', count: 1, ref: 'حصن المسلم - سيد الاستغفار' },
+                    { text: 'اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لاَ إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ.', count: 4, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.', count: 1, ref: 'حصن المسلم' },
+                    { text: 'أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.', count: 3, ref: 'حصن المسلم - مسلم' },
+                    { text: 'بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.', count: 3, ref: 'حصن المسلم' },
+                    { text: 'حَسْبِيَ اللهُ لاَ إِلَهَ إِلاَّ هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.', count: 7, ref: 'حصن المسلم' },
+                    { text: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ.', count: 100, ref: 'حصن المسلم - مسلم' },
+                    { text: 'أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ الَّتِي لاَ يُجَاوِزُهُنَّ بَرٌّ وَلاَ فَاجِرٌ مِنْ شَرِّ مَا خَلَقَ.', count: 3, ref: 'حصن المسلم' },
+                    { text: 'آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ... (آية الكرسي والبسملة والمعوذات)', count: 1, ref: 'حصن المسلم' }
+                ]
+            },
+            {
+                id: 'after_salah',
+                title: { ar: 'أذكار بعد الصلاة', en: 'After Prayer', fr: 'After Prayer', hi: 'After Prayer' },
+                icon: '🕌',
+                items: [
+                    { text: 'أَسْتَغْفِرُ اللهَ', count: 3, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللَّهُمَّ أَنْتَ السَّلاَمُ وَمِنْكَ السَّلاَمُ، تَبَارَكْتَ يَا ذَا الْجَلاَلِ وَالإِكْرَامِ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لاَ مَانِعَ لِمَا أَعْطَيْتَ، وَلاَ مُعْطِيَ لِمَا مَنَعْتَ، وَلاَ يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'سُبْحَانَ اللهِ', count: 33, ref: 'حصن المسلم - مسلم' },
+                    { text: 'الْحَمْدُ لِلَّهِ', count: 33, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللهُ أَكْبَرُ', count: 33, ref: 'حصن المسلم - مسلم' },
+                    { text: 'لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'آيَةُ الْكُرْسِيِّ: اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ...', count: 1, ref: 'حصن المسلم - النسائي' },
+                    { text: 'قُلْ هُوَ اللهُ أَحَدٌ، وَالْمُعَوِّذَتَيْنِ', count: 1, ref: 'حصن المسلم - أبو داود' }
+                ]
+            },
+            {
+                id: 'sleep',
+                title: { ar: 'أذكار النوم', en: 'Sleep', fr: 'Sleep', hi: 'Sleep' },
+                icon: '😴',
+                items: [
+                    { text: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ.', count: 3, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'سُبْحَانَ اللهِ', count: 33, ref: 'حصن المسلم - البخاري' },
+                    { text: 'الْحَمْدُ لِلَّهِ', count: 33, ref: 'حصن المسلم - البخاري' },
+                    { text: 'اللهُ أَكْبَرُ', count: 34, ref: 'حصن المسلم - البخاري' },
+                    { text: 'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا.', count: 1, ref: 'حصن المسلم' },
+                    { text: 'اللَّهُمَّ إِنَّكَ خَلَقْتَ نَفْسِي وَأَنْتَ تَوَفَّاهَا، لَكَ مَمَاتُهَا وَمَحْيَاهَا، إِنْ أَحْيَيْتَهَا فَاحْفَظْهَا، وَإِنْ أَمَتَّهَا فَاغْفِرْ لَهَا. اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'آيَةُ الْكُرْسِيِّ', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ.', count: 1, ref: 'حصن المسلم - البخاري' }
+                ]
+            },
+            {
+                id: 'food',
+                title: { ar: 'أذكار الطعام', en: 'Food', fr: 'Food', hi: 'Food' },
+                icon: '🍽️',
+                items: [
+                    { text: 'بِسْمِ اللهِ.', count: 1, ref: 'حصن المسلم - قبل الأكل' },
+                    { text: 'بِسْمِ اللهِ أَوَّلَهُ وَآخِرَهُ.', count: 1, ref: 'حصن المسلم - إن نسي' },
+                    { text: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلاَ قُوَّةٍ.', count: 1, ref: 'حصن المسلم - بعد الأكل' },
+                    { text: 'الْحَمْدُ لِلَّهِ حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ، غَيْرَ مَكْفِيٍّ وَلاَ مُوَدَّعٍ وَلاَ مُسْتَغْنًى عَنْهُ رَبَّنَا.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَأَطْعِمْنَا خَيْرًا مِنْهُ.', count: 1, ref: 'حصن المسلم - للبن' }
+                ]
+            },
+            {
+                id: 'travel',
+                title: { ar: 'دعاء السفر', en: 'Travel', fr: 'Travel', hi: 'Travel' },
+                icon: '✈️',
+                items: [
+                    { text: 'اللهُ أَكْبَرُ، اللهُ أَكْبَرُ، اللهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ. اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالأَهْلِ.', count: 1, ref: 'حصن المسلم - مسلم' },
+                    { text: 'آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ.', count: 1, ref: 'حصن المسلم - عند الرجوع' },
+                    { text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالأَهْلِ وَالْوَلَدِ.', count: 1, ref: 'حصن المسلم' }
+                ]
+            },
+            {
+                id: 'mosque',
+                title: { ar: 'أذكار المسجد', en: 'Mosque', fr: 'Mosque', hi: 'Mosque' },
+                icon: '🕋',
+                items: [
+                    { text: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ.', count: 1, ref: 'حصن المسلم - عند الدخول' },
+                    { text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ.', count: 1, ref: 'حصن المسلم - عند الخروج' },
+                    { text: 'أَعُوذُ بِاللهِ الْعَظِيمِ، وَبِوَجْهِهِ الْكَرِيمِ، وَسُلْطَانِهِ الْقَدِيمِ، مِنَ الشَّيْطَانِ الرَّجِيمِ.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'بِسْمِ اللهِ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى رَسُولِ اللهِ، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ.', count: 1, ref: 'حصن المسلم' }
+                ]
+            },
+            {
+                id: 'istighfar',
+                title: { ar: 'الاستغفار والتوبة', en: 'Istighfar', fr: 'Istighfar', hi: 'Istighfar' },
+                icon: '🤍',
+                items: [
+                    { text: 'أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ.', count: 100, ref: 'حصن المسلم - البخاري' },
+                    { text: 'رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ.', count: 100, ref: 'حصن المسلم - الترمذي' },
+                    { text: 'اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.', count: 1, ref: 'حصن المسلم - سيد الاستغفار' },
+                    { text: 'أَسْتَغْفِرُ اللهَ الَّذِي لاَ إِلَهَ إِلاَّ هُوَ الْحَيَّ الْقَيُّومَ وَأَتُوبُ إِلَيْهِ.', count: 1, ref: 'حصن المسلم - أبو داود' },
+                    { text: 'رَبِّ اغْفِرْ لِي خَطِيئَتِي وَجَهْلِي، وَإِسْرَافِي فِي أَمْرِي، وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي.', count: 1, ref: 'حصن المسلم - البخاري' }
+                ]
+            },
+            {
+                id: 'home',
+                title: { ar: 'دخول المنزل والخلاء', en: 'Home', fr: 'Home', hi: 'Home' },
+                icon: '🏠',
+                items: [
+                    { text: 'بِسْمِ اللهِ وَلَجْنَا، وَبِسْمِ اللهِ خَرَجْنَا، وَعَلَى اللهِ رَبِّنَا تَوَكَّلْنَا.', count: 1, ref: 'حصن المسلم - دخول المنزل' },
+                    { text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ.', count: 1, ref: 'حصن المسلم - دخول الخلاء' },
+                    { text: 'غُفْرَانَكَ.', count: 1, ref: 'حصن المسلم - الخروج من الخلاء' },
+                    { text: 'بِسْمِ اللهِ', count: 1, ref: 'حصن المسلم - عند الخروج من المنزل' },
+                    { text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ.', count: 1, ref: 'حصن المسلم - الخروج من المنزل' }
+                ]
+            },
+            {
+                id: 'general',
+                title: { ar: 'أذكار عامة', en: 'General', fr: 'General', hi: 'General' },
+                icon: '✨',
+                items: [
+                    { text: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ الْعَظِيمِ.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'حَسْبِيَ اللهُ لاَ إِلَهَ إِلاَّ هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.', count: 7, ref: 'حصن المسلم' },
+                    { text: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ.', count: 10, ref: 'حصن المسلم' },
+                    { text: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ.', count: 1, ref: 'حصن المسلم - البقرة' },
+                    { text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ.', count: 1, ref: 'حصن المسلم' },
+                    { text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ هَمِّ الْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْجُبْنِ وَالْبُخْلِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ.', count: 1, ref: 'حصن المسلم - البخاري' },
+                    { text: 'حَسْبُنَا اللهُ وَنِعْمَ الْوَكِيلُ.', count: 1, ref: 'حصن المسلم - البخاري' }
+                ]
+            }
+        ];
+
+        // —— مصحف بصفحات ——
+        // تقريب: ~15 آية في الصفحة
+        const AYAHS_PER_PAGE = 12;
+        let mushafState = { surahId: 1, page: 0, ayahs: [], totalPages: 1 , pageNum: 1};
+
+        async function initMushafSelect() {
+            const sel = document.getElementById('mushafSurahSelect');
+            if (!sel) return;
+            if (sel.options.length === 0) {
+                SURAH_NAMES.forEach((name, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i + 1;
+                    opt.textContent = (i + 1) + ' - ' + name;
+                    sel.appendChild(opt);
+                });
+                sel.onchange = () => loadMushafSurah(parseInt(sel.value, 10), 0);
+            }
+            const prev = document.getElementById('mushafPrev');
+            const next = document.getElementById('mushafNext');
+            const prev2 = document.getElementById('mushafPrev2');
+            const next2 = document.getElementById('mushafNext2');
+            if (prev) prev.onclick = () => mushafTurn(-1);
+            if (next) next.onclick = () => mushafTurn(1);
+            if (prev2) prev2.onclick = () => mushafTurn(-1);
+            if (next2) next2.onclick = () => mushafTurn(1);
+        }
+
+        async function loadMushafSurah(surahId, page) {
+            const content = document.getElementById('mushafContent');
+            const status = document.getElementById('mushafStatus');
+            if (!content) return;
+            content.innerHTML = '';
+            if (status) status.textContent = t('loading') || 'جاري التحميل...';
+            mushafState.surahId = surahId;
+            const cacheKey = 'mushaf-surah-' + surahId;
+            try {
+                let data = null;
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    data = JSON.parse(cached);
+                } else {
+                    const url = 'https://api.alquran.cloud/v1/surah/' + surahId + '/quran-uthmani';
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const json = await res.json();
+                    data = json.data;
+                    try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch (e) {}
+                }
+                mushafState.ayahs = data.ayahs || [];
+                mushafState.totalPages = Math.max(1, Math.ceil(mushafState.ayahs.length / AYAHS_PER_PAGE));
+                mushafState.page = Math.min(Math.max(0, page || 0), mushafState.totalPages - 1);
+                renderMushafPage();
+            } catch (e) {
+                console.error(e);
+                if (status) status.textContent = t('mushafError') || 'تعذر تحميل المصحف';
+            }
+        }
+
+        function renderMushafPage() { renderMushafPageImage(); }
+
+        function mushafTurn(dir) { const n = (mushafState.pageNum || 1) + dir; if (n < 1 || n > (typeof TOTAL_MUSHAF_PAGES!=="undefined"?TOTAL_MUSHAF_PAGES:604)) return; mushafState.pageNum = n; renderMushafPageImage(); }
+
+        
+
+        function openAdhkar() {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const btn = document.querySelector('.nav-btn[data-section="adhkar"]');
+            if (btn) btn.classList.add('active');
+            document.getElementById('adhkar').classList.add('active');
+            renderAdhkarCategories();
+        }
+
+        function renderAdhkarCategories() {
+            const cats = document.getElementById('adhkarCategories');
+            const content = document.getElementById('adhkarContent');
+            if (!cats) return;
+            cats.innerHTML = '';
+            if (content) content.innerHTML = '';
+            ADHKAR_DATA.forEach((cat) => {
+                const el = document.createElement('div');
+                el.className = 'cat-card';
+                const title = (cat.title[currentLang] || (cat.title[currentLang] || cat.title.en || cat.title.ar) || cat.title.en);
+                let itemsHtml = '';
+                cat.items.forEach(item => {
+                    itemsHtml += '<div class="adhkar-card"><div class="adhkar-text">' + item.text + '</div>' +
+                        '<div class="adhkar-count">' + (t('repeat') || 'التكرار') + ': ' + item.count + '</div>' +
+                        '<div class="adhkar-ref">' + item.ref + '</div></div>';
+                });
+                el.innerHTML = '<div style="font-size:1.6em">' + cat.icon + '</div><strong style="font-size:0.9em">' + title + '</strong>' +
+                    '<div class="adhkar-items">' + itemsHtml + '</div>';
+                el.onclick = (e) => {
+                    // toggle open inside card
+                    const wasOpen = el.classList.contains('open');
+                    cats.querySelectorAll('.cat-card').forEach(c => c.classList.remove('open'));
+                    if (!wasOpen) el.classList.add('open');
+                };
+                cats.appendChild(el);
+            });
+        }
+
+        function renderAdhkarItems(cat) {
+            // legacy no-op (items inside cards now)
+        }
+
+
+        // تقليب بالسحب على المصحف
+        (function() {
+            let tx = 0;
+            document.addEventListener('DOMContentLoaded', () => {
+                const page = () => document.getElementById('mushafContent');
+                const bind = () => {
+                    const el = page();
+                    if (!el || el.dataset.swipeBound) return;
+                    el.dataset.swipeBound = '1';
+                    el.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; }, {passive:true});
+                    el.addEventListener('touchend', e => {
+                        const dx = e.changedTouches[0].screenX - tx;
+                        if (Math.abs(dx) < 50) return;
+                        // RTL: swipe right = previous page, left = next
+                        if (dx > 0) mushafTurn(-1);
+                        else mushafTurn(1);
+                    }, {passive:true});
+                };
+                setInterval(bind, 1000);
+            });
+        })();
+
+        
+        function openMushaf() {
+            if (typeof showSection === 'function') showSection('mushaf');
+            else {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                const btn = document.querySelector('.nav-btn[data-section="mushaf"]');
+                if (btn) btn.classList.add('active');
+                const sec = document.getElementById('mushaf');
+                if (sec) sec.classList.add('active');
+            }
+            if (!mushafState.pageNum) {
+                mushafState.pageNum = 1;
+                mushafState.surahId = 1;
+            }
+            const sel = document.getElementById('mushafSurahSelect');
+            if (sel && !sel.options.length) {
+                for (let i = 1; i <= 114; i++) {
+                    const o = document.createElement('option');
+                    o.value = i;
+                    o.textContent = i + '. ' + getSurahDisplay(i);
+                    sel.appendChild(o);
+                }
+                sel.onchange = () => {
+                    const id = parseInt(sel.value, 10);
+                    mushafState.surahId = id;
+                    mushafState.pageNum = SURAH_START_PAGE[id] || 1;
+                    renderMushafPageImage();
+                };
+            }
+            if (sel) sel.value = String(mushafState.surahId || 1);
+            renderMushafPageImage();
+        }
+
+        function mushafPageUrl(n) {
+            const p = String(n).padStart(3, '0');
+            // مصادر تدعم CORS (تعمل من GitHub Pages)
+            return 'https://www.mp3quran.net/api/quran_pages_svg/' + p + '.svg';
+        }
+
+        function renderMushafPageImage() {
+            const content = document.getElementById('mushafContent');
+            const status = document.getElementById('mushafStatus');
+            if (!content) return;
+            let n = parseInt(mushafState.pageNum, 10) || 1;
+            if (n < 1) n = 1;
+            if (n > TOTAL_MUSHAF_PAGES) n = TOTAL_MUSHAF_PAGES;
+            mushafState.pageNum = n;
+            if (status) status.textContent = t('page') + ' ' + n + ' / ' + TOTAL_MUSHAF_PAGES;
+            const pn = document.getElementById('mushafPageNum');
+            if (pn) pn.textContent = String(n);
+            let sid = 1;
+            for (let i = 1; i <= 114; i++) {
+                if ((SURAH_START_PAGE[i] || 1) <= n) sid = i;
+            }
+            mushafState.surahId = sid;
+            const sl = document.getElementById('mushafSurahLabel');
+            if (sl) sl.textContent = getSurahName(sid);
+            const juzEl = document.getElementById('mushafJuz');
+            if (juzEl) {
+                const juz = Math.min(30, Math.max(1, Math.ceil(n / 20)));
+                juzEl.textContent = t('juz') + ' ' + juz;
+            }
+            const sel = document.getElementById('mushafSurahSelect');
+            if (sel) {
+                if (!sel.options.length) {
+                    for (let i = 1; i <= 114; i++) {
+                        const o = document.createElement('option');
+                        o.value = i;
+                        o.textContent = i + ' - ' + getSurahName(i);
+                        sel.appendChild(o);
+                    }
+                    sel.onchange = () => {
+                        const id = parseInt(sel.value, 10);
+                        mushafState.surahId = id;
+                        mushafState.pageNum = SURAH_START_PAGE[id] || 1;
+                        renderMushafPageImage();
+                    };
+                } else {
+                    Array.from(sel.options).forEach(o => {
+                        const id = parseInt(o.value, 10);
+                        if (id) o.textContent = id + ' - ' + getSurahName(id);
+                    });
+                }
+                sel.value = String(sid);
+            }
+            const p = String(n).padStart(3, '0');
+            // مصادر صور صفحات المصحف (مصحف المدينة / مجمع الملك فهد عبر Quran.com images)
+            const sources = [
+                'https://cdn.jsdelivr.net/gh/GovarJabbar/Quran-PNG@master/' + p + '.png',
+                'https://raw.githubusercontent.com/GovarJabbar/Quran-PNG/master/' + p + '.png',
+                'https://govarjabbar.github.io/Quran-PNG/' + p + '.png',
+                'https://cdn.jsdelivr.net/gh/quranpedia/quran-svg@main/mushafs/hafs/kfqc/svg/' + p + '.svg',
+                'https://www.mp3quran.net/api/quran_pages_svg/' + p + '.svg'
+            ];
+            content.innerHTML = '<div class="mushaf-loading">' + t('loadingPage') + '</div>';
+            let si = 0;
+            const tryLoad = () => {
+                if (si >= sources.length) {
+                    // احتياطي: نص عثماني من api.quran.com
+                    loadMushafTextPage(n, content);
+                    return;
+                }
+                const url = sources[si++];
+                const img = document.createElement('img');
+                img.className = 'mushaf-page-img';
+                img.alt = 'Mushaf page ' + n;
+                img.draggable = false;
+                let done = false;
+                const timer = setTimeout(() => {
+                    if (!done) { done = true; tryLoad(); }
+                }, 10000);
+                img.onload = () => {
+                    if (done) return;
+                    done = true;
+                    clearTimeout(timer);
+                    content.innerHTML = '';
+                    content.appendChild(img);
+                };
+                img.onerror = () => {
+                    if (done) return;
+                    done = true;
+                    clearTimeout(timer);
+                    tryLoad();
+                };
+                img.src = url;
+            };
+            tryLoad();
+        }
+
+        async function loadMushafTextPage(n, content) {
+            try {
+                const res = await fetch('https://api.quran.com/api/v4/quran/verses/uthmani?page_number=' + n);
+                if (!res.ok) throw new Error('api');
+                const data = await res.json();
+                const verses = data.verses || [];
+                if (!verses.length) throw new Error('empty');
+                let html = '<div class="mushaf-text-page">';
+                verses.forEach(v => {
+                    const num = (v.verse_key || '').split(':')[1] || '';
+                    html += '<span class="mushaf-ayah">' + (v.text_uthmani || '') +
+                        '<span class="mushaf-num">' + num + '</span></span> ';
+                });
+                html += '</div>';
+                content.innerHTML = html;
+            } catch (e) {
+                content.innerHTML = '<p style="text-align:center;padding:24px;color:#c0392b">' + t('pageLoadFail') + '</p>';
+            }
+        }
+
+        function mushafPageUrl(n) {
+            const p = String(n).padStart(3, '0');
+            return 'https://cdn.jsdelivr.net/gh/GovarJabbar/Quran-PNG@master/' + p + '.png';
+        }
+
+
+        function mushafTurn(dir) {
+            const n = (mushafState.pageNum || 1) + dir;
+            if (n < 1 || n > TOTAL_MUSHAF_PAGES) return;
+            mushafState.pageNum = n;
+            renderMushafPageImage();
+        }
+
+        function loadMushafSurah(id) {
+            mushafState.surahId = id;
+            mushafState.pageNum = SURAH_START_PAGE[id] || 1;
+            renderMushafPageImage();
+        }
+
+
+        
+        (function setupMushafSwipe() {
+            let startX = 0, startY = 0;
+            function bind() {
+                const el = document.getElementById('mushafContent');
+                if (!el || el.dataset.swipeOk) return;
+                el.dataset.swipeOk = '1';
+                el.addEventListener('touchstart', function(e) {
+                    startX = e.changedTouches[0].clientX;
+                    startY = e.changedTouches[0].clientY;
+                }, {passive: true});
+                el.addEventListener('touchend', function(e) {
+                    const dx = e.changedTouches[0].clientX - startX;
+                    const dy = e.changedTouches[0].clientY - startY;
+                    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
+                    // RTL: السحب لليمين = الصفحة السابقة، لليسار = التالية
+                    if (dx > 0) mushafTurn(-1);
+                    else mushafTurn(1);
+                }, {passive: true});
+            }
+            document.addEventListener('DOMContentLoaded', bind);
+            setInterval(bind, 1500);
+        })();
+
         function hideSplash() {
             const splash = document.getElementById('splashScreen');
             if (splash) splash.classList.add('hidden');
@@ -831,6 +1965,22 @@
                     langSel.value = currentLang;
                     langSel.onchange = (e) => applyLanguage(e.target.value);
                 }
+                
+                const savedCard = document.getElementById('statSavedCard');
+                if (savedCard) {
+                    savedCard.onclick = () => {
+                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                        document.querySelector('.nav-btn[data-section="home"]').classList.add('active');
+                        document.getElementById('home').classList.add('active');
+                        renderSavedSurahs();
+                        document.getElementById('savedSurahsPanel').scrollIntoView({ behavior: 'smooth' });
+                    };
+                }
+                const mushafCard = document.getElementById('statMushafCard');
+                if (mushafCard) mushafCard.onclick = () => openMushaf();
+                const adhkarCard = document.getElementById('statAdhkarCard');
+                if (adhkarCard) adhkarCard.onclick = () => openAdhkar();
                 hideSplash();
             }
         });
@@ -839,7 +1989,7 @@
             filter = filter || '';
             const list = document.getElementById('sheikhsList');
             list.innerHTML = '';
-            const filtered = QURAN_DATA.sheikhs.filter(s => s.name.includes(filter));
+            const q = (filter||'').toLowerCase(); const filtered = QURAN_DATA.sheikhs.filter(s => s.name.includes(filter) || (s.country||'').includes(filter) || s.name.toLowerCase().includes(q));
             if (filtered.length === 0) {
                 list.innerHTML = '<p style="text-align:center;opacity:0.6;grid-column:1/-1">' + t('noResults') + '</p>';
                 return;
@@ -848,13 +1998,13 @@
                 const isSelected = window.player.currentSheikh.server === s.server;
                 const el = document.createElement('div');
                 el.className = 'sheikh-card' + (isSelected ? ' selected' : '');
-                el.innerHTML = '<div style="font-size:1.8em;margin-bottom:4px">👤</div><strong style="font-size:0.95em">' + s.name + '</strong><br><span class="country-tag">' + s.country + '</span>';
+                el.innerHTML = '<div class="sheikh-label">' + (t('sheikhWord') || 'الشيخ') + '</div><div class="sheikh-name">' + s.name + '</div><span class="country-tag">' + getCountryLabel(s.country) + '</span>' + (s.young ? ' <span class="country-tag" style="background:rgba(212,175,55,0.25)">' + t('young') + '</span>' : '');
                 el.onclick = () => {
                     window.player.currentSheikh = s;
+                    
                     renderSheikhs(filter);
                     const searchVal = document.getElementById('surahSearch').value;
                     renderSurahs(searchVal);
-                    // الانتقال مباشرة إلى قسم السور
                     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
                     const surahsBtn = document.querySelector('.nav-btn[data-section="surahs"]');
@@ -893,7 +2043,7 @@
             filter = filter || '';
             const list = document.getElementById('surahsList');
             list.innerHTML = '';
-            const filtered = QURAN_DATA.surahs.filter(s => s.name.includes(filter));
+            const q = (filter||'').toLowerCase(); const filtered = QURAN_DATA.surahs.filter(s => getSurahName(s.id).toLowerCase().includes(q) || SURAH_NAMES[s.id-1].includes(filter) || String(s.id)===filter);
 
             if (filtered.length === 0) {
                 list.innerHTML = '<p style="text-align:center;opacity:0.6">' + t('noResults') + '</p>';
@@ -903,7 +2053,7 @@
             filtered.forEach(s => {
                 const el = document.createElement('div');
                 el.className = 'surah-item';
-                el.innerHTML = '<div class="surah-info" data-id="' + s.id + '"><div class="surah-num">' + s.id + '</div><strong>' + t('surahOf') + ' ' + s.name + '</strong></div><div class="action-btns"><button class="save-btn" id="saveBtn-' + s.id + '" data-id="' + s.id + '">' + t('save') + '</button><a href="#" class="direct-download" id="dl-' + s.id + '" download="سورة_' + s.name + '.mp3" target="_blank" rel="noopener">📥 MP3</a></div>';
+                el.innerHTML = '<div class="surah-info" data-id="' + s.id + '"><div class="surah-num">' + s.id + '</div><strong>' + getSurahDisplay(s.id) + '</strong></div><div class="action-btns"><button class="save-btn" id="saveBtn-' + s.id + '" data-id="' + s.id + '">' + t('save') + '</button><a href="#" class="direct-download" id="dl-' + s.id + '" download="سورة_' + s.name + '.mp3" target="_blank" rel="noopener">📥 MP3</a></div>';
                 list.appendChild(el);
 
                 const url = window.player.getSurahUrl(s.id);
@@ -984,12 +2134,30 @@
                     }
                     if (btn.dataset.section === 'home') {
                         updateSavedCount();
+                        
+                    }
+                    if (btn.dataset.section === 'mushaf') {
+                        initMushafSelect();
+                        loadMushafSurah(mushafState.surahId || 1, mushafState.page || 0);
+                    }
+                    if (btn.dataset.section === 'adhkar') {
+                        renderAdhkarCategories();
                     }
                 };
             });
         }
 
         function setupEvents() {
+
+            const mp = document.getElementById('mushafPrev');
+            const mn = document.getElementById('mushafNext');
+            const mp2 = document.getElementById('mushafPrev2');
+            const mn2 = document.getElementById('mushafNext2');
+            if (mp) mp.onclick = () => mushafTurn(-1);
+            if (mn) mn.onclick = () => mushafTurn(1);
+            if (mp2) mp2.onclick = () => mushafTurn(-1);
+            if (mn2) mn2.onclick = () => mushafTurn(1);
+
             document.getElementById('playBtn').onclick = () => {
                 if (window.player.isPlaying) window.player.pause();
                 else window.player.play();
@@ -1006,6 +2174,14 @@
             document.getElementById('volumeBar').oninput = (e) => {
                 window.player.audio.volume = e.target.value / 100;
             };
+            const repBtn = document.getElementById('repeatBtn');
+            if (repBtn) {
+                repBtn.onclick = () => {
+                    window.player.audio.loop = !window.player.audio.loop;
+                    repBtn.classList.toggle('active', window.player.audio.loop);
+                    showToast(window.player.audio.loop ? (t('repeatOn') || 'تكرار السورة مفعّل') : (t('repeatOff') || 'تكرار السورة متوقف'));
+                };
+            }
 
             document.getElementById('sheikhSearch').oninput = (e) => renderSheikhs(e.target.value.trim());
             document.getElementById('surahSearch').oninput = (e) => renderSurahs(e.target.value.trim());
