@@ -382,6 +382,45 @@
         }
         .saved-group-body { background: var(--card); padding: 6px 8px 10px; }
         .saved-group-body .surah-item { margin: 6px 0; }
+    
+        .mushaf-verse-block {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.25);
+        }
+        .mushaf-verse-block:last-child { border-bottom: none; }
+        .mushaf-ayah-ar {
+            font-family: "Amiri", "Scheherazade New", "Traditional Arabic", serif;
+            font-size: 1.5em;
+            line-height: 2.3;
+            text-align: center;
+            color: #1a1208;
+            direction: rtl;
+            margin-bottom: 8px;
+        }
+        body.dark-mode .mushaf-ayah-ar { color: #f5ecd0; }
+        .mushaf-ayah-tr {
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.95em;
+            line-height: 1.65;
+            text-align: center;
+            color: #333;
+            opacity: 0.92;
+            padding: 0 6px;
+        }
+        body.dark-mode .mushaf-ayah-tr { color: #d0d0d0; }
+    
+        .adhkar-tr {
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.92em;
+            line-height: 1.65;
+            color: #444;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(26,94,58,0.2);
+            text-align: start;
+        }
+        body.dark-mode .adhkar-tr { color: #ccc; border-top-color: rgba(212,175,55,0.25); }
     </style>
 </head>
 <body>
@@ -429,7 +468,7 @@
         <button class="nav-btn active" data-section="home" data-i18n="navHome">🏠 الرئيسية</button>
         <button class="nav-btn" data-section="sheikhs" data-i18n="navSheikhs">👤 المشايخ</button>
         <button class="nav-btn" data-section="surahs" data-i18n="navSurahs">📖 السور</button>
-        <button class="nav-btn" data-section="mushaf" data-i18n="navMushaf">📖 مصحف</button>
+        <button class="nav-btn" data-section="mushaf" data-i18n="navMushaf">📗 المصحف</button>
         <button class="nav-btn" data-section="adhkar" data-i18n="navAdhkar">🤲 أذكار</button>
         <button class="nav-btn" data-section="settings" data-i18n="navSettings">⚙ الإعدادات</button>
     </nav>
@@ -441,7 +480,7 @@
                 <p style="margin-top:8px;opacity:0.85;line-height:1.5" data-i18n="welcomeDesc">احفظ سور القرآن الكريم واستمع بدون إنترنت. هذا التطبيق صدقة جارية لأمة الإسلام</p>
             </div>
             <div class="quick-stats">
-                <div class="stat-card" id="statMushafCard" style="cursor:pointer"><h3 data-i18n="statMushaf">📖 المصحف</h3><p style="font-size:1.6em;line-height:1.2">📗</p></div>
+                <div class="stat-card" id="statMushafCard" style="cursor:pointer"><h3 data-i18n="statMushaf">📗 المصحف</h3><p style="font-size:1.6em;line-height:1.2">📗</p></div>
                 <div class="stat-card" id="statAdhkarCard" style="cursor:pointer"><h3 data-i18n="statAdhkar">🤲 الأذكار</h3><p style="font-size:1.6em;line-height:1.2">📿</p></div>
                 <div class="stat-card" id="statSavedCard" style="cursor:pointer;border:2px solid var(--secondary)"><h3 data-i18n="statSaved">محفوظة</h3><p id="savedCount">0</p></div>
             </div>
@@ -1170,6 +1209,48 @@
         const RTL_LANGS = ['ar', 'ur', 'ku'];
         let currentLang = localStorage.getItem('appLang') || 'ar';
 
+        
+        (function(){
+            const extraKeys = {
+                delete: { ar:"حذف", en:"Delete", fr:"Supprimer", ha:"Share", so:"Tirtir", ur:"حذف کریں", es:"Eliminar", it:"Elimina", tr:"Sil", hi:"हटाएँ", de:"Löschen", id:"Hapus", ms:"Padam", ku:"سڕینەوە", pt:"Excluir" },
+                settingsTitle: { ar:"⚙ الإعدادات", en:"⚙ Settings", fr:"⚙ Paramètres", ha:"⚙ Saiti", so:"⚙ Settings", ur:"⚙ ترتیبات", es:"⚙ Ajustes", it:"⚙ Impostazioni", tr:"⚙ Ayarlar", hi:"⚙ सेटिंग्स", de:"⚙ Einstellungen", id:"⚙ Pengaturan", ms:"⚙ Tetapan", ku:"⚙ ڕێکخستن", pt:"⚙ Configurações" },
+                darkMode: { ar:"الوضع الليلي", en:"Dark mode", fr:"Mode sombre", ha:"Yanayi mai duhu", so:"Habeyn", ur:"ڈارک موڈ", es:"Modo oscuro", it:"Modalità scura", tr:"Karanlık mod", hi:"डार्क मोड", de:"Dunkelmodus", id:"Mode gelap", ms:"Mod gelap", ku:"دۆخی تاریک", pt:"Modo escuro" },
+                language: { ar:"اللغة", en:"Language", fr:"Langue", ha:"Harshe", so:"Luuqad", ur:"زبان", es:"Idioma", it:"Lingua", tr:"Dil", hi:"भाषा", de:"Sprache", id:"Bahasa", ms:"Bahasa", ku:"زمان", pt:"Idioma" },
+                clearCache: { ar:"مسح جميع التلاوات المحفوظة", en:"Clear all saved recitations", fr:"Effacer toutes les récitations", ha:"Share duk wanda aka ajiye", so:"Tirtir dhammaan", ur:"تمام محفوظ تلاوتیں مٹائیں", es:"Borrar todas", it:"Cancella tutto", tr:"Tümünü temizle", hi:"सभी सहेजी तिलावत हटाएँ", de:"Alle löschen", id:"Hapus semua", ms:"Padam semua", ku:"هەموو بسڕەوە", pt:"Limpar tudo" },
+                clearAll: { ar:"🗑 مسح الكل", en:"🗑 Clear all", fr:"🗑 Tout effacer", ha:"🗑 Share duka", so:"🗑 Tirtir", ur:"🗑 سب مٹائیں", es:"🗑 Borrar todo", it:"🗑 Cancella", tr:"🗑 Temizle", hi:"🗑 सब साफ़", de:"🗑 Alles löschen", id:"🗑 Hapus semua", ms:"🗑 Padam semua", ku:"🗑 پاککردن", pt:"🗑 Limpar" },
+                sadaqa: { ar:"صدقة جارية لكل من ينشرها", en:"Ongoing charity for all who share it", fr:"Charité continue pour ceux qui la partagent", ha:"Sadaka mai ci gaba ga duk wanda ya yada", so:"Sadaqad joogto ah", ur:"جاری صدقہ ہر شیئر کرنے والے کے لیے", es:"Caridad continua", it:"Carità continua", tr:"Paylaşanlar için sürekli sadaka", hi:"साझा करने वालों के लिए सदका", de:"Fortlaufende Wohltätigkeit", id:"Sedekah jariyah", ms:"Sedekah jariah", ku:"سەدەقەی بەردەوام", pt:"Caridade contínua" },
+                shareTip: { ar:"لا تنسى نشر التطبيق فالدال على الخير كفاعله", en:"Do not forget to share the app — guiding to good is like doing it", fr:"N'oubliez pas de partager — guider vers le bien c'est comme le faire", ha:"Kada ka manta ka yada app — mai nuna hanya ga alheri kamar mai aikatawa ne", so:"Ha iloobin in aad wadaagto", ur:"ایپ شیئر کرنا نہ بھولیں", es:"No olvides compartir la app", it:"Non dimenticare di condividere", tr:"Uygulamayı paylaşmayı unutma", hi:"ऐप साझा करना न भूलें", de:"App teilen nicht vergessen", id:"Jangan lupa bagikan aplikasi", ms:"Jangan lupa kongsi aplikasi", ku:"لەبیر مەکە بەشی بکەیت", pt:"Não esqueça de compartilhar" },
+                appInfo: { ar:"معلومات التطبيق", en:"App info", fr:"Infos", ha:"Bayanan app", so:"Macluumaadka", ur:"ایپ کی معلومات", es:"Info", it:"Info", tr:"Uygulama bilgisi", hi:"ऐप जानकारी", de:"App-Info", id:"Info aplikasi", ms:"Maklumat app", ku:"زانیاری ئەپ", pt:"Info do app" },
+                chooseSurah: { ar:"اختر سورة للاستماع", en:"Choose a Surah to listen", fr:"Choisissez une sourate", ha:"Zaɓi Sura don saurare", so:"Dooro Suurad", ur:"سننے کے لیے سورہ منتخب کریں", es:"Elige una sura", it:"Scegli una sura", tr:"Dinlemek için sure seç", hi:"सुनने के लिए सूरह चुनें", de:"Sure zum Anhören wählen", id:"Pilih surah", ms:"Pilih surah", ku:"سورەت هەڵبژێرە", pt:"Escolha uma sura" }
+            };
+            Object.keys(extraKeys).forEach(k => {
+                Object.keys(extraKeys[k]).forEach(lang => {
+                    if (!I18N[lang]) I18N[lang] = {};
+                    I18N[lang][k] = extraKeys[k][lang];
+                });
+            });
+        })();
+
+        
+        (function(){
+            // المصحف + أيقونة
+            const mushafL = {ar:"📗 المصحف",en:"📗 Mushaf",fr:"📗 Mushaf",tr:"📗 Mushaf",es:"📗 Mushaf",de:"📗 Mushaf",id:"📗 Mushaf",ms:"📗 Mushaf",ur:"📗 المصحف",hi:"📗 मुस्हफ़",ha:"📗 Mushaf",so:"📗 Mushaf",ku:"📗 مصحەف",pt:"📗 Mushaf",it:"📗 Mushaf"};
+            // Azkar for EN/FR as requested
+            const azkarL = {ar:"🤲 أذكار",en:"🤲 Azkar",fr:"🤲 Azkar",tr:"🤲 Zikirler",es:"🤲 Azkar",de:"🤲 Azkar",id:"🤲 Dzikir",ms:"🤲 Zikir",ur:"🤲 اذکار",hi:"🤲 अज़कार",ha:"🤲 Azkar",so:"🤲 Xus",ku:"🤲 زیکر",pt:"🤲 Azkar",it:"🤲 Azkar"};
+            const statM = {ar:"المصحف",en:"Mushaf",fr:"Mushaf",tr:"Mushaf",es:"Mushaf",de:"Mushaf",id:"Mushaf",ms:"Mushaf",ur:"المصحف",hi:"मुस्हफ़",ha:"Mushaf",so:"Mushaf",ku:"مصحەف",pt:"Mushaf",it:"Mushaf"};
+            const statA = {ar:"الأذكار",en:"Azkar",fr:"Azkar",tr:"Zikirler",es:"Azkar",de:"Azkar",id:"Dzikir",ms:"Zikir",ur:"اذکار",hi:"अज़कार",ha:"Azkar",so:"Xus",ku:"زیکر",pt:"Azkar",it:"Azkar"};
+            Object.keys(mushafL).forEach(l=>{
+                if(!I18N[l]) I18N[l]={};
+                I18N[l].navMushaf = mushafL[l];
+                I18N[l].navAdhkar = azkarL[l];
+                I18N[l].statMushaf = statM[l];
+                I18N[l].statAdhkar = statA[l];
+                I18N[l].adhkarTitle = (l==='en'||l==='fr') ? ('🤲 Azkar') : (I18N[l].adhkarTitle||azkarL[l]);
+                if(l==='en') I18N[l].adhkarTitle = '🤲 Azkar & Duas';
+                if(l==='fr') I18N[l].adhkarTitle = '🤲 Azkar et invocations';
+            });
+        })();
+
         function t(key) {
             const pack = I18N[currentLang] || I18N.ar;
             return pack[key] || I18N.ar[key] || key;
@@ -1198,6 +1279,7 @@
                 const sheikhFilter = (document.getElementById('sheikhSearch') || {}).value || '';
                 const surahFilter = (document.getElementById('surahSearch') || {}).value || '';
                 renderSheikhs(sheikhFilter);
+                try { const ms=document.getElementById('mushafSurahSelect'); if(ms) ms.innerHTML=''; if(document.getElementById('mushaf')?.classList.contains('active')) renderMushafPageImage(); } catch(e){}
                 if (typeof renderMushafPageImage === 'function' && document.getElementById('mushaf')?.classList.contains('active')) { try { const sel = document.getElementById('mushafSurahSelect'); if (sel) sel.innerHTML=''; renderMushafPageImage(); } catch(e){} }
                 renderSurahs(surahFilter);
                 
@@ -1222,6 +1304,20 @@
             const pack = COUNTRY_I18N[currentLang] || COUNTRY_I18N.en || COUNTRY_I18N.ar;
             const name = (pack && pack[base]) || (COUNTRY_I18N.ar && COUNTRY_I18N.ar[base]) || base || raw;
             return '<span class="country-flag">' + flag + '</span> <span class="country-name">' + name + '</span>';
+        }
+
+        
+        const SHEIKH_NAME_TR = {"مشاري راشد العفاسي": {"en": "Mishary Rashid Alafasy", "fr": "Mishary Rashid Alafasy", "tr": "Mişari Raşid El-Afasi", "es": "Mishary Rashid Alafasy", "de": "Mishary Rashid Alafasy", "id": "Misyari Rasyid Al-Afasy", "ur": "مشاری راشد العفاسی", "hi": "मिशारी राशिद अल-अफासी", "ha": "Mishary Rashid Alafasy", "so": "Mishary Rashid Alafasy", "ms": "Misyari Rasyid Al-Afasy", "ku": "میشاری ڕاشید عەفاسی", "pt": "Mishary Rashid Alafasy", "it": "Mishary Rashid Alafasy"}, "عبد الرحمن السديس": {"en": "Abdul Rahman Al-Sudais", "fr": "Abdul Rahman Al-Sudais", "tr": "Abdurrahman Es-Sudays", "es": "Abdul Rahman Al-Sudais", "de": "Abdul Rahman Al-Sudais", "id": "Abdurrahman As-Sudais", "ur": "عبدالرحمن السدیس", "hi": "अब्दुर्रहमान अस-सुदैस", "ha": "Abdul Rahman Al-Sudais", "so": "Abdul Rahman Al-Sudais", "ms": "Abdurrahman As-Sudais", "ku": "عەبدولڕەحمان سودەیس", "pt": "Abdul Rahman Al-Sudais", "it": "Abdul Rahman Al-Sudais"}, "سعود الشريم": {"en": "Saud Al-Shuraim", "fr": "Saoud Al-Shuraim", "tr": "Suud Eş-Şureym", "es": "Saud Al-Shuraim", "de": "Saud Al-Shuraim", "id": "Saud Asy-Syuraim", "ur": "سعود الشریم", "hi": "सऊद अश-शुरैम", "ha": "Saud Al-Shuraim", "so": "Saud Al-Shuraim", "ms": "Saud Asy-Syuraim", "ku": "سەعود شورەیم", "pt": "Saud Al-Shuraim", "it": "Saud Al-Shuraim"}, "ماهر المعيقلي": {"en": "Maher Al-Muaiqly", "fr": "Maher Al-Muaiqly", "tr": "Mahir El-Muaykili", "es": "Maher Al-Muaiqly", "de": "Maher Al-Muaiqly", "id": "Maher Al-Muaiqly", "ur": "ماہر المعیقلی", "hi": "माहिर अल-मुऐक़ली", "ha": "Maher Al-Muaiqly", "so": "Maher Al-Muaiqly", "ms": "Maher Al-Muaiqly", "ku": "ماهیر موعەیقلی", "pt": "Maher Al-Muaiqly", "it": "Maher Al-Muaiqly"}, "ياسر الدوسري": {"en": "Yasser Al-Dosari", "fr": "Yasser Al-Dossari", "tr": "Yasir Ed-Devseri", "es": "Yasser Al-Dosari", "de": "Yasser Al-Dosari", "id": "Yasser Al-Dosari", "ur": "یاسر الدوسری", "hi": "यासिर अद-दौसरी", "ha": "Yasser Al-Dosari", "so": "Yasser Al-Dosari", "ms": "Yasser Al-Dosari", "ku": "یاسیر دەوسەری", "pt": "Yasser Al-Dosari", "it": "Yasser Al-Dosari"}, "علي الحذيفي": {"en": "Ali Al-Huthaify", "fr": "Ali Al-Huthaify", "tr": "Ali El-Huzeyfi", "es": "Ali Al-Huthaify", "de": "Ali Al-Huthaify", "id": "Ali Al-Huthaify", "ur": "علی الحذیفی", "hi": "अली अल-हुज़ैफ़ी", "ha": "Ali Al-Huthaify", "so": "Ali Al-Huthaify", "ms": "Ali Al-Huthaify", "ku": "عەلی حوزەفی", "pt": "Ali Al-Huthaify", "it": "Ali Al-Huthaify"}, "أحمد بن علي العجمي": {"en": "Ahmed Al-Ajmi", "fr": "Ahmed Al-Ajmi", "tr": "Ahmed El-Acemi", "es": "Ahmed Al-Ajmi", "de": "Ahmed Al-Ajmi", "id": "Ahmad Al-Ajmi", "ur": "احمد العجمی", "hi": "अहमद अल-अजमी", "ha": "Ahmed Al-Ajmi", "so": "Ahmed Al-Ajmi", "ms": "Ahmad Al-Ajmi", "ku": "ئەحمەد عەجەمی", "pt": "Ahmed Al-Ajmi", "it": "Ahmed Al-Ajmi"}, "أبو بكر الشاطري": {"en": "Abu Bakr Al-Shatri", "fr": "Abou Bakr Al-Shatri", "tr": "Ebu Bekir Eş-Şatri", "es": "Abu Bakr Al-Shatri", "de": "Abu Bakr Al-Shatri", "id": "Abu Bakar Asy-Syatri", "ur": "ابو بکر الشاطری", "hi": "अबू बक्र अश-शात्री", "ha": "Abu Bakr Al-Shatri", "so": "Abu Bakr Al-Shatri", "ms": "Abu Bakar Asy-Syatri", "ku": "ئەبو بەکر شاتری", "pt": "Abu Bakr Al-Shatri", "it": "Abu Bakr Al-Shatri"}, "محمد أيوب": {"en": "Muhammad Ayyub", "fr": "Muhammad Ayyoub", "tr": "Muhammed Eyyub", "es": "Muhammad Ayyub", "de": "Muhammad Ayyub", "id": "Muhammad Ayyub", "ur": "محمد ایوب", "hi": "मुहम्मद अय्यूब", "ha": "Muhammad Ayyub", "so": "Maxamad Ayyuub", "ms": "Muhammad Ayyub", "ku": "محەمەد ئەییوب", "pt": "Muhammad Ayyub", "it": "Muhammad Ayyub"}, "خالد الجليل": {"en": "Khalid Al-Jalil", "fr": "Khaled Al-Jalil", "tr": "Halid El-Celil", "es": "Khalid Al-Jalil", "de": "Khalid Al-Jalil", "id": "Khalid Al-Jalil", "ur": "خالد الجلیل", "hi": "खालिद अल-जलील", "ha": "Khalid Al-Jalil", "so": "Khaalid Al-Jalil", "ms": "Khalid Al-Jalil", "ku": "خالید جەلیل", "pt": "Khalid Al-Jalil", "it": "Khalid Al-Jalil"}, "عبد الله عواد الجهني": {"en": "Abdullah Awad Al-Jahny", "fr": "Abdullah Awad Al-Jahny", "tr": "Abdullah Avvad El-Cuheni", "es": "Abdullah Awad Al-Jahny", "de": "Abdullah Awad Al-Jahny", "id": "Abdullah Awad Al-Jahny", "ur": "عبداللہ عواد الجہنی", "hi": "अब्दुल्लाह अवाद अल-जहनी", "ha": "Abdullah Awad Al-Jahny", "so": "Cabdillaahi Awad Al-Jahny", "ms": "Abdullah Awad Al-Jahny", "ku": "عەبدوڵڵا عەواد جەهەنی", "pt": "Abdullah Awad Al-Jahny", "it": "Abdullah Awad Al-Jahny"}, "هاني الرفاعي": {"en": "Hani Al-Rifai", "fr": "Hani Al-Rifai", "tr": "Hani Er-Rifai", "es": "Hani Al-Rifai", "de": "Hani Al-Rifai", "id": "Hani Ar-Rifai", "ur": "ہانی الرفاعی", "hi": "हानी अर-रिफाई", "ha": "Hani Al-Rifai", "so": "Haani Al-Rifai", "ms": "Hani Ar-Rifai", "ku": "هانی ڕیفاعی", "pt": "Hani Al-Rifai", "it": "Hani Al-Rifai"}, "نورين محمد صديق": {"en": "Nourin Mohammad Siddig", "fr": "Nourin Mohammad Siddig", "tr": "Nurin Muhammed Sıddık", "es": "Nourin Mohammad Siddig", "de": "Nourin Mohammad Siddig", "id": "Nourin Mohammad Siddig", "ur": "نورین محمد صدیق", "hi": "नूरीन मुहम्मद सिद्दीक", "ha": "Nourin Mohammad Siddig", "so": "Nuurin Maxamad Siddiig", "ms": "Nourin Mohammad Siddig", "ku": "نورین محەمەد سدیق", "pt": "Nourin Mohammad Siddig", "it": "Nourin Mohammad Siddig"}, "إدريس أبكر": {"en": "Idris Abkar", "fr": "Idriss Abkar", "tr": "İdris Abkar", "es": "Idris Abkar", "de": "Idris Abkar", "id": "Idris Abkar", "ur": "ادریس ابکر", "hi": "इदरीस अबकर", "ha": "Idris Abkar", "so": "Idriis Abkar", "ms": "Idris Abkar", "ku": "ئیدریس ئەبکەر", "pt": "Idris Abkar", "it": "Idris Abkar"}, "محمد صديق المنشاوي": {"en": "Mohamed Siddiq Al-Minshawi", "fr": "Mohamed Siddiq Al-Minshawi", "tr": "Muhammed Sıddık El-Minşavi", "es": "Mohamed Siddiq Al-Minshawi", "de": "Mohamed Siddiq Al-Minshawi", "id": "Muhammad Siddiq Al-Minshawi", "ur": "محمد صدیق المنشاوی", "hi": "मुहम्मद सिद्दीक अल-मिनशावी", "ha": "Mohamed Siddiq Al-Minshawi", "so": "Maxamad Siddiig Al-Minshaawi", "ms": "Muhammad Siddiq Al-Minshawi", "ku": "محەمەد سدیق مینشاوی", "pt": "Mohamed Siddiq Al-Minshawi", "it": "Mohamed Siddiq Al-Minshawi"}, "محمد جبريل": {"en": "Muhammad Jibreel", "fr": "Muhammad Jibril", "tr": "Muhammed Cibril", "es": "Muhammad Jibreel", "de": "Muhammad Jibreel", "id": "Muhammad Jibril", "ur": "محمد جبریل", "hi": "मुहम्मद जिब्रील", "ha": "Muhammad Jibreel", "so": "Maxamad Jibriil", "ms": "Muhammad Jibril", "ku": "محەمەد جبریل", "pt": "Muhammad Jibreel", "it": "Muhammad Jibreel"}, "عکاشة کمیني": {"en": "Okasha Kameny", "fr": "Okasha Kameny", "tr": "Ukaşe Kameni", "es": "Okasha Kameny", "de": "Okasha Kameny", "id": "Okasha Kameny", "ur": "عکاشہ کمینی", "hi": "ओकाशाह कमेनी", "ha": "Okasha Kameny", "so": "Cukaasha Kameny", "ms": "Okasha Kameny", "ku": "عوقاشە کەمینی", "pt": "Okasha Kameny", "it": "Okasha Kameny"}, "الدوكالي محمد العالم": {"en": "Al-Dokali Mohammad Al-Alim", "fr": "Al-Dokali Mohammad Al-Alim", "tr": "Dokali Muhammed El-Alim", "es": "Al-Dokali Mohammad Al-Alim", "de": "Al-Dokali Mohammad Al-Alim", "id": "Al-Dokali Mohammad Al-Alim", "ur": "الدوکالی محمد العالم", "hi": "अद-दोकाली मुहम्मद अल-आलिम", "ha": "Al-Dokali Mohammad Al-Alim", "so": "Al-Dokali Maxamad Al-Caalim", "ms": "Al-Dokali Mohammad Al-Alim", "ku": "دۆکالی محەمەد عالم", "pt": "Al-Dokali Mohammad Al-Alim", "it": "Al-Dokali Mohammad Al-Alim"}, "عبد الرشيد صوفي": {"en": "Abdul Rashid Sufi", "fr": "Abdul Rashid Soufi", "tr": "Abdurreşid Sufi", "es": "Abdul Rashid Sufi", "de": "Abdul Rashid Sufi", "id": "Abdul Rasyid Sufi", "ur": "عبدالرشید صوفی", "hi": "अब्दुर्रशीद सूफी", "ha": "Abdul Rashid Sufi", "so": "Cabdirashiid Suufi", "ms": "Abdul Rasyid Sufi", "ku": "عەبدولڕەشید سۆفی", "pt": "Abdul Rashid Sufi", "it": "Abdul Rashid Sufi"}, "موسى بلال": {"en": "Musa Bilal", "fr": "Moussa Bilal", "tr": "Musa Bilal", "es": "Musa Bilal", "de": "Musa Bilal", "id": "Musa Bilal", "ur": "موسی بلال", "hi": "मूसा बिलाल", "ha": "Musa Bilal", "so": "Muusa Bilaal", "ms": "Musa Bilal", "ku": "موسا بلال", "pt": "Musa Bilal", "it": "Musa Bilal"}, "بدر التركي": {"en": "Badr Al-Turki", "fr": "Badr Al-Turki", "tr": "Bedir Et-Türki", "es": "Badr Al-Turki", "de": "Badr Al-Turki", "id": "Badr At-Turki", "ur": "بدر الترکی", "hi": "बद्र अत-तुर्की", "ha": "Badr Al-Turki", "so": "Badr At-Turki", "ms": "Badr At-Turki", "ku": "بەدر تورکی", "pt": "Badr Al-Turki", "it": "Badr Al-Turki"}, "بندر بليلة": {"en": "Bandar Baleelah", "fr": "Bandar Balilah", "tr": "Bender Beleyle", "es": "Bandar Baleelah", "de": "Bandar Baleelah", "id": "Bandar Baleelah", "ur": "بندر بلیلہ", "hi": "बंदर बलीला", "ha": "Bandar Baleelah", "so": "Bandar Baleelah", "ms": "Bandar Baleelah", "ku": "بەندەر بەلیلە", "pt": "Bandar Baleelah", "it": "Bandar Baleelah"}, "محمد عثمان خان": {"en": "Muhammad Usman Khan", "fr": "Muhammad Usman Khan", "tr": "Muhammed Osman Han", "es": "Muhammad Usman Khan", "de": "Muhammad Usman Khan", "id": "Muhammad Usman Khan", "ur": "محمد عثمان خان", "hi": "मुहम्मद उस्मान खान", "ha": "Muhammad Usman Khan", "so": "Maxamad Cusmaan Khan", "ms": "Muhammad Usman Khan", "ku": "محەمەد عوسمان خان", "pt": "Muhammad Usman Khan", "it": "Muhammad Usman Khan"}, "عکاشة كميني": {"en": "Okasha Kameny", "fr": "Okasha Kameny", "tr": "Ukaşe Kameni", "es": "Okasha Kameny", "de": "Okasha Kameny", "id": "Okasha Kameny", "ur": "عکاشہ کمینی", "hi": "ओकाशाह कमेनी", "ha": "Okasha Kameny", "so": "Cukaasha Kameny", "ms": "Okasha Kameny", "ku": "عوقاشە کەمینی", "pt": "Okasha Kameny", "it": "Okasha Kameny"}, "عكاشة كميني": {"en": "Okasha Kameny", "fr": "Okasha Kameny", "tr": "Ukaşe Kameni", "es": "Okasha Kameny", "de": "Okasha Kameny", "id": "Okasha Kameny", "ur": "عکاشہ کمینی", "hi": "ओकाशाह कमेनी", "ha": "Okasha Kameny", "so": "Cukaasha Kameny", "ms": "Okasha Kameny", "ku": "عوقاشە کەمینی", "pt": "Okasha Kameny", "it": "Okasha Kameny"}, "ادريس أبكر": {"en": "Idris Abkar", "fr": "Idriss Abkar", "tr": "İdris Abkar", "es": "Idris Abkar", "de": "Idris Abkar", "id": "Idris Abkar", "ur": "ادریس ابکر", "hi": "इदरीस अबकर", "ha": "Idris Abkar", "so": "Idriis Abkar", "ms": "Idris Abkar", "ku": "ئیدریس ئەبکەر", "pt": "Idris Abkar", "it": "Idris Abkar"}, "إدريس ابكر": {"en": "Idris Abkar", "fr": "Idriss Abkar", "tr": "İdris Abkar", "es": "Idris Abkar", "de": "Idris Abkar", "id": "Idris Abkar", "ur": "ادریس ابکر", "hi": "इदरीस अबकर", "ha": "Idris Abkar", "so": "Idriis Abkar", "ms": "Idris Abkar", "ku": "ئیدریس ئەبکەر", "pt": "Idris Abkar", "it": "Idris Abkar"}};
+
+        
+        Object.assign(SHEIKH_NAME_TR, {"هانئ الرفاعي": {"en": "Hani Al-Rifai", "fr": "Hani Al-Rifai", "tr": "Hani Er-Rifai", "es": "Hani Al-Rifai", "de": "Hani Al-Rifai", "id": "Hani Ar-Rifai", "ur": "ہانی الرفاعی", "hi": "हानी अर-रिफाई", "ha": "Hani Al-Rifai", "so": "Haani Al-Rifai", "ms": "Hani Ar-Rifai", "ku": "هانی ڕیفاعی", "pt": "Hani Al-Rifai", "it": "Hani Al-Rifai"}, "عكاشة كميني": {"en": "Okasha Kameny", "fr": "Okasha Kameny", "tr": "Ukaşe Kameni", "es": "Okasha Kameny", "de": "Okasha Kameny", "id": "Okasha Kameny", "ur": "عکاشہ کمینی", "hi": "ओकाशाह कमेनी", "ha": "Okasha Kameny", "so": "Cukaasha Kameny", "ms": "Okasha Kameny", "ku": "عوقاشە کەمینی", "pt": "Okasha Kameny", "it": "Okasha Kameny"}, "ناصر القطامي": {"en": "Nasser Al-Qatami", "fr": "Nasser Al-Qatami", "tr": "Nasır El-Katami", "id": "Nasser Al-Qatami", "ur": "ناصر القطامی", "ha": "Nasser Al-Qatami", "so": "Naasir Al-Qatami", "ms": "Nasser Al-Qatami", "pt": "Nasser Al-Qatami", "it": "Nasser Al-Qatami", "es": "Nasser Al-Qatami", "de": "Nasser Al-Qatami", "hi": "नासिर अल-क़तामी", "ku": "ناسر قەتامی"}, "سعد الغامدي": {"en": "Saad Al-Ghamdi", "fr": "Saad Al-Ghamdi", "tr": "Sad El-Gamidi", "id": "Saad Al-Ghamdi", "ur": "سعد الغامدی", "ha": "Saad Al-Ghamdi", "so": "Sacad Al-Ghamdi", "ms": "Saad Al-Ghamdi", "pt": "Saad Al-Ghamdi", "it": "Saad Al-Ghamdi", "es": "Saad Al-Ghamdi", "de": "Saad Al-Ghamdi", "hi": "साद अल-ग़ामदी", "ku": "سەعد غامدی"}, "عبد الباسط عبد الصمد": {"en": "Abdul Basit Abdus Samad", "fr": "Abdul Basit Abdus Samad", "tr": "Abdulbasit Abdussamed", "id": "Abdul Basit Abdus Samad", "ur": "عبدالباسط عبدالصمد", "ha": "Abdul Basit Abdus Samad", "so": "Cabdul Baasit Cabdisamad", "ms": "Abdul Basit Abdus Samad", "pt": "Abdul Basit Abdus Samad", "it": "Abdul Basit Abdus Samad", "es": "Abdul Basit Abdus Samad", "de": "Abdul Basit Abdus Samad", "hi": "अब्दुल बासित अब्दुस समद", "ku": "عەبدولباست عەبدوسەمەد"}, "محمود خليل الحصري": {"en": "Mahmoud Khalil Al-Husary", "fr": "Mahmoud Khalil Al-Husary", "tr": "Mahmud Halil El-Husari", "id": "Mahmoud Khalil Al-Husary", "ur": "محمود خلیل الحصری", "ha": "Mahmoud Khalil Al-Husary", "so": "Maxamuud Khalil Al-Husary", "ms": "Mahmoud Khalil Al-Husary", "pt": "Mahmoud Khalil Al-Husary", "it": "Mahmoud Khalil Al-Husary", "es": "Mahmoud Khalil Al-Husary", "de": "Mahmoud Khalil Al-Husary", "hi": "महमूद खलील अल-हुसरी", "ku": "مەحموود خەلیل حوسەری"}, "إسلام صبحي": {"en": "Islam Sobhi", "fr": "Islam Sobhi", "tr": "İslam Subhi", "id": "Islam Sobhi", "ur": "اسلام صبحی", "ha": "Islam Sobhi", "so": "Islaam Subxi", "ms": "Islam Sobhi", "pt": "Islam Sobhi", "it": "Islam Sobhi", "es": "Islam Sobhi", "de": "Islam Sobhi", "hi": "इस्लाम सोब्ही", "ku": "ئیسلام سوبحی"}, "فارس عباد": {"en": "Fares Abbad", "fr": "Fares Abbad", "tr": "Faris Abbad", "id": "Fares Abbad", "ur": "فارس عباد", "ha": "Fares Abbad", "so": "Faaris Abbaad", "ms": "Fares Abbad", "pt": "Fares Abbad", "it": "Fares Abbad", "es": "Fares Abbad", "de": "Fares Abbad", "hi": "फारेस अब्बाद", "ku": "فارس عەباد"}});
+        function getSheikhDisplayName(name) {
+            if (!name) return '';
+            if (currentLang === 'ar') return name;
+            const pack = SHEIKH_NAME_TR[name];
+            if (pack && pack[currentLang]) return pack[currentLang];
+            if (pack && pack.en) return pack.en;
+            return name;
         }
 
         function getSurahName(id) {
@@ -1300,7 +1396,7 @@
 
                 this.audio.src = url;
                 document.getElementById('currentSurahName').textContent = getSurahDisplay(surah.id);
-                document.getElementById('currentSheikhName').textContent = t('reader') + ' ' + this.currentSheikh.name;
+                document.getElementById('currentSheikhName').textContent = t('reader') + ' ' + getSheikhDisplayName(this.currentSheikh.name);
                 this.play();
             }
 
@@ -1402,23 +1498,52 @@
                 const keys = await cache.keys();
                 if (!keys.length) {
                     list.innerHTML = '<p style="opacity:0.6">' + t('noSaved') + '</p>';
+                    updateSavedCount();
                     return;
                 }
+                // تجميع بدون تكرار: مفتاح = server + surahId
                 const groups = {};
+                const seen = new Set();
                 keys.forEach(req => {
                     const url = req.url;
                     const m = url.match(/(\d{3})\.mp3$/);
                     const surahId = m ? parseInt(m[1], 10) : 0;
+                    if (!surahId) return;
                     let sheikh = null;
                     for (const sh of QURAN_DATA.sheikhs) {
-                        const pathPart = sh.server.replace(/https?:\/\/[^/]+/, '');
+                        const pathPart = (sh.server || '').replace(/https?:\/\/[^/]+/, '');
                         if (pathPart && url.indexOf(pathPart) >= 0) { sheikh = sh; break; }
                         if (url.startsWith(sh.server)) { sheikh = sh; break; }
                     }
-                    const key = sheikh ? sheikh.server : 'unknown';
-                    if (!groups[key]) groups[key] = { sheikh: sheikh, items: [] };
-                    groups[key].items.push({ url: url, surahId: surahId });
+                    const gkey = (sheikh ? sheikh.server : 'unknown');
+                    const uniq = gkey + '|' + surahId;
+                    if (seen.has(uniq)) return; // منع التكرار
+                    seen.add(uniq);
+                    if (!groups[gkey]) groups[gkey] = { sheikh: sheikh, items: [] };
+                    groups[gkey].items.push({ url: url, surahId: surahId });
                 });
+                // تنظيف التكرارات القديمة من الكاش
+                const keepUrls = new Set();
+                Object.values(groups).forEach(g => g.items.forEach(it => keepUrls.add(it.url)));
+                for (const req of keys) {
+                    const m = req.url.match(/(\d{3})\.mp3$/);
+                    if (!m) continue;
+                    if (!keepUrls.has(req.url)) {
+                        // قد يكون تكراراً لنفس السورة برابط مختلف قليلاً
+                        const surahId = parseInt(m[1], 10);
+                        let sheikh = null;
+                        for (const sh of QURAN_DATA.sheikhs) {
+                            if (req.url.indexOf((sh.server||'').replace(/https?:\/\/[^/]+/, '')) >= 0 || req.url.startsWith(sh.server)) {
+                                sheikh = sh; break;
+                            }
+                        }
+                        const gkey = sheikh ? sheikh.server : 'unknown';
+                        const uniq = gkey + '|' + surahId;
+                        if (seen.has(uniq) && !keepUrls.has(req.url)) {
+                            try { await cache.delete(req); } catch(e) {}
+                        }
+                    }
+                }
                 Object.keys(groups).forEach(key => {
                     const g = groups[key];
                     const wrap = document.createElement('div');
@@ -1426,19 +1551,44 @@
                     const head = document.createElement('button');
                     head.type = 'button';
                     head.className = 'saved-group-head';
-                    const name = g.sheikh ? g.sheikh.name : '?';
+                    const name = g.sheikh ? getSheikhDisplayName(g.sheikh.name) : '?';
                     head.innerHTML = '<span>' + (t('sheikhWord') || '') + ' ' + name + ' (' + g.items.length + ')</span><span class="chev">▼</span>';
                     const body = document.createElement('div');
                     body.className = 'saved-group-body';
                     body.style.display = 'none';
                     g.items.sort((a,b) => a.surahId - b.surahId).forEach(item => {
                         const el = document.createElement('div');
-                        el.className = 'surah-item';
-                        el.innerHTML = '<div class="surah-info"><div class="surah-num">' + (item.surahId || '?') + '</div><div><strong>' + getSurahName(item.surahId) + '</strong></div></div>';
-                        el.onclick = (e) => {
-                            e.stopPropagation();
+                        el.className = 'surah-item saved-item';
+                        el.innerHTML =
+                            '<div class="surah-info" style="flex:1;cursor:pointer">' +
+                            '<div class="surah-num">' + item.surahId + '</div>' +
+                            '<div><strong>' + getSurahName(item.surahId) + '</strong></div></div>' +
+                            '<button type="button" class="del-saved-btn" title="' + (t('delete') || 'حذف') + '">🗑</button>';
+                        el.querySelector('.surah-info').onclick = () => {
                             if (g.sheikh) window.player.currentSheikh = g.sheikh;
                             if (item.surahId) window.player.playSurah(item.surahId);
+                        };
+                        el.querySelector('.del-saved-btn').onclick = async (e) => {
+                            e.stopPropagation();
+                            try {
+                                const cache2 = await caches.open('quran-audio-v1');
+                                // احذف كل نسخ هذه السورة لنفس الشيخ
+                                const all = await cache2.keys();
+                                for (const r of all) {
+                                    const mm = r.url.match(/(\d{3})\.mp3$/);
+                                    if (!mm || parseInt(mm[1],10) !== item.surahId) continue;
+                                    if (g.sheikh && (r.url.indexOf(g.sheikh.server) >= 0 || r.url.startsWith(g.sheikh.server))) {
+                                        await cache2.delete(r);
+                                    } else if (!g.sheikh) {
+                                        await cache2.delete(r);
+                                    }
+                                }
+                                showToast(t('saveDeleted'));
+                                await renderSavedSurahs();
+                                await updateSavedCount();
+                            } catch (err) {
+                                showToast(t('clearError') || 'Error');
+                            }
                         };
                         body.appendChild(el);
                     });
@@ -1451,16 +1601,36 @@
                     wrap.appendChild(body);
                     list.appendChild(wrap);
                 });
+                updateSavedCount();
             } catch (e) {
                 list.innerHTML = '<p style="opacity:0.6">' + t('noSaved') + '</p>';
             }
         }
 
 
+        
+        const ADHKAR_TR = {"en": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "fr": {"أَصْبَحْنَا وَأَصْبَحَ": "Nous voici au matin, et le royaume appartient à Allah. Louange à Allah. Nul n'a le droit d'être adoré en dehors d'Allah, seul, sans associé. À Lui la royauté et la louange, et Il est Omnipotent. Seigneur, je Te demande le bien de ce jour et le bien de ce qui le suit, et je cherche refuge auprès de Toi contre le mal de ce jour et le mal de ce qui le suit...", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "Ô Allah, c'est par Toi que nous arrivons au matin, par Toi que nous arrivons au soir, par Toi que nous vivons, par Toi que nous mourons, et c'est vers Toi que sera la résurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "Ô Allah, Tu es mon Seigneur, nul n'a le droit d'être adoré en dehors de Toi. Tu m'as créé et je suis Ton serviteur. Je m'engage à respecter mon pacte et ma promesse envers Toi du mieux que je peux. Je cherche refuge auprès de Toi contre le mal de ce que j'ai commis. Je reconnais Ton bienfait sur moi et je reconnais mon péché. Pardonne-moi, car nul ne pardonne les péchés en dehors de Toi.", "أُشْهِدُكَ، وَأُشْهِدُ": "Ô Allah, je T'ai pris à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toute Ta création, que Tu es Allah, nul n'a le droit d'être adoré en dehors de Toi, seul sans associé, et que Muhammad est Ton serviteur et Messager.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "Ô Allah, tout bienfait dont j'ai bénéficié, moi ou l'une de Tes créatures, vient de Toi seul, sans associé. À Toi la louange et à Toi la gratitude.", "عَافِنِي فِي بَدَنِي": "Ô Allah, préserve mon corps, mon ouïe et ma vue. Nul n'a le droit d'être adoré en dehors de Toi. Ô Allah, je cherche refuge auprès de Toi contre la mécréance et la pauvreté, et contre le châtiment de la tombe.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah me suffit. Nul n'a le droit d'être adoré en dehors de Lui. En Lui je place ma confiance. Il est le Seigneur du Trône immense.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "Ô Allah, je Te demande le pardon et le bien-être dans la vie d'ici-bas et dans l'au-delà...", "عَالِمَ الْغَيْبِ": "Ô Allah, Connaisseur de l'invisible et du visible, Créateur des cieux et de la terre...", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "Au nom d'Allah, avec le nom duquel rien ne peut nuire sur terre ni dans le ciel. Il est l'Audient, l'Omniscient.", "رَضِيتُ بِاللهِ رَبًّا": "Je suis satisfait d'Allah comme Seigneur, de l'Islam comme religion et de Muhammad comme Prophète.", "يَا حَيُّ يَا قَيُّومُ": "Ô Vivant, ô Immuable, par Ta miséricorde je demande secours. Arrangemes affaires et ne me confie pas à moi-même même un clin d'œil.", "أَمْسَيْنَا وَأَمْسَى": "Nous voici au soir, et le royaume appartient à Allah. Louange à Allah...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "Ô Allah, c'est par Toi que nous arrivons au soir, par Toi que nous arrivons au matin, par Toi que nous vivons et mourons, et c'est vers Toi le retour.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "Je cherche refuge dans les paroles parfaites d'Allah contre le mal de ce qu'Il a créé.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "C'est en Ton nom, Ô Allah, que je meurs et que je vis.", "اللَّهُمَّ قِنِي عَذَابَكَ": "Ô Allah, préserve-moi de Ton châtiment le jour où Tu ressusciteras Tes serviteurs.", "سُبْحَانَ اللهِ": "Gloire à Allah.", "الْحَمْدُ لِلَّهِ": "Louange à Allah.", "اللهُ أَكْبَرُ": "Allah est le Plus Grand.", "أَسْتَغْفِرُ اللهَ": "Je demande pardon à Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "Nul n'a le droit d'être adoré en dehors d'Allah, seul, sans associé. À Lui la royauté et la louange et Il est Omnipotent.", "بِسْمِ اللهِ": "Au nom d'Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "Louange à Allah qui nous a nourris, abreuvés et a fait de nous des musulmans."}, "tr": {"أَصْبَحْنَا وَأَصْبَحَ": "Sabaha erdik ve mülk Allah'ındır. Hamd Allah'adır. Allah'tan başka ilah yoktur; O tektir, ortağı yoktur. Mülk O'nundur, hamd O'nadır. O her şeye kadirdir. Rabbim! Bu günün hayrını ve sonrasının hayrını Senden isterim. Bu günün şerrinden ve sonrasının şerrinden Sana sığınırım...", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "Allah'ım! Seninle sabaha erdik, Seninle akşama erdik. Seninle yaşar, Seninle ölürüz. Dönüş sanadır.", "اللَّهُمَّ أَنْتَ رَبِّي": "Allah'ım! Sen benim Rabbimsin, Senden başka ilah yoktur. Beni Sen yarattın, ben Senin kulunum. Gücüm yettiğince ahdine ve vaadine vefalıyım. Yaptığım kötülüklerden Sana sığınırım. Bana verdiğin nimetleri ve günahımı itiraf ederim. Beni bağışla; günahları ancak Sen bağışlarsın. (Seyyidü'l-İstiğfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "Allah'ım! Sabaha erdim; Seni, Arş'ını taşıyanları, meleklerini ve bütün yaratılmışları şahit tutarım ki Senden başka ilah yoktur; Sen tektir, ortağın yoktur. Muhammed Senin kulun ve elçindir.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "Allah'ım! Bende veya yaratıklarından herhangi birinde bulunan nimet yalnızca Sendendir; ortağın yoktur. Hamd ve şükür Sanadır.", "عَافِنِي فِي بَدَنِي": "Allah'ım! Bedenime, işitme ve görme duyularıma afiyet ver. Senden başka ilah yoktur. Küfürden, yoksulluktan ve kabir azabından Sana sığınırım.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah bana yeter. O'ndan başka ilah yoktur. O'na tevekkül ettim. O, büyük Arş'ın Rabbidir.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "Allah'ım! Dünya ve ahirette affını ve afiyetini isterim...", "عَالِمَ الْغَيْبِ": "Allah'ım! Gaybı ve görüneni bilen, gökleri ve yeri yoktan var eden...", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "Kendisiyle birlikte yerde ve gökte hiçbir şeyin zarar veremeyeceği Allah'ın adıyla. O, Semi'dir, Alîm'dir.", "رَضِيتُ بِاللهِ رَبًّا": "Rab olarak Allah'tan, din olarak İslam'dan, peygamber olarak Muhammed'den razı oldum.", "يَا حَيُّ يَا قَيُّومُ": "Ey Hayy, ey Kayyûm! Rahmetinle yardım isterim. Bütün işlerimi düzelt, göz açıp kapayıncaya kadar bile beni nefsimle baş başa bırakma.", "أَمْسَيْنَا وَأَمْسَى": "Akşama erdik ve mülk Allah'ındır. Hamd Allah'adır...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "Allah'ım! Seninle akşama erdik, Seninle sabaha erdik. Seninle yaşar, Seninle ölürüz. Dönüş sanadır.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "Allah'ın tamamlanmış kelimelerine, yarattığının şerrinden sığınırım.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "Allah'ım! Senin adınla ölür ve Senin adınla dirilirim.", "اللَّهُمَّ قِنِي عَذَابَكَ": "Allah'ım! Kullarını dirilttiğin günde azabından koru.", "سُبْحَانَ اللهِ": "Allah'ı tüm noksanlıklardan tenzih ederim.", "الْحَمْدُ لِلَّهِ": "Hamd Allah'adır.", "اللهُ أَكْبَرُ": "Allah en büyüktür.", "أَسْتَغْفِرُ اللهَ": "Allah'tan bağışlanma dilerim.", "لاَ إِلَهَ إِلاَّ اللهُ": "Allah'tan başka ilah yoktur; O tektir, ortağı yoktur. Mülk O'nundur, hamd O'nadır. O her şeye kadirdir.", "بِسْمِ اللهِ": "Allah'ın adıyla.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "Bizi yedirip içiren ve Müslüman kılan Allah'a hamd olsun."}, "es": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "de": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "id": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "ms": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "ur": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "hi": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "ha": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "so": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "ku": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "pt": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}, "it": {"أَصْبَحْنَا وَأَصْبَحَ": "We have reached the morning and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senile old age. My Lord, I take refuge in You from torment in the Fire and torment in the grave.", "اللَّهُمَّ بِكَ أَصْبَحْنَا": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.", "اللَّهُمَّ أَنْتَ رَبِّي": "O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant and I abide by Your covenant and promise as best I can. I take refuge in You from the evil of which I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You. (Sayyid al-Istighfar)", "أُشْهِدُكَ، وَأُشْهِدُ": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.", "مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ": "O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.", "عَافِنِي فِي بَدَنِي": "O Allah, grant my body health, grant my hearing health, and grant my sight health. None has the right to be worshipped except You. O Allah, I take refuge in You from disbelief and poverty, and I take refuge in You from the punishment of the grave. None has the right to be worshipped except You.", "حَسْبِيَ اللهُ لاَ إِلَهَ": "Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely, and He is Lord of the exalted throne.", "أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with Your greatness lest I be swallowed up from beneath.", "عَالِمَ الْغَيْبِ": "O Allah, Knower of the unseen and the seen, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.", "بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is the All-Hearing, the All-Knowing.", "رَضِيتُ بِاللهِ رَبًّا": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad (peace be upon him) as a Prophet.", "يَا حَيُّ يَا قَيُّومُ": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "أَمْسَيْنَا وَأَمْسَى": "We have reached the evening and at this very time unto Allah belongs all sovereignty. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I take refuge in You from the evil of this night and the evil of what follows it...", "اللَّهُمَّ بِكَ أَمْسَيْنَا": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "أَعُوذُ بِكَلِمَاتِ اللهِ": "I take refuge in the perfect words of Allah from the evil of that which He has created.", "بِاسْمِكَ اللَّهُمَّ أَمُوتُ": "In Your name O Allah, I live and die.", "اللَّهُمَّ قِنِي عَذَابَكَ": "O Allah, protect me from Your punishment on the day You resurrect Your servants.", "سُبْحَانَ اللهِ": "Glory is to Allah.", "الْحَمْدُ لِلَّهِ": "All praise is for Allah.", "اللهُ أَكْبَرُ": "Allah is the greatest.", "أَسْتَغْفِرُ اللهَ": "I seek the forgiveness of Allah.", "لاَ إِلَهَ إِلاَّ اللهُ": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise and He is over all things omnipotent.", "بِسْمِ اللهِ": "In the name of Allah.", "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا": "All praise is for Allah who fed us and gave us drink and made us Muslims.", "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ": "O Allah, I take refuge in You...", "تَبَوَّأْ": "O Allah, place light in my heart..."}};
+
+        function getAdhkarTranslation(arabicText) {
+            if (!arabicText || currentLang === 'ar') return '';
+            const pack = ADHKAR_TR[currentLang] || ADHKAR_TR.en;
+            if (!pack) return '';
+            for (const key of Object.keys(pack)) {
+                if (arabicText.indexOf(key) !== -1) return pack[key];
+            }
+            // fallback English
+            if (currentLang !== 'en' && ADHKAR_TR.en) {
+                for (const key of Object.keys(ADHKAR_TR.en)) {
+                    if (arabicText.indexOf(key) !== -1) return ADHKAR_TR.en[key];
+                }
+            }
+            return '';
+        }
+
         const ADHKAR_DATA = [
             {
                 id: 'morning',
-                title: { ar: 'أذكار الصباح', en: 'Morning Adhkar', fr: 'Adhkar du matin', hi: 'सुबह के अज़कार', tr: 'Sabah zikirleri', ur: 'صبح کے اذکار', id: 'Dzikir pagi', es: 'Adhkar de la mañana', de: 'Morgen-Adhkar' },
+                title: { ar: 'أذكار الصباح', en: 'Morning Azkar', fr: 'Azkar du matin', hi: 'सुबह के अज़कार', tr: 'Sabah zikirleri', ur: 'صبح کے اذکار', id: 'Dzikir pagi', es: 'Azkar de la mañana', de: 'Morgen-Azkar', ha: 'Azkar na safiya', so: 'Xuska subaxda', ms: 'Zikir pagi', ku: 'زیکرەکانی بەیانی', pt: 'Adhkar da manhã', it: 'Adhkar del mattino' },
                 icon: '🌅',
                 items: [
                     { text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.', count: 1, ref: 'حصن المسلم - مسلم' },
@@ -1485,7 +1655,7 @@
             },
             {
                 id: 'evening',
-                title: { ar: 'أذكار المساء', en: 'Evening Adhkar', fr: 'Adhkar du soir', hi: 'शाम के अज़कार', tr: 'Akşam zikirleri', ur: 'شام کے اذکار', id: 'Dzikir sore', es: 'Adhkar de la tarde', de: 'Abend-Adhkar' },
+                title: { ar: 'أذكار المساء', en: 'Evening Azkar', fr: 'Azkar du soir', hi: 'शाम के अज़कार', tr: 'Akşam zikirleri', ur: 'شام کے اذکار', id: 'Dzikir sore', es: 'Azkar de la tarde', de: 'Abend-Adhkar' },
                 icon: '🌙',
                 items: [
                     { text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.', count: 1, ref: 'حصن المسلم - مسلم' },
@@ -1613,6 +1783,10 @@
         const AYAHS_PER_PAGE = 12;
         let mushafState = { surahId: 1, page: 0, ayahs: [], totalPages: 1 , pageNum: 1};
 
+        const TOTAL_MUSHAF_PAGES = 604;
+        const SURAH_START_PAGE = {1: 1, 2: 2, 3: 50, 4: 77, 5: 106, 6: 128, 7: 151, 8: 177, 9: 187, 10: 208, 11: 221, 12: 235, 13: 249, 14: 255, 15: 262, 16: 267, 17: 282, 18: 293, 19: 305, 20: 312, 21: 322, 22: 332, 23: 342, 24: 350, 25: 359, 26: 367, 27: 377, 28: 385, 29: 396, 30: 404, 31: 411, 32: 415, 33: 418, 34: 428, 35: 434, 36: 440, 37: 446, 38: 453, 39: 458, 40: 467, 41: 477, 42: 483, 43: 489, 44: 496, 45: 499, 46: 502, 47: 507, 48: 511, 49: 515, 50: 518, 51: 520, 52: 523, 53: 526, 54: 528, 55: 531, 56: 534, 57: 537, 58: 542, 59: 545, 60: 549, 61: 551, 62: 553, 63: 554, 64: 556, 65: 558, 66: 560, 67: 562, 68: 564, 69: 566, 70: 568, 71: 570, 72: 572, 73: 574, 74: 575, 75: 577, 76: 578, 77: 580, 78: 582, 79: 583, 80: 585, 81: 586, 82: 587, 83: 587, 84: 589, 85: 590, 86: 591, 87: 591, 88: 592, 89: 593, 90: 594, 91: 595, 92: 595, 93: 596, 94: 596, 95: 597, 96: 597, 97: 598, 98: 598, 99: 599, 100: 599, 101: 600, 102: 600, 103: 601, 104: 601, 105: 601, 106: 602, 107: 602, 108: 602, 109: 603, 110: 603, 111: 603, 112: 604, 113: 604, 114: 604};
+
+
         async function initMushafSelect() {
             const sel = document.getElementById('mushafSurahSelect');
             if (!sel) return;
@@ -1668,7 +1842,13 @@
 
         function renderMushafPage() { renderMushafPageImage(); }
 
-        function mushafTurn(dir) { const n = (mushafState.pageNum || 1) + dir; if (n < 1 || n > (typeof TOTAL_MUSHAF_PAGES!=="undefined"?TOTAL_MUSHAF_PAGES:604)) return; mushafState.pageNum = n; renderMushafPageImage(); }
+        function mushafTurn(dir) {
+            var maxPages = (typeof TOTAL_MUSHAF_PAGES !== 'undefined') ? TOTAL_MUSHAF_PAGES : 604;
+            var n = (mushafState.pageNum || 1) + dir;
+            if (n < 1 || n > maxPages) return;
+            mushafState.pageNum = n;
+            renderMushafPageImage();
+        }
 
         
 
@@ -1693,7 +1873,9 @@
                 const title = (cat.title[currentLang] || (cat.title[currentLang] || cat.title.en || cat.title.ar) || cat.title.en);
                 let itemsHtml = '';
                 cat.items.forEach(item => {
+                    const trText = getAdhkarTranslation(item.text);
                     itemsHtml += '<div class="adhkar-card"><div class="adhkar-text">' + item.text + '</div>' +
+                        (trText ? '<div class="adhkar-tr" dir="' + (['ur','ku'].includes(currentLang)?'rtl':'ltr') + '">' + trText + '</div>' : '') +
                         '<div class="adhkar-count">' + (t('repeat') || 'التكرار') + ': ' + item.count + '</div>' +
                         '<div class="adhkar-ref">' + item.ref + '</div></div>';
                 });
@@ -1738,66 +1920,62 @@
 
         
         function openMushaf() {
-            if (typeof showSection === 'function') showSection('mushaf');
-            else {
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                const btn = document.querySelector('.nav-btn[data-section="mushaf"]');
-                if (btn) btn.classList.add('active');
-                const sec = document.getElementById('mushaf');
-                if (sec) sec.classList.add('active');
-            }
-            if (!mushafState.pageNum) {
-                mushafState.pageNum = 1;
-                mushafState.surahId = 1;
-            }
-            const sel = document.getElementById('mushafSurahSelect');
-            if (sel && !sel.options.length) {
-                for (let i = 1; i <= 114; i++) {
-                    const o = document.createElement('option');
+            document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+            var btn = document.querySelector('.nav-btn[data-section="mushaf"]');
+            if (btn) btn.classList.add('active');
+            var sec = document.getElementById('mushaf');
+            if (sec) sec.classList.add('active');
+            if (!mushafState.pageNum) mushafState.pageNum = 1;
+            if (!mushafState.surahId) mushafState.surahId = 1;
+            var sel = document.getElementById('mushafSurahSelect');
+            var starts = (typeof SURAH_START_PAGE !== 'undefined') ? SURAH_START_PAGE : {};
+            if (sel) {
+                sel.innerHTML = '';
+                for (var i = 1; i <= 114; i++) {
+                    var o = document.createElement('option');
                     o.value = i;
-                    o.textContent = i + '. ' + getSurahDisplay(i);
+                    o.textContent = i + ' - ' + ((typeof getSurahName === 'function') ? getSurahName(i) : i);
                     sel.appendChild(o);
                 }
-                sel.onchange = () => {
-                    const id = parseInt(sel.value, 10);
+                sel.value = String(mushafState.surahId || 1);
+                sel.onchange = function() {
+                    var id = parseInt(sel.value, 10);
                     mushafState.surahId = id;
-                    mushafState.pageNum = SURAH_START_PAGE[id] || 1;
+                    mushafState.pageNum = starts[id] || 1;
                     renderMushafPageImage();
                 };
             }
-            if (sel) sel.value = String(mushafState.surahId || 1);
             renderMushafPageImage();
         }
 
-        function mushafPageUrl(n) {
-            const p = String(n).padStart(3, '0');
-            // مصادر تدعم CORS (تعمل من GitHub Pages)
-            return 'https://www.mp3quran.net/api/quran_pages_svg/' + p + '.svg';
-        }
+        
 
         function renderMushafPageImage() {
+            try {
             const content = document.getElementById('mushafContent');
             const status = document.getElementById('mushafStatus');
             if (!content) return;
+            const maxPages = (typeof TOTAL_MUSHAF_PAGES !== 'undefined') ? TOTAL_MUSHAF_PAGES : 604;
             let n = parseInt(mushafState.pageNum, 10) || 1;
             if (n < 1) n = 1;
-            if (n > TOTAL_MUSHAF_PAGES) n = TOTAL_MUSHAF_PAGES;
+            if (n > maxPages) n = maxPages;
             mushafState.pageNum = n;
-            if (status) status.textContent = t('page') + ' ' + n + ' / ' + TOTAL_MUSHAF_PAGES;
+            if (status) status.textContent = (typeof t === 'function' ? t('page') : 'Page') + ' ' + n + ' / ' + maxPages;
             const pn = document.getElementById('mushafPageNum');
             if (pn) pn.textContent = String(n);
             let sid = 1;
+            const starts = (typeof SURAH_START_PAGE !== 'undefined') ? SURAH_START_PAGE : {};
             for (let i = 1; i <= 114; i++) {
-                if ((SURAH_START_PAGE[i] || 1) <= n) sid = i;
+                if ((starts[i] || 1) <= n) sid = i;
             }
             mushafState.surahId = sid;
             const sl = document.getElementById('mushafSurahLabel');
-            if (sl) sl.textContent = getSurahName(sid);
+            if (sl) sl.textContent = (typeof getSurahName === 'function') ? getSurahName(sid) : String(sid);
             const juzEl = document.getElementById('mushafJuz');
             if (juzEl) {
                 const juz = Math.min(30, Math.max(1, Math.ceil(n / 20)));
-                juzEl.textContent = t('juz') + ' ' + juz;
+                juzEl.textContent = (typeof t === 'function' ? t('juz') : 'Juz') + ' ' + juz;
             }
             const sel = document.getElementById('mushafSurahSelect');
             if (sel) {
@@ -1805,87 +1983,162 @@
                     for (let i = 1; i <= 114; i++) {
                         const o = document.createElement('option');
                         o.value = i;
-                        o.textContent = i + ' - ' + getSurahName(i);
+                        o.textContent = i + ' - ' + ((typeof getSurahName === 'function') ? getSurahName(i) : i);
                         sel.appendChild(o);
                     }
-                    sel.onchange = () => {
+                    sel.onchange = function() {
                         const id = parseInt(sel.value, 10);
                         mushafState.surahId = id;
-                        mushafState.pageNum = SURAH_START_PAGE[id] || 1;
+                        mushafState.pageNum = (starts[id] || 1);
                         renderMushafPageImage();
                     };
                 } else {
-                    Array.from(sel.options).forEach(o => {
+                    Array.from(sel.options).forEach(function(o) {
                         const id = parseInt(o.value, 10);
-                        if (id) o.textContent = id + ' - ' + getSurahName(id);
+                        if (id) o.textContent = id + ' - ' + ((typeof getSurahName === 'function') ? getSurahName(id) : id);
                     });
                 }
                 sel.value = String(sid);
             }
-            const p = String(n).padStart(3, '0');
-            // مصادر صور صفحات المصحف (مصحف المدينة / مجمع الملك فهد عبر Quran.com images)
-            const sources = [
-                'https://cdn.jsdelivr.net/gh/GovarJabbar/Quran-PNG@master/' + p + '.png',
-                'https://raw.githubusercontent.com/GovarJabbar/Quran-PNG/master/' + p + '.png',
-                'https://govarjabbar.github.io/Quran-PNG/' + p + '.png',
-                'https://cdn.jsdelivr.net/gh/quranpedia/quran-svg@main/mushafs/hafs/kfqc/svg/' + p + '.svg',
-                'https://www.mp3quran.net/api/quran_pages_svg/' + p + '.svg'
-            ];
-            content.innerHTML = '<div class="mushaf-loading">' + t('loadingPage') + '</div>';
-            let si = 0;
-            const tryLoad = () => {
-                if (si >= sources.length) {
-                    // احتياطي: نص عثماني من api.quran.com
-                    loadMushafTextPage(n, content);
-                    return;
-                }
-                const url = sources[si++];
-                const img = document.createElement('img');
-                img.className = 'mushaf-page-img';
-                img.alt = 'Mushaf page ' + n;
-                img.draggable = false;
-                let done = false;
-                const timer = setTimeout(() => {
-                    if (!done) { done = true; tryLoad(); }
-                }, 10000);
-                img.onload = () => {
-                    if (done) return;
-                    done = true;
-                    clearTimeout(timer);
-                    content.innerHTML = '';
-                    content.appendChild(img);
-                };
-                img.onerror = () => {
-                    if (done) return;
-                    done = true;
-                    clearTimeout(timer);
-                    tryLoad();
-                };
-                img.src = url;
-            };
-            tryLoad();
-        }
-
-        async function loadMushafTextPage(n, content) {
-            try {
-                const res = await fetch('https://api.quran.com/api/v4/quran/verses/uthmani?page_number=' + n);
-                if (!res.ok) throw new Error('api');
-                const data = await res.json();
-                const verses = data.verses || [];
-                if (!verses.length) throw new Error('empty');
-                let html = '<div class="mushaf-text-page">';
-                verses.forEach(v => {
-                    const num = (v.verse_key || '').split(':')[1] || '';
-                    html += '<span class="mushaf-ayah">' + (v.text_uthmani || '') +
-                        '<span class="mushaf-num">' + num + '</span></span> ';
-                });
-                html += '</div>';
-                content.innerHTML = html;
-            } catch (e) {
-                content.innerHTML = '<p style="text-align:center;padding:24px;color:#c0392b">' + t('pageLoadFail') + '</p>';
+            content.innerHTML = '<div class="mushaf-loading">' + (typeof t === 'function' ? t('loadingPage') : '...') + '</div>';
+            loadMushafTextPage(n, content).then(function(ok) {
+                if (ok) return;
+                content.innerHTML = '<p style="text-align:center;padding:24px;color:#c0392b">' +
+                    (typeof t === 'function' ? t('pageLoadFail') : 'Failed') + '</p>' +
+                    '<p style="text-align:center"><button type="button" id="mushafRetryBtn" style="padding:10px 16px;background:var(--primary);color:#fff;border:none;border-radius:10px">' +
+                    (typeof t === 'function' ? t('loadingPage') : 'Retry') + '</button></p>';
+                const rb = document.getElementById('mushafRetryBtn');
+                if (rb) rb.onclick = function() { renderMushafPageImage(); };
+            }).catch(function() {
+                content.innerHTML = '<p style="text-align:center;padding:24px;color:#c0392b">Error</p>';
+            });
+            } catch (err) {
+                console.error('mushaf render', err);
+                const content = document.getElementById('mushafContent');
+                if (content) content.innerHTML = '<p style="text-align:center;padding:20px">Error: ' + err.message + '</p>';
             }
         }
 
+        
+        // ترجمات api.quran.com حسب لغة التطبيق
+        const TRANSLATION_IDS = {
+            ar: null,
+            en: 20,   // Sahih International
+            fr: 31,   // Hamidullah
+            es: 83,   // Isa Garcia
+            it: 153,  // Hamza Roberto Piccardo
+            tr: 77,   // Diyanet
+            de: 27,   // Bubenheim
+            pt: 103,  // Helmi Nasr
+            ur: 54,   // Junagarhi
+            hi: 122,  // Azizul Haque
+            id: 33,   // Indonesian Ministry
+            ms: 39,   // Basmeih
+            ha: 32,   // Abubakar Gumi
+            so: 46,   // Mahmud Muhammad Abduh
+            ku: 81    // Burhan Muhammad-Amin
+        };
+
+        function stripTranslationHtml(s) {
+            return String(s || '')
+                .replace(/<sup[^>]*>.*?<\/sup>/gi, '')
+                .replace(/<[^>]+>/g, '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .trim();
+        }
+
+
+        async function loadMushafTextPage(n, content) {
+            const lang = currentLang || 'ar';
+            const tid = TRANSLATION_IDS.hasOwnProperty(lang) ? TRANSLATION_IDS[lang] : 20;
+            const cacheKey = 'mushaf_p_' + n + '_' + (tid || 'ar');
+            try {
+                let verses = null;
+                try {
+                    const cached = localStorage.getItem(cacheKey);
+                    if (cached) verses = JSON.parse(cached);
+                } catch (e) {}
+                if (!verses) {
+                    let url;
+                    if (!tid) {
+                        url = 'https://api.quran.com/api/v4/quran/verses/uthmani?page_number=' + n;
+                    } else {
+                        url = 'https://api.quran.com/api/v4/verses/by_page/' + n +
+                            '?translations=' + tid + '&fields=text_uthmani&per_page=50&words=false';
+                    }
+                    const res = await fetch(url);
+                    if (!res.ok) return false;
+                    const data = await res.json();
+                    verses = data.verses || [];
+                    if (!verses.length) return false;
+                    try { localStorage.setItem(cacheKey, JSON.stringify(verses)); } catch (e) {}
+                    try {
+                        const c = await caches.open('mushaf-text-v1');
+                        await c.put('https://mushaf.local/page/' + n + '/' + (tid || 'ar'),
+                            new Response(JSON.stringify(verses), { headers: { 'Content-Type': 'application/json' } }));
+                    } catch (e) {}
+                }
+                let html = '<div class="mushaf-text-page"><div class="mushaf-text-inner">';
+                verses.forEach(v => {
+                    const num = (v.verse_key || '').split(':')[1] || String(v.verse_number || '');
+                    const ar = v.text_uthmani || (v.text_uthmani === undefined ? '' : v.text_uthmani);
+                    // بعض الاستجابات تضع النص في text_uthmani عبر fields
+                    const arabic = ar || v.text_uthmani || v.text || '';
+                    html += '<div class="mushaf-verse-block">';
+                    html += '<div class="mushaf-ayah-ar">' + arabic +
+                        ' <span class="mushaf-num">' + toArabicIndic(num) + '</span></div>';
+                    if (tid) {
+                        const tr = (v.translations && v.translations[0]) ? stripTranslationHtml(v.translations[0].text) : '';
+                        if (tr) {
+                            html += '<div class="mushaf-ayah-tr" dir="' + (['ar','ur','ku'].includes(lang) ? 'rtl' : 'ltr') + '">' + tr + '</div>';
+                        }
+                    }
+                    html += '</div>';
+                });
+                html += '</div><div class="mushaf-text-footer">' + n + ' / 604</div></div>';
+                content.innerHTML = html;
+                return true;
+            } catch (e) {
+                try {
+                    const c = await caches.open('mushaf-text-v1');
+                    const r = await c.match('https://mushaf.local/page/' + n + '/' + (tid || 'ar'));
+                    if (r) {
+                        const verses = await r.json();
+                        let html = '<div class="mushaf-text-page"><div class="mushaf-text-inner">';
+                        verses.forEach(v => {
+                            const num = (v.verse_key || '').split(':')[1] || '';
+                            const arabic = v.text_uthmani || '';
+                            html += '<div class="mushaf-verse-block">';
+                            html += '<div class="mushaf-ayah-ar">' + arabic +
+                                ' <span class="mushaf-num">' + toArabicIndic(num) + '</span></div>';
+                            if (tid && v.translations && v.translations[0]) {
+                                const tr = stripTranslationHtml(v.translations[0].text);
+                                if (tr) html += '<div class="mushaf-ayah-tr">' + tr + '</div>';
+                            }
+                            html += '</div>';
+                        });
+                        html += '</div><div class="mushaf-text-footer">' + n + ' / 604</div></div>';
+                        content.innerHTML = html;
+                        return true;
+                    }
+                } catch (e2) {}
+                return false;
+            }
+        }
+
+        function toArabicIndic(num) {
+            const map = '٠١٢٣٤٥٦٧٨٩';
+            return String(num).replace(/\d/g, d => map[d] || d);
+        }
+
+        
+
+
+        
         function mushafPageUrl(n) {
             const p = String(n).padStart(3, '0');
             return 'https://cdn.jsdelivr.net/gh/GovarJabbar/Quran-PNG@master/' + p + '.png';
@@ -1929,6 +2182,19 @@
             document.addEventListener('DOMContentLoaded', bind);
             setInterval(bind, 1500);
         })();
+
+        
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.nav-btn[data-section="mushaf"]');
+            if (btn) {
+                e.preventDefault();
+                openMushaf();
+            }
+            var prev = e.target.closest('#mushafPrev, #mushafPrev2');
+            if (prev) { e.preventDefault(); mushafTurn(-1); }
+            var next = e.target.closest('#mushafNext, #mushafNext2');
+            if (next) { e.preventDefault(); mushafTurn(1); }
+        });
 
         function hideSplash() {
             const splash = document.getElementById('splashScreen');
@@ -1989,7 +2255,7 @@
             filter = filter || '';
             const list = document.getElementById('sheikhsList');
             list.innerHTML = '';
-            const q = (filter||'').toLowerCase(); const filtered = QURAN_DATA.sheikhs.filter(s => s.name.includes(filter) || (s.country||'').includes(filter) || s.name.toLowerCase().includes(q));
+            const q = (filter||'').toLowerCase(); const filtered = QURAN_DATA.sheikhs.filter(s => s.name.includes(filter) || getSheikhDisplayName(s.name).includes(filter) || (s.country||'').includes(filter) || s.name.toLowerCase().includes(q));
             if (filtered.length === 0) {
                 list.innerHTML = '<p style="text-align:center;opacity:0.6;grid-column:1/-1">' + t('noResults') + '</p>';
                 return;
@@ -1998,7 +2264,7 @@
                 const isSelected = window.player.currentSheikh.server === s.server;
                 const el = document.createElement('div');
                 el.className = 'sheikh-card' + (isSelected ? ' selected' : '');
-                el.innerHTML = '<div class="sheikh-label">' + (t('sheikhWord') || 'الشيخ') + '</div><div class="sheikh-name">' + s.name + '</div><span class="country-tag">' + getCountryLabel(s.country) + '</span>' + (s.young ? ' <span class="country-tag" style="background:rgba(212,175,55,0.25)">' + t('young') + '</span>' : '');
+                el.innerHTML = '<div class="sheikh-label">' + (t('sheikhWord') || 'الشيخ') + '</div><div class="sheikh-name">' + getSheikhDisplayName(s.name) + '</div><span class="country-tag">' + getCountryLabel(s.country) + '</span>' + (s.young ? ' <span class="country-tag" style="background:rgba(212,175,55,0.25)">' + t('young') + '</span>' : '');
                 el.onclick = () => {
                     window.player.currentSheikh = s;
                     
@@ -2029,13 +2295,27 @@
         }
 
         async function updateSavedCount() {
-            if (!('caches' in window)) return;
+            const el = document.getElementById('savedCount');
+            if (!el) return;
+            if (!('caches' in window)) { el.textContent = '0'; return; }
             try {
                 const cache = await caches.open('quran-audio-v1');
                 const keys = await cache.keys();
-                document.getElementById('savedCount').textContent = keys.length;
+                const seen = new Set();
+                keys.forEach(req => {
+                    const m = req.url.match(/(\d{3})\.mp3$/);
+                    if (!m) return;
+                    let sheikhKey = 'x';
+                    for (const sh of QURAN_DATA.sheikhs) {
+                        if (req.url.startsWith(sh.server) || req.url.indexOf((sh.server||'').replace(/https?:\/\/[^/]+/, '')) >= 0) {
+                            sheikhKey = sh.server; break;
+                        }
+                    }
+                    seen.add(sheikhKey + '|' + m[1]);
+                });
+                el.textContent = String(seen.size);
             } catch (e) {
-                document.getElementById('savedCount').textContent = '0';
+                el.textContent = '0';
             }
         }
 
@@ -2082,42 +2362,68 @@
         async function toggleSaveSurah(btn, surahId) {
             const url = btn.dataset.url;
             if (!url) return;
-
             if (!('caches' in window)) {
                 showToast(t('noCache'));
                 return;
             }
-
             try {
                 const cache = await caches.open('quran-audio-v1');
-                const isSaved = await cache.match(url);
+                // تحقق من وجود أي نسخة لنفس الشيخ+السورة
+                const pad = String(surahId).padStart(3, '0');
+                const keys = await cache.keys();
+                let existing = null;
+                for (const r of keys) {
+                    if (r.url.indexOf(pad + '.mp3') >= 0) {
+                        // نفس مسار الشيخ إن أمكن
+                        if (url && r.url.replace(/https?:/, '') === url.replace(/https?:/, '')) {
+                            existing = r; break;
+                        }
+                        if (window.player && window.player.currentSheikh) {
+                            const srv = window.player.currentSheikh.server || '';
+                            if (srv && r.url.indexOf(srv.replace(/https?:\/\/[^/]+/, '')) >= 0) {
+                                existing = r; break;
+                            }
+                        }
+                    }
+                }
+                if (!existing) existing = await cache.match(url);
 
-                if (isSaved) {
+                if (existing) {
+                    // حذف كل التكرارات
+                    for (const r of keys) {
+                        if (r.url.indexOf(pad + '.mp3') >= 0) {
+                            if (window.player && window.player.currentSheikh) {
+                                const srv = window.player.currentSheikh.server || '';
+                                if (srv && (r.url.startsWith(srv) || r.url.indexOf(srv.replace(/https?:\/\/[^/]+/, '')) >= 0)) {
+                                    await cache.delete(r);
+                                }
+                            } else if (r.url === url) {
+                                await cache.delete(r);
+                            }
+                        }
+                    }
                     await cache.delete(url);
                     btn.className = 'save-btn';
                     btn.innerHTML = t('save');
                     showToast(t('saveDeleted'));
                 } else {
-                    btn.className = 'save-btn loading';
                     btn.innerHTML = t('saving');
                     btn.disabled = true;
-
-                    const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
-                    if (!response.ok) throw new Error('HTTP ' + response.status);
-
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('fetch');
                     await cache.put(url, response.clone());
                     btn.className = 'save-btn saved';
                     btn.innerHTML = t('saved');
                     showToast(t('saveOk'));
                 }
+                btn.disabled = false;
+                await updateSavedCount();
+                const panel = document.getElementById('savedSurahsPanel');
+                if (panel && panel.style.display !== 'none') await renderSavedSurahs();
             } catch (e) {
-                console.error(e);
-                btn.className = 'save-btn';
+                btn.disabled = false;
                 btn.innerHTML = t('save');
                 showToast(t('saveFail'));
-            } finally {
-                btn.disabled = false;
-                updateSavedCount();
             }
         }
 
